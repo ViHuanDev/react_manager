@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Text, AsyncStorage } from 'react-native';
+import { Text, AsyncStorage,Image } from 'react-native';
 import {connect} from 'react-redux';
 import {Card, CardSection, Input, Button, Spinner} from './common';
 import {
@@ -65,50 +65,69 @@ class LoginForm extends Component{
 				});
 				// console.log(value);
 				return(
-					<Card>
-					<CardSection>
-					<Input 
-					label = "Email"
-					placeholder = "user@gmail.com"
-					onChangeText={this.onEmailChange.bind(this)}
-					value = {this.props.email}
-					/>
-					</CardSection>
-					<CardSection>
-					<Input
-					secureTextEntry
-					label = "Password"
-					placeholder = "password"
-					onChangeText={this.onPasswordChange.bind(this)}
-					value = {this.props.password}
-					/>
-					</CardSection>
-					<Text style={styles.errorTextStyle}>
-					{this.props.error}
-					</Text>
-					<CardSection>
-					{this.renderButton()}
-					</CardSection>
+					<Card style={styles.backgroundLogin}>
+						<Image source={require('../images/bg-login.jpg')} style={styles.bg_images} >
+								<CardSection style={styles.backgroundLogin} >	
+									<CardSection>
+											<Input 
+											label = "Email"
+											underlineColorAndroid='transparent'
+											keyboardType={'email-address'}
+											placeholder = "user@gmail.com"
+											onChangeText={this.onEmailChange.bind(this)}
+											value = {this.props.email}
+											/>
+									</CardSection>
+									<CardSection>
+											<Input
+											secureTextEntry={true}
+											underlineColorAndroid='transparent'
+											label = "Password"
+											placeholder = "password"
+											onChangeText={this.onPasswordChange.bind(this)}
+											value = {this.props.password}
+											/>
+									</CardSection>
+									<Text style={styles.errorTextStyle}>
+											{this.props.error}
+									</Text>
+									<CardSection>
+										{this.renderButton()}
+									</CardSection>
+								</CardSection>
+						</Image>
 					</Card>
 					);
 					// }
 				}
 			}
-			const styles = {
-				errorTextStyle: {
-					fontSize: 20,
-					alignSelf: 'center',
-					color: 'red'
-				},
-				loaddingAsync: {
-					flex:1,
-					backgroundColor: 'lightblue',
-				}
-			};
+const styles = {
+	errorTextStyle: {
+		fontSize: 20,
+		alignSelf: 'center',
+		color: 'red'
+	},
+	loaddingAsync: {
+		flex:1,
+		backgroundColor: 'lightblue',
+	},
+	backgroundLogin:{
+		flex:1,
+		flexDirection: 'column',
+		justifyContent: 'center',
+    	alignItems: 'center', 
+		backgroundColor: 'rgba(255,255,255,0.1)',
+	},
+	bg_images:{
+		flex: 1,
+		alignSelf:  'stretch',
+		width: null,
+		justifyContent: 'center' 
+	}
+};
 
-			const mapStateToProps = ({auth}) => {
-				const {email, password, error, loading } = auth;
-				return { email, password, error, loading };
-			};
-
-			export default connect(mapStateToProps, {emailChanged, passwordChanged, loginUser,loginUserSuccess})(LoginForm);
+const mapStateToProps = ({auth}) => {
+	const {email, password, error, loading } = auth;
+	return { email, password, error, loading };
+};
+export default connect(mapStateToProps, {emailChanged, passwordChanged, loginUser,loginUserSuccess})(LoginForm);

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {View,Text,FlatList,AsyncStorage,Dimensions,
 	StyleSheet,ScrollView,TouchableOpacity} from 'react-native';
-import CheckBox from 'react-native-checkbox';
+// import CheckBox from 'react-native-checkbox';
+import { CheckBox } from 'react-native-elements';
 class ListFaQ extends Component {
 constructor(props) {
   super(props);
@@ -16,13 +17,13 @@ clickCheck(){
 		this.setState({
 			checkItem: false
 		});
-		console.log(this.state.checkItem);
+		console.log(this.state.checkItem+"false");
 	}
 	else{
 		this.setState({
 			checkItem: true
 		});
-		console.log(this.state.checkItem);
+		console.log(this.state.checkItem+"true");
 	}
 }
 _keyExtractor = (item, index) => index;
@@ -43,12 +44,13 @@ _keyExtractor = (item, index) => index;
 							  renderItem= { ({item})=>
 								  <View style={styles.itemRow} >
 										  <View>
-											  <CheckBox
-											  	checkboxStyle={styles.checkbox}
-											  	label="FaQ" 
-						  						isChecked={this.state.checkItem}
-						  						onClick={()=> this.clickCheck}
-												onPress={()=>this.clickCheck}
+												<CheckBox
+													  left
+													  title='Click Here'
+													  // checkedIcon='dot-circle-o'
+													  // uncheckedIcon='circle-o'
+													  checked={this.state.checkItem}
+													  onPress={()=>this.clickCheck}
 												/>
 											</View>
 											<View>

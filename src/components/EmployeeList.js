@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import {View, Text,AsyncStorage,ListView,FlatList,
 	StyleSheet,Dimensions,TouchableOpacity} from 'react-native';
-import CheckBox from 'react-native-checkbox';
+import { Icon } from 'react-native-elements';
+// import Icon from 'react-native-vector-icons';
+// import IconOc from 'react-native-vector-icons/Octicons';
 class EmployeeList extends Component {
 	constructor(props) {
 		super(props);
@@ -29,57 +31,40 @@ class EmployeeList extends Component {
 		render(){
 			return(
 				<View style={styles.row}>
-						<View>
+						<View style={styles.headList}>
 							<Text>
-							  	Danh sách check list
+							  	Manage Check List
 							</Text>
 						</View>
-						<FlatList
-					  data={this.state.mang}
-					  keyExtractor={item => item.id}
-					  renderItem={({item})=>
-					  		<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ListFaQ',{id: item.id,name_org: item.organization.name})}}>
-					  		<Text>
-							  	Code CheckList : {item.id}
-							</Text>
-								<View style={styles.contentList}>
-									<View style={styles.contentLeft}>
-											<View style={styles.item}>
-												<Text style={styles.center}>
-												  	Name User :
-												</Text>
+						<View style={styles.contentList}>
+								<FlatList
+							  data={this.state.mang}
+							  keyExtractor={item => item.id}
+							  renderItem={({item})=>
+							  		<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ListFaQ',{id: item.id,name_org: item.organization.name})}}>
+										<View style={styles.contentList}>
+											<View style={styles.contentLeft}>
+												<View style={styles.iconLeft}>
+													<Icon type='octicon' name="checklist" size={30} />
+												</View>
 											</View>
-											<View style={styles.item}>
-												<Text style={styles.center}>
-												  	Name Company :
-												</Text>
+											<View style={styles.contentRight}>
+													<View style={styles.item}>
+														<Text style={styles.center}>
+														  	Check List {item.id}: {item.name}
+														</Text>
+														<Text style={styles.center}>
+															{item.organization.name}
+														</Text>													
+													</View>
+													<View style={styles.arrowLeft}>
+														<Icon type='font-awesome' name="chevron-right" size={20} />
+													</View>
 											</View>
-											<View style={styles.item}>
-												<Text style={styles.center}>
-												  	Code Company :
-												</Text>
-											</View>
-									</View>
-									<View style={styles.contentRight}>
-									<View style={styles.item}>
-												<Text style={styles.center}>
-												  	{item.name}
-												</Text>
-											</View>
-											<View style={styles.item}>
-											<Text style={styles.center}>
-												{item.organization.name}
-											</Text>													
-											</View>
-											<View style={styles.item}>
-											<Text style={styles.center}>
-												{item.organization.organization_code}
-												</Text>
-											</View>
-									</View>
-								</View>
-						</TouchableOpacity>
-					}/>
+										</View>
+								</TouchableOpacity>
+							}/>
+						</View>
 				</View>
 				// <Text>
 				//   	Hello
@@ -92,11 +77,11 @@ const styles = StyleSheet.create({
 	row:{
 		flex: 1,
 		flexDirection: 'column',
-		// backgroundColor: 'cyan'
+		backgroundColor: 'rgba(192,192,192,0.1)'
 	},
 	contentList:{
 		marginTop: 5,
-		height: (height*1.5)/10,
+		height: (height*2)/10,
 		flexDirection: 'row',
 		borderWidth: 1,
 		// borderBottomWidth: 0,
@@ -105,24 +90,45 @@ const styles = StyleSheet.create({
 	contentLeft:{
 		flex:1,
 		flexDirection: 'column',
-		height: (height*1.5)/10.2,
+		height: (height*2)/30,
 		backgroundColor: 'white'
 	},
 	contentRight:{
-		flex:1,
-		height: (height*1.5)/10.2,
-		flexDirection: 'column', 
-		// backgroundColor: 'lightblue'
+		flex:6,
+		height: (height*2)/30,
+		flexDirection: 'row', 
+		backgroundColor: 'white',
+		borderBottomWidth: 1,
 	},
 	item:{
-		flex:1,
+		flex: 0.9,
 		// alignSelf: 'center',  
 		justifyContent: 'center',
 		alignItems: 'center', 
 		// borderBottomWidth: 1,
 		// borderRightWidth: 1,
 	},
+	arrowLeft:{
+		flex: 0.1,
+		justifyContent: 'center',
+		alignItems: 'center', 
+	},
 	center:{
+	},
+	headList:{
+		flex: 0.1,
+		justifyContent: 'center',
+		alignItems: 'center' 
+	},
+	contentList:{
+		flex: 0.9,
+		flexDirection: 'row' 
+	},
+	iconLeft:{
+		flex:1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		// backgroundColor: 'green',
 	}
 });
 export default EmployeeList;
