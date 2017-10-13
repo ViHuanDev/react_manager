@@ -1,15 +1,21 @@
 import React, {Component} from 'react';
-import { Text, AsyncStorage,Image } from 'react-native';
+import { Text, AsyncStorage,Image ,Dimensions,View} from 'react-native';
 import {connect} from 'react-redux';
+
 import {Card, CardSection, Input, Button, Spinner} from './common';
 import {
 	emailChanged,
 	passwordChanged,
 	loginUser,loginUserFail,loginUserSuccess
 } from '../actions';
-
+const {height,width} = Dimensions.get('screen');
 class LoginForm extends Component{
-
+	constructor(props) {
+	  super(props);
+	  this.state = {
+	  	loadingLogin: true
+	  };
+	}
 	onEmailChange(text){
 		this.props.emailChanged(text);
 	}
@@ -30,42 +36,46 @@ class LoginForm extends Component{
 			</Button>
 			);
 		}
-		///
 		componentWillMount(){
 			console.log("will");
 			var keyGet = ['@email:key','@password:key','@user_id:key'];
 			AsyncStorage.multiGet(keyGet).then((value)=>{
+				// console.log(value);
 				if(value){
-					// console.log("wtf");
 					const email =value[0][1];
 					const password= value[1][1];
-					// console.log(value);
 					if(email!==null && password!==null){
 						console.log(email+"-"+password);
 						this.props.loginUser({password,email});
-						// console.log("success");
-						var data = JSON.stringify(value);
-						// console.log(data);
+					}
+				if(value[0][1]==null && value[1][1]==null){
+						this.setState({
+							loadingLogin: false
+						});
+						console.log('F');
 					}
 				}
 			});
 			// AsyncStorage.multiRemove(['@email:key','@password:key','@token:key','@user_id:key']).then((value)=>{
 			// 		console.log("ok remoe");
 			// 	});
-			};
+};
 			render(){
 				var keyGet = ['@email:key','@password:key'];
 				AsyncStorage.multiGet(keyGet).then((value)=>{
-					if(value.length > 0){
-						return value;
-					}
-					else{
-						return value;
-					}
+					// console.log(value[1]);
+					// console.log(this.state.loadingLogin);
 				});
 				// console.log(value);
 				return(
 					<Card style={styles.backgroundLogin}>
+					<View style={{width: width, height: height, backgroundColor: 'rgba(255,255,255,0.1)',
+					justifyContent: 'center',alignItems: 'center',display: this.state.loadingLogin?'flex':'none'}}>
+						<Image
+						  style={{width: 50,height: 50}}
+						  source={require('../images/loading_apple.gif')}
+						/>
+					</View>	
 						<Image source={require('../images/bg-login.jpg')} style={styles.bg_images} >
 								<CardSection style={styles.backgroundLogin} >	
 									<CardSection>
@@ -98,14 +108,13 @@ class LoginForm extends Component{
 						</Image>
 					</Card>
 					);
-					// }
 				}
 			}
 const styles = {
 	errorTextStyle: {
 		fontSize: 20,
 		alignSelf: 'center',
-		color: 'red'
+		color: 'red',
 	},
 	loaddingAsync: {
 		flex:1,
@@ -122,7 +131,7 @@ const styles = {
 		flex: 1,
 		alignSelf:  'stretch',
 		width: null,
-		justifyContent: 'center' 
+		justifyContent: 'center' ,
 	}
 };
 

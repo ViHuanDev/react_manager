@@ -59,13 +59,6 @@ export const loginUser = ({email, password}) =>{
 		// 	}
 		// });
 		dispatch({type: LOGIN_USER});
-		// firebase.auth().signInWithEmailAndPassword(email, password)
-		// .then(user =>loginUserSuccess(dispatch,user))
-		// .catch((error)=>{
-		// 	firebase.auth().createUserWithEmailAndPassword(email, password)
-		// 	.then (user => loginUserSuccess(dispatch,user))
-		// 	.catch(()=> loginUserFail(dispatch));
-		// });s
 		try {
 			fetch("http://96.96.10.10/api/users/signin",{
 				"method": "POST",

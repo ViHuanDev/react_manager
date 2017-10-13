@@ -8,24 +8,29 @@ import reducers from './reducers';
 import ReduxThunk from 'redux-thunk';
 import Router from './Router';
 class Main extends Component {
-	// 	componentWillMount(){
-	// 	AsyncStorage.getAllKeys((err, keys) => { 
-	// 		AsyncStorage.multiGet(keys, (err, stores) => {
-	// 			stores.map((result, i, store)=>{
-	// 				console.log(result);
-	// 				if(result){
-	// 					loginUserSuccess = (dispatch,result) => {
-	// 						dispatch ({
-	// 							type: "login_user_success",
-	// 							payload: result,
-	// 						});
-	// 						Actions.main();
-	// 					};
-	// 				}
-	// 			});
-	// 		}); 
-	// 	});
-	// }
+// 		componentWillMount(){
+// 			console.log("log.");
+// 			var keyGet = ['@email:key','@password:key','@user_id:key'];
+// 			AsyncStorage.multiGet(keyGet).then((value)=>{
+// 				if(value){
+// 					// console.log("wtf");
+// 					const email =value[0][1];
+// 					const password= value[1][1];
+// 					// console.log(value);
+// 					if(email!==null && password!==null){
+// 						Actions.main();
+// 						console.log(email+"-"+password);
+// 						// this.props.loginUser({password,email});
+// 						// console.log("success");
+// 						var data = JSON.stringify(value);
+// 						// console.log(data);
+// 					}
+// 				}
+// 			});
+// 			// AsyncStorage.multiRemove(['@email:key','@password:key','@token:key','@user_id:key']).then((value)=>{
+// 			// 		console.log("ok remoe");
+// 			// });
+// };
 	render(){
 		return (
 			<Provider store = {createStore (reducers, {}, applyMiddleware(ReduxThunk))}>

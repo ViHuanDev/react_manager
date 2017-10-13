@@ -22,7 +22,7 @@ class EmployeeList extends Component {
 					isLoading: false,
 					mang: responseJson,
 				});
-				// console.log(this.state.mang);
+				console.log(this.state.mang);
 			}) .catch((error) => { 
 				console.error(error); });
 		};
@@ -38,10 +38,10 @@ class EmployeeList extends Component {
 						</View>
 						<View style={styles.contentList}>
 								<FlatList
-							  data={this.state.mang}
-							  keyExtractor={item => item.id}
-							  renderItem={({item})=>
-							  		<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ListFaQ',{id: item.id,name_org: item.organization.name})}}>
+							 		 data={this.state.mang}
+							  		keyExtractor={item => item.id}
+							  		renderItem={({item})=>
+							  			<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ListFaQ',{id: item.id,name_org: item.organization.name})}}>
 										<View style={styles.contentList}>
 											<View style={styles.contentLeft}>
 												<View style={styles.iconLeft}>
@@ -51,10 +51,10 @@ class EmployeeList extends Component {
 											<View style={styles.contentRight}>
 													<View style={styles.item}>
 														<Text style={styles.center}>
-														  	Check List {item.id}: {item.name}
+														  	Check list {item.organization.name}
 														</Text>
 														<Text style={styles.center}>
-															{item.organization.name}
+															 {item.name}
 														</Text>													
 													</View>
 													<View style={styles.arrowLeft}>
@@ -66,6 +66,7 @@ class EmployeeList extends Component {
 							}/>
 						</View>
 				</View>
+
 				// <Text>
 				//   	Hello
 				// </Text>
