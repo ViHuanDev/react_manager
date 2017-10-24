@@ -3,7 +3,6 @@ import { Picker, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { employeeUpdate } from '../actions';
 import { Card, CardSection, Input, Button } from './common';
-
 class EmployeeCreate extends Component {
 	render(){
 		return (

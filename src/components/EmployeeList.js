@@ -22,7 +22,7 @@ class EmployeeList extends Component {
 					isLoading: false,
 					mang: responseJson,
 				});
-				console.log(this.state.mang);
+				// console.log(this.state.mang);
 			}) .catch((error) => { 
 				console.error(error); });
 		};
@@ -56,9 +56,6 @@ class EmployeeList extends Component {
 														<Text style={styles.center}>
 															 {item.name}
 														</Text>													
-													</View>
-													<View style={styles.arrowLeft}>
-														<Icon type='font-awesome' name="chevron-right" size={20} />
 													</View>
 											</View>
 										</View>

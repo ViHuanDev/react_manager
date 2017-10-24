@@ -13,7 +13,7 @@ class LoginForm extends Component{
 	constructor(props) {
 	  super(props);
 	  this.state = {
-	  	loadingLogin: true
+	  	loadingLogin: true,loading:true,
 	  };
 	}
 	onEmailChange(text){
@@ -45,6 +45,9 @@ class LoginForm extends Component{
 					const email =value[0][1];
 					const password= value[1][1];
 					if(email!==null && password!==null){
+						this.setState({
+							loading: false
+						});
 						console.log(email+"-"+password);
 						this.props.loginUser({password,email});
 					}

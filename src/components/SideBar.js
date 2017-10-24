@@ -1,18 +1,25 @@
 import React, { Component } from 'react';
-import { Picker, Text,TouchableOpacity } from 'react-native';
+import { Picker, Text,TouchableOpacity,Image } from 'react-native';
 import { connect } from 'react-redux';
 // import { employeeUpdate } from '../actions';
 // import EmployeeCreate from './EmployeeCreate';
 import { Card, CardSection, Input, Button } from './common';
+import {Actions } from 'react-native-router-flux';
 import {
   StyleSheet,
   View
 } from 'react-native';
 class SideBar extends Component {
+// componentDidMount() { Actions.menu({key: 'menu', ref: this.refs.navigation}); }
 render() {
     return (
       <View style={styles.body}>
       	<View style={styles.logo}>
+            <Image 
+            style={styles.img}
+              source={require('../../images/logo.jpg')}
+            />
+            
         </View>
         <View style={styles.div1}>
             <View style={styles.items}>
@@ -96,4 +103,4 @@ const styles = StyleSheet.create({
     borderColor: '#ffffff' 
   },
 });
-export default SideBar;
+export default connect()(SideBar);

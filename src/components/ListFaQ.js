@@ -39,6 +39,33 @@ class ListFaQ extends Component {
 		selectedIds: temp,
 	});
 }
+fetchdata = ()=>{
+	this.setState({
+		page: this.state.page+1
+	});
+	var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
+	AsyncStorage.multiGet(keyGet).then((value)=>{
+		if(value){
+			const token = value[3][1];
+			console.log(this.state.id_faq);
+			fetch('http://96.96.10.10/api/checklists/extend/getfaq/'+this.state.id_faq+'?page='+this.state.page+'&token='+token)
+			.then((response)=>response.json()).then((responseJson) => {
+				console.log(responseJson);
+				this.setState({
+					isLoading: false,
+					array_faq: this.state.array_faq.concat(responseJson.data),
+					count: 0-20,
+				});
+				// console.log(this.state.array_faq);
+			}) .catch((error) => { 
+				console.error(error); });
+		};
+	});
+}
+componentDidMount(){
+	console.log(this.state.id_faq);
+	this.fetchdata();
+};
 _keyExtractor = (item, index) => index;
 render() {
 	return (
@@ -64,7 +91,7 @@ render() {
 					uncheckedColor='black'
 					onPress={()=>this.clickCheck(item.id)}
 					style={styles.checkbox} />
-		</View>
+			</View>
 		<View style={styles.rowContent}>
 			<View style={styles.contentItem}>
 				<TouchableOpacity>
@@ -89,6 +116,9 @@ render() {
 							<Text style={[styles.paddingL,styles.textFunc]}>
 								Action
 							</Text>
+							<View style={styles.arrowLeft}>
+								<Icon type='font-awesome' name="chevron-right" size={20} />
+							</View>
 						</View>
 					}
 					items={[
@@ -132,31 +162,7 @@ render() {
 </View>
 				);
 }
-fetchdata = ()=>{
-	this.setState({
-		page: this.state.page+1
-	});
-	var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
-	AsyncStorage.multiGet(keyGet).then((value)=>{
-		if(value){
-			const token = value[3][1];
-			console.log(this.state.page);
-fetch('http://96.96.10.10/api/checklists/extend/getfaq/'+this.state.id_faq+'?page='+this.state.page+'&token='+token)
-			.then((response)=>response.json()).then((responseJson) => {
-				this.setState({
-					isLoading: false,
-					array_faq: this.state.array_faq.concat(responseJson.data),
-					count: 0-20,
-				});
-				// console.log(this.state.array_faq);
-			}) .catch((error) => { 
-				console.error(error); });
-		};
-	});
-}
-componentDidMount(){
-	this.fetchdata();
-};
+
 }
 const {height,width} = Dimensions.get('screen');
 const styles= StyleSheet.create({

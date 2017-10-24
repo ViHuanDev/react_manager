@@ -1,4 +1,3 @@
-// import firebase from 'firebase';
 import { Actions } from 'react-native-router-flux';
 import {
 	EMAIL_CHANGED, 
@@ -64,13 +63,14 @@ export const loginUser = ({email, password}) =>{
 				"method": "POST",
 				headers:{
 					"Accept":"application/json",
-					"Content-Type":"application/json"
+					"Content-Type":"application/json;charset=utf-8"
 				},
 				body: JSON.stringify({
 					"password": password,
 					"email" : email
 				})
 			}).then(async (responseJson)=>{
+				// console.log(responseJson);
 				if(responseJson.ok==true){
 					// console.log(responseJson);
 					var rJson = JSON.parse(responseJson._bodyInit);
