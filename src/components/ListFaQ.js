@@ -48,7 +48,7 @@ fetchdata = ()=>{
 		if(value){
 			const token = value[3][1];
 			console.log(this.state.id_faq);
-			fetch('http://96.96.10.10/api/checklists/extend/getfaq/'+this.state.id_faq+'?page='+this.state.page+'&token='+token)
+			fetch('http://96.96.10.10/api/checklistitems?token='+token)
 			.then((response)=>response.json()).then((responseJson) => {
 				console.log(responseJson);
 				this.setState({
@@ -56,12 +56,35 @@ fetchdata = ()=>{
 					array_faq: this.state.array_faq.concat(responseJson.data),
 					count: 0-20,
 				});
-				// console.log(this.state.array_faq);
+				console.log(this.state.array_faq);
 			}) .catch((error) => { 
 				console.error(error); });
 		};
 	});
 }
+// fetchdata = ()=>{
+// 	this.setState({
+// 		page: this.state.page+1
+// 	});
+// 	var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
+// 	AsyncStorage.multiGet(keyGet).then((value)=>{
+// 		if(value){
+// 			const token = value[3][1];
+// 			console.log(this.state.id_faq);
+// 			fetch('http://96.96.10.10/api/checklists/extend/getfaq/'+this.state.id_faq+'?page='+this.state.page+'&token='+token)
+// 			.then((response)=>response.json()).then((responseJson) => {
+// 				console.log(responseJson);
+// 				this.setState({
+// 					isLoading: false,
+// 					array_faq: this.state.array_faq.concat(responseJson.data),
+// 					count: 0-20,
+// 				});
+// 				// console.log(this.state.array_faq);
+// 			}) .catch((error) => { 
+// 				console.error(error); });
+// 		};
+// 	});
+// }
 componentDidMount(){
 	console.log(this.state.id_faq);
 	this.fetchdata();
@@ -197,7 +220,7 @@ const styles= StyleSheet.create({
 		paddingRight: 5, 
 	},
 	checkbox:{
-		paddingLeft: (width/20)
+		paddingLeft: (width/20),
 		// backgroundColor: 'red', 
         // borderWidth: 1,
         // height: (height/6)/5,

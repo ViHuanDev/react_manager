@@ -4,23 +4,45 @@ import {
   StyleSheet,
   View,Text,Dimensions,Image,TouchableOpacity,AsyncStorage,Modal
 } from 'react-native';
+// import {ResponsiveStyleSheet} from 'react-native-responsive-ui';
+// import {responsive} from 'react-native-responsive-ui';
 import { Icon } from 'react-native-elements';
+import {lang} from './languages/languages';
 const {height,width} = Dimensions.get('screen');
+// const _langAsyn =
 class Main_Screen extends Component {
+    static navigationOptions = {
+    title: 'Home',
+  };
   constructor(props) {
     super(props);
     this.state = {
-      modalVisible: false,
+      modalVisible: false,_lang:lang,lang_load: false,selectedIds:[],visibleModal: false,
+      test:[1,2,3,4,5,6,7],
     };
-  }
+  };
+componentWillMount() {
+  // console.log(this.state._lang.length);
+  // console.log(_key);
+ // this.state.test.map((item)=>{
+ //    console.log(item);
+ //  });
+  var keyGet = ['@email:key','@password:key','@user_id:key','@token:key','@locale:key'];
+    AsyncStorage.multiGet(keyGet).then((value)=>{
+      // console.log(value[4][1]);
+      if(value[4][1]!=null){
+        this.setState({
+          selectedIds: [value[4][1]],
+          lang_load: value[4][1]=='vi'?true:false,
+        });     
+      }
+    });
+};
   onButtonPressProfile(){
     Actions.profile();
   };
   onPressLogout(){
       AsyncStorage.getAllKeys((err, keys) => { 
-          // AsyncStorage.multiGet(keys, (err, stores) => {
-          //     console.log(keys);
-          // }); 
           AsyncStorage.multiRemove(keys).then((value)=>{
              console.log("ok remoe");
           });
@@ -30,7 +52,7 @@ class Main_Screen extends Component {
 _onChangeLanguage(){
 
 };
-  render() {
+  render(){
     return (
       <View style={styles.row}>
         
@@ -40,13 +62,13 @@ _onChangeLanguage(){
               <Image style={styles.img}
                 source={require('./../../images/logo.jpg')}
               />
-        </View>
+            </View>
       		</View>
       		<View style={[styles.itemContent,styles.center,{borderTopWidth: 1}]}>
               <TouchableOpacity style={[styles.itemClick]} onPress={()=>{this.props.navigation.navigate('Screen_EmployList')}} >
                   <Icon style={[styles.flex3,styles.IconFirst]}  type='materialIcons' name='library-books' size={20} />
-                  <Text style={[styles.flex3,styles.textItem]} >
-                      List CheckList
+                  <Text style={[{flex: 0.4},styles.textItem]} >
+                      {this.state.lang_load?this.state._lang.vi.listchList:this.state._lang.en.listchList}
                   </Text>
                   <Icon style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={20} />
               </TouchableOpacity>
@@ -54,8 +76,9 @@ _onChangeLanguage(){
       		<View style={[styles.itemContent,styles.center]}>
             <TouchableOpacity style={[styles.itemClick]} onPress={()=>{this.props.navigation.navigate('Screen_Profile')}}>
                   <Icon  style={[styles.flex3,styles.IconFirst]} type='font-awesome' name="user-circle-o" size={20} />
-                  <Text style={[styles.flex3,styles.textItem]} >
-                      Profile
+                  <Text style={[{flex: 0.4},styles.textItem]} >
+                    {this.state.lang_load?this.state._lang.vi.profile:this.state._lang.en.profile}
+                     
                   </Text>
                    <Icon  style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={20} />
               </TouchableOpacity>
@@ -63,8 +86,9 @@ _onChangeLanguage(){
           <View style={[styles.itemContent,styles.center]}>
             <TouchableOpacity onPress={()=>this.onPressLogout()} style={[styles.itemClick]}>
                   <Icon style={[styles.flex3,styles.IconFirst]}  type='material-icons' name="power-settings-new" size={20} />
-                  <Text style={[styles.flex3,styles.textItem]} >
-                      Sign Out
+                  <Text style={[{flex: 0.4},styles.textItem]} >
+                      {this.state.lang_load?this.state._lang.vi.signout:this.state._lang.en.signout}
+                      
                   </Text>
                   <Icon style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={20} />
               </TouchableOpacity>
@@ -72,8 +96,8 @@ _onChangeLanguage(){
           <View style={[styles.itemContent,styles.center]}>
             <TouchableOpacity onPress={()=>this.props.navigation.navigate('Screen_ChoseLanguage')} style={[styles.itemClick]}>
                   <Icon style={[styles.flex3,styles.IconFirst]}  type='material-icons' name="power-settings-new" size={20} />
-                  <Text style={[styles.flex3,styles.textItem]} >
-                      Change Language
+                  <Text style={[{flex: 0.4},styles.textItem]} >
+                      {this.state.lang_load?this.state._lang.vi.changelanguage:this.state._lang.en.changelanguage}  
                   </Text>
                   <Icon style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={20} />
               </TouchableOpacity>
@@ -81,6 +105,9 @@ _onChangeLanguage(){
       	</View>
       </View>
     );
+  }
+  get style(){
+
   }
 }
 

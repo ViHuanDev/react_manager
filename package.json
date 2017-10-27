@@ -13,6 +13,7 @@
     "react-native-checkbox": "^1.2.0",
     "react-native-elements": "^0.17.0",
     "react-native-popover-tooltip": "^1.1.1",
+    "react-native-responsive-ui": "^1.1.1",
     "react-native-router-flux": "^3.41.0",
     "react-native-vector-icons": "^4.4.0",
     "react-navigation": "^1.0.0-beta.11",

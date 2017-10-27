@@ -37,10 +37,10 @@ class LoginForm extends Component{
 			);
 		}
 		componentWillMount(){
-			console.log("will");
+			console.log("will login");
 			var keyGet = ['@email:key','@password:key','@user_id:key'];
 			AsyncStorage.multiGet(keyGet).then((value)=>{
-				// console.log(value);
+				console.log(value);
 				if(value){
 					const email =value[0][1];
 					const password= value[1][1];
@@ -48,16 +48,17 @@ class LoginForm extends Component{
 						this.setState({
 							loading: false
 						});
-						console.log(email+"-"+password);
+						console.log(email+"-"+password+" login");
 						this.props.loginUser({password,email});
 					}
-				if(value[0][1]==null && value[1][1]==null){
+					if(value[0][1]==null && value[1][1]==null){
 						this.setState({
 							loadingLogin: false
 						});
-						console.log('F');
+						console.log('F'+'Login');
 					}
 				}
+
 			});
 			// AsyncStorage.multiRemove(['@email:key','@password:key','@token:key','@user_id:key']).then((value)=>{
 			// 		console.log("ok remoe");

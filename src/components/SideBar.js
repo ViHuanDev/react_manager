@@ -19,25 +19,39 @@ render() {
             style={styles.img}
               source={require('../../images/logo.jpg')}
             />
-            
         </View>
-        <View style={styles.div1}>
+        <View style={styles.div2}>
             <View style={styles.items}>
-                <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
-                      Search
+                <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_EmployList')}}>
+                  <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
+                     CheckList
                   </Text>
+                </TouchableOpacity>
             </View>
             <View style={styles.items1}>
-                <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_Detail')}}>
+                <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_Profile')}}>
                   <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
-                      Detail
+                      Profile
                   </Text>
                 </TouchableOpacity>
             </View>
         </View>
-        <View style={styles.div2}></View>
-        <View style={styles.div3}></View>
-        <View style={styles.div4}></View>
+        <View style={styles.div2}>
+            <View style={styles.items}>
+                <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChoseLanguage')}}>
+                  <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
+                    Chose Language
+                  </Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.items1}>
+                <TouchableOpacity>
+                  <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
+                      Sign Out
+                  </Text>
+                </TouchableOpacity>
+            </View>
+        </View>
       </View>
     );
   }

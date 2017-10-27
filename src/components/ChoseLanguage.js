@@ -8,29 +8,47 @@ import {
   View,Text,Modal,TouchableOpacity,Dimensions,Image,AsyncStorage
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
+import {lang} from './languages/languages';
 const {height,width} = Dimensions.get('screen');
-let lang= null;
 class ChoseLanguage extends Component {
+constructor(props) {
+  super(props);
+  this.state = {
+  	loading: true,selectedIds:[],success: false,lang_load: false,_lang: lang.vi,
+  };
+};
 componentWillMount() {
+	// console.log(this.state._lang.vi.signout);
 	var keyGet = ['@email:key','@password:key','@user_id:key','@token:key','@locale:key'];
   	AsyncStorage.multiGet(keyGet).then((value)=>{
   		// var item = value.map(function(i,v){
   		// 	console.log(i[1][1]);
   		// });
   		if(value[4][1]!=null){
-  			lang= value[4][1];
+  			// lang = value[4][1];
+  			this.setState({
+  				selectedIds: [value[4][1]],
+  			}); 			
+  			if(value[4][1]=='vi'){
+  				this.setState({
+  				lang_load: true,
+  				_lang: lang.vi
+  				});
+  			}else{
+  				this.setState({
+  				lang_load: false,
+  				_lang: lang.en
+  				});
+  			}
   		}
   	});
-  	console.log(this.state.selectedIds);
-};
-constructor(props) {
-  super(props);
-  this.state = {
-  	visibleModal: false,selectedIds:[lang==null?'vi':lang],success: false
-  };
+  	// console.log(this.state.selectedIds);
 };
 _onChangeLanguage(){
-  	console.log(this.state.selectedIds[0]);
+	this.setState({
+		loading: !this.state.loading,
+	});
+  	// console.log(this.state.selectedIds[0]);
   	var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
   	AsyncStorage.multiGet(keyGet).then((value)=>{
 		if(value){
@@ -48,7 +66,8 @@ _onChangeLanguage(){
 			.then((response)=>response.json()).then((responseJson) => {
 				// console.log(responseJson);
 				this.setState({
-					success: true,
+					success: !this.state.success,
+					loading: !this.state.loading,
 				});
 				AsyncStorage.setItem('@locale:key',this.state.selectedIds[0]);
 			}) .catch((error) => { 
@@ -56,8 +75,29 @@ _onChangeLanguage(){
 		};
 	});
 };
-_close(){
-	Actions.main();
+_onClose(){
+	this.setState({
+		success: !this.state.success,
+	});
+};
+_renderButtonChange(){
+	if(this.state.loading){
+		return(
+			<TouchableOpacity onPress={()=>{this._onChangeLanguage()}} style={[styles._button,styles._center]} >
+							<Text style={styles._buttonText,{textAlign: 'center' }} >
+							  	Save Change
+							</Text>
+			</TouchableOpacity>
+		);
+	}
+	else{
+		return (
+				<View>
+					<Image style={{width: width/10, height:  width/10,}}
+					 	 source={require('../images/loading_green.gif')}/>
+				</View>
+		);
+	}
 };
 _clickCheck(id){
 	var temp = this.state.selectedIds;
@@ -69,7 +109,7 @@ _clickCheck(id){
 		this.setState({
 			selectedIds: temp,
 		});
-		console.log(this.state.selectedIds.length);
+		// console.log(this.state.selectedIds[0]);
 	}
 	else{
 		if(temp.includes("vi")){
@@ -79,7 +119,7 @@ _clickCheck(id){
 		this.setState({
 			selectedIds: temp,
 		});
-		console.log(this.state.selectedIds.length);
+		// console.log(this.state.selectedIds[0]);
 	}
 };
   render() {
@@ -98,7 +138,7 @@ _clickCheck(id){
                     	</Text>
                     </View>
                     <View style={[styles._footerModal,styles._center]}>
-                        <TouchableOpacity onPress={()=>{this.props.navigation.goBack()}} style={[styles._button,{padding: 5}]} >
+                        <TouchableOpacity onPress={()=>{this._onClose()}} style={[styles._button,{padding: 5}]} >
                           <Text style={styles._buttonText} >
                               Close
                           </Text>
@@ -131,7 +171,6 @@ _clickCheck(id){
 							/>		
 						</View>
 						<View style={styles._nameLanguage} >
-			                    
 						</View>
 					</View>
 					<View style={styles._itemChose}>
@@ -156,11 +195,7 @@ _clickCheck(id){
 						</View>
 					</View>
 					<View style={[styles._itemChose,styles._center]}>
-						<TouchableOpacity onPress={()=>{this._onChangeLanguage()}} style={[styles._button,styles._center]} >
-							<Text style={styles._buttonText,{textAlign: 'center' }} >
-							  	Save Change
-							</Text>
-						</TouchableOpacity>
+						{this._renderButtonChange()}
 					</View>
 			</View>
      	</View>
