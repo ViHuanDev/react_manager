@@ -40,20 +40,21 @@ class LoginForm extends Component{
 			console.log("will login");
 			var keyGet = ['@email:key','@password:key','@user_id:key'];
 			AsyncStorage.multiGet(keyGet).then((value)=>{
-				console.log(value);
+				// console.log(value);
 				if(value){
+					// console.log(value);
 					const email =value[0][1];
 					const password= value[1][1];
-					if(email!==null && password!==null){
+					if(email!=null && password!=null){
 						this.setState({
-							loading: false
+							loading: false,
 						});
 						console.log(email+"-"+password+" login");
 						this.props.loginUser({password,email});
 					}
 					if(value[0][1]==null && value[1][1]==null){
 						this.setState({
-							loadingLogin: false
+							loadingLogin: false,
 						});
 						console.log('F'+'Login');
 					}

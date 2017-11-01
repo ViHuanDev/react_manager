@@ -3,52 +3,41 @@
 import React, { Component } from 'react';
 import { Actions } from 'react-native-router-flux';
 import { NavigationActions } from 'react-navigation'
+import {connect} from 'react-redux';
 import {
   StyleSheet,
   View,Text,Modal,TouchableOpacity,Dimensions,Image,AsyncStorage
 } from 'react-native';
+// import { language_success } from '../actions';
 import { CheckBox } from 'react-native-elements';
 import {lang} from './languages/languages';
 const {height,width} = Dimensions.get('screen');
-class ChoseLanguage extends Component {
+class ChooseLanguage extends Component {
 constructor(props) {
   super(props);
   this.state = {
-  	loading: true,selectedIds:[],success: false,lang_load: false,_lang: lang.vi,
+  	loading: true,selectedIds:[],success: false,lang_load: false,_lang: lang,
   };
+  AsyncStorage.getItem('@locale:key').then((item)=>{
+  	this.setState({
+  		lang_load: item=='vi'?true:false,
+  	});
+  });
 };
 componentWillMount() {
-	// console.log(this.state._lang.vi.signout);
 	var keyGet = ['@email:key','@password:key','@user_id:key','@token:key','@locale:key'];
   	AsyncStorage.multiGet(keyGet).then((value)=>{
-  		// var item = value.map(function(i,v){
-  		// 	console.log(i[1][1]);
-  		// });
   		if(value[4][1]!=null){
-  			// lang = value[4][1];
   			this.setState({
   				selectedIds: [value[4][1]],
   			}); 			
-  			if(value[4][1]=='vi'){
-  				this.setState({
-  				lang_load: true,
-  				_lang: lang.vi
-  				});
-  			}else{
-  				this.setState({
-  				lang_load: false,
-  				_lang: lang.en
-  				});
-  			}
   		}
   	});
-  	// console.log(this.state.selectedIds);
 };
 _onChangeLanguage(){
 	this.setState({
 		loading: !this.state.loading,
 	});
-  	// console.log(this.state.selectedIds[0]);
   	var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
   	AsyncStorage.multiGet(keyGet).then((value)=>{
 		if(value){
@@ -64,7 +53,17 @@ _onChangeLanguage(){
 				})
 			})
 			.then((response)=>response.json()).then((responseJson) => {
-				// console.log(responseJson);
+				if(this.state.selectedIds[0]=='vi'){
+  				this.setState({
+  				lang_load: true,
+  				_lang: lang
+  				});
+  			}else{
+  				this.setState({
+  				lang_load: false,
+  				_lang: lang
+  				});
+  			}
 				this.setState({
 					success: !this.state.success,
 					loading: !this.state.loading,
@@ -76,16 +75,18 @@ _onChangeLanguage(){
 	});
 };
 _onClose(){
+	// this.language_success();
 	this.setState({
 		success: !this.state.success,
 	});
+	Actions.auth();
 };
 _renderButtonChange(){
 	if(this.state.loading){
 		return(
 			<TouchableOpacity onPress={()=>{this._onChangeLanguage()}} style={[styles._button,styles._center]} >
 							<Text style={styles._buttonText,{textAlign: 'center' }} >
-							  	Save Change
+							  	{this.state.lang_load?this.state._lang.vi.save_change:this.state._lang.en.save_change}
 							</Text>
 			</TouchableOpacity>
 		);
@@ -101,26 +102,24 @@ _renderButtonChange(){
 };
 _clickCheck(id){
 	var temp = this.state.selectedIds;
+	temp.splice(temp.indexOf(""),1);
 	if(id=="vi"){
-		if(temp.includes("en")){
 			temp.splice(temp.indexOf("en"),1); //remove=1 with indexOf, add=0
 			temp.push("vi"); //add id for array
-		}
 		this.setState({
 			selectedIds: temp,
 		});
 		// console.log(this.state.selectedIds[0]);
 	}
 	else{
-		if(temp.includes("vi")){
 			temp.splice(temp.indexOf("vi"),1); //remove=1 with indexOf, add=0
 			temp.push("en"); //add id for array
-		}
 		this.setState({
 			selectedIds: temp,
 		});
 		// console.log(this.state.selectedIds[0]);
 	}
+	console.log(temp);
 };
   render() {
     return (
@@ -134,22 +133,22 @@ _clickCheck(id){
                 <View style={styles._itemsModal}>
                     <View style={[styles._headModal,styles._center]}>
                     	<Text>
-                    	  	Update successful
+                    	  	{this.state.lang_load?this.state._lang.vi.update_succ:this.state._lang.en.update_succ}
                     	</Text>
                     </View>
                     <View style={[styles._footerModal,styles._center]}>
                         <TouchableOpacity onPress={()=>{this._onClose()}} style={[styles._button,{padding: 5}]} >
                           <Text style={styles._buttonText} >
-                              Close
+                              {this.state.lang_load?this.state._lang.vi.close:this.state._lang.en.close}
                           </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
               </View>
        </Modal>
-			<View style={styles._headChose}>
-				<Text>
-				  	Select Language
+			<View style={[styles._headChose,styles._center]}>
+				<Text style={{fontSize: height/40 }}>
+				  	{this.state.lang_load?this.state._lang.vi.select_language:this.state._lang.en.select_language}
 				</Text>
 			</View>       
 			<View style={styles._contentChose} >
@@ -170,7 +169,10 @@ _clickCheck(id){
 							  source={require('../../images/flags/vietnam.png')}
 							/>		
 						</View>
-						<View style={styles._nameLanguage} >
+						<View style={[styles._nameLanguage,styles._center]} >
+							<Text style={[styles._spanText,styles._textCenter]}>
+							  	{this.state.lang_load?this.state._lang.vi.vi:this.state._lang.en.vi}
+							</Text>
 						</View>
 					</View>
 					<View style={styles._itemChose}>
@@ -190,8 +192,10 @@ _clickCheck(id){
 							  source={require('../../images/flags/english.png')}
 							/>
 						</View>
-						<View style={styles._nameLanguage} >
-			                    
+						<View style={[styles._nameLanguage,styles._center]} >
+			                    <Text style={[styles._spanText,styles._textCenter]}>
+							  	{this.state.lang_load?this.state._lang.vi.en:this.state._lang.en.en}
+							</Text>
 						</View>
 					</View>
 					<View style={[styles._itemChose,styles._center]}>
@@ -206,6 +210,10 @@ const styles = StyleSheet.create({
 _center:{
 	justifyContent: 'center',
 	alignItems: 'center',  
+},
+_textCenter:{
+	textAlign: 'center',
+	alignSelf: 'center', 
 },
 _row:{
 	flex: 1,
@@ -231,7 +239,6 @@ _footerModal:{
 },
 _headChose:{
 	flex: 0.1,
-
 },
 _contentChose:{
 	flex:0.9,
@@ -272,8 +279,12 @@ _button:{
   	padding: 10,
   },
 _buttonText:{
-  	fontSize: 15,
+  	fontSize: height/45,
   	color: 'black',
   },
+ _spanText:{
+ 	fontSize: height/40,
+ 	color: 'black',
+ }
 });
-export default ChoseLanguage;
+export default connect()(ChooseLanguage);

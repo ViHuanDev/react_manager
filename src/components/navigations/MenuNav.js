@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import {Image,TouchableOpacity , Dimensions,Text,StyleSheet} from 'react-native';
-import { StackNavigator , DrawerNavigator ,AsyncStorage ,DrawerItems,NavigationActions } from 'react-navigation';
+import {Image,TouchableOpacity , Dimensions,Text,StyleSheet,AsyncStorage,} from 'react-native';
+import { StackNavigator , DrawerNavigator  ,DrawerItems,NavigationActions } from 'react-navigation';
 import EmployeeCreate from '../EmployeeList';
 import Main_Screen from '../Main_Screen';
-import ChoseLanguage from '../ChoseLanguage';
+import ChooseLanguage from '../ChoseLanguage';
 import ListFaQ from '../ListFaQ';
 import ChangePassword from '../ChangePassword';
 import { connect } from 'react-redux';
@@ -11,15 +11,23 @@ import EmployeeList from '../EmployeeList';
 import Profile from '../Profile';
 import {Icon} from 'react-native-elements';
 import SideBar from '../SideBar';
-const {width} = Dimensions.get('window');
+const {width,height} = Dimensions.get('window');
 export const HomeMenu = StackNavigator({
 	Screen_Main:{
 		screen: Main_Screen,
 		//header:{ visible:false },
+		//
 		navigationOptions:({navigation})=>({
+			title: (
+	            <Image
+	                source={require('../../images/header_icon/home_icon.png')}
+	                style={{width: width*0.28, height: height/6,}}
+	                resizeMode={"contain"}
+            	/>
+        	),
 			headerRight:
 			<TouchableOpacity style={styles.paddingIcons}  onPress={()=>navigation.navigate('DrawerOpen')}>
-					<Icon type='material-community-icons' name='menu' size={20} />
+					<Icon type='material-community-icons' color='white' name='menu' size={20} />
     		</TouchableOpacity>,
 			headerTitleStyle:{
 				alignSelf: 'center',
@@ -29,7 +37,7 @@ export const HomeMenu = StackNavigator({
 				paddingLeft: 0
 			},
 			headerStyle:{
-
+				backgroundColor: '#5F84CE',
 			},
 			headerLeft:
 				<Text></Text>,
@@ -40,15 +48,24 @@ export const HomeMenu = StackNavigator({
 		navigationOptions:({navigation})=>({
 			headerRight:
 				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
-						<Icon type='material-community-icons' name='menu' size={20} />
+						<Icon type='material-community-icons' color='white' name='menu' size={20} />
 	   	 		</TouchableOpacity>,
-			title:'CheckLists',
+			title: (
+	            <Image
+	                source={require('../../images/header_icon/checklist_icon.png')}
+	                style={{width: width*0.28, height: height/6,}}
+	                resizeMode={"contain"}
+            	/>
+        	),
+			headerStyle:{
+				backgroundColor: '#DE584D',
+			},
 			headerTitleStyle:{
 				alignSelf: 'center',
 			},
 			headerLeft:
 				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.goBack()}}>
-						<Icon type='entypo' name='chevron-thin-left' size={20} />
+						<Icon type='entypo' color='white' name='chevron-thin-left' size={20} />
 	   	 		</TouchableOpacity>,
 		}),	
 	},
@@ -57,21 +74,53 @@ export const HomeMenu = StackNavigator({
 	},
 	Screen_ListFaQ:{
 		screen: ListFaQ,
+		navigationOptions:({navigation})=>({
+			headerRight:
+				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
+						<Icon type='material-community-icons' color='white' name='menu' size={20} />
+	   	 		</TouchableOpacity>,
+			title: (
+	            <Image
+	                source={require('../../images/header_icon/checklist_icon.png')}
+	                style={{width: width*0.28, height: height/6,}}
+	                resizeMode={"contain"}
+            	/>
+        	),
+			headerStyle:{
+				backgroundColor: '#DE584D',
+			},
+			headerTitleStyle:{
+				alignSelf: 'center',
+			},
+			headerLeft:
+				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.goBack()}}>
+						<Icon type='entypo' color='white' name='chevron-thin-left' size={20} />
+	   	 		</TouchableOpacity>,
+		}),	
 	},
 	Screen_Profile:{
 		screen: Profile,
 		navigationOptions:({navigation})=>({
 			headerRight:
 				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
-						<Icon type='material-community-icons' name='menu' size={20} />
+						<Icon type='material-community-icons' color='white' name='menu' size={20} />
 	   	 		</TouchableOpacity>,
-			title:'Profile',
+			title: (
+	            <Image
+	                source={require('../../images/header_icon/profile_icon.png')}
+	                style={{width: width*0.28, height: height/6,}}
+	                resizeMode={"contain"}
+            	/>
+        	),
+			headerStyle:{
+				backgroundColor: '#DD574C',
+			},
 			headerTitleStyle:{
 				alignSelf: 'center',
 			},
 			headerLeft:
 				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.goBack()}}>
-						<Icon type='entypo' name='chevron-thin-left' size={20} />
+						<Icon type='entypo' color='white' name='chevron-thin-left' size={20} />
 	   	 		</TouchableOpacity>,
 		}),	
 	},
@@ -80,32 +129,50 @@ export const HomeMenu = StackNavigator({
 		navigationOptions:({navigation})=>({
 			headerRight:
 				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
-						<Icon type='material-community-icons' name='menu' size={20} />
+						<Icon type='material-community-icons' color='white' name='menu' size={20} />
 	   	 		</TouchableOpacity>,
-			title:'Change Password',
+			title: (
+	            <Image
+	                source={require('../../images/header_icon/forgot_password.png')}
+	                style={{width: width*0.28, height: height/6,}}
+	                resizeMode={"contain"}
+            	/>
+        	),
+			headerStyle:{
+				backgroundColor: '#5F84CE',
+			},
 			headerTitleStyle:{
 				alignSelf: 'center',
 			},
 			headerLeft:
 				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.goBack()}}>
-						<Icon type='entypo' name='chevron-thin-left' size={20} />
+						<Icon type='entypo' color='white'  name='chevron-thin-left' size={20} />
 	   	 		</TouchableOpacity>,
 		}),	
 	},
 	Screen_ChoseLanguage:{
-		screen: ChoseLanguage,
+		screen: ChooseLanguage,
 		navigationOptions:({navigation})=>({
 			headerRight:
 				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
-						<Icon type='material-community-icons' name='menu' size={20} />
+						<Icon type='material-community-icons' color='white' name='menu' size={20} />
 	   	 		</TouchableOpacity>,
-			title:'Chose Language',
+			title: (
+	            <Image
+	                source={require('../../images/header_icon/language_icon2.png')}
+	                style={{width: width*0.28, height: height/6,}}
+	                resizeMode={"contain"}
+            	/>
+        	),
+			headerStyle:{
+				backgroundColor: '#0457C9',
+			},
 			headerTitleStyle:{
 				alignSelf: 'center',
 			},
 			headerLeft:
 				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.navigate('Screen_Main')}}>
-						<Icon type='entypo' name='chevron-thin-left' size={20} />
+						<Icon type='entypo' color='white' name='chevron-thin-left' size={20} />
 	   	 		</TouchableOpacity>,
 		}),	
 	},

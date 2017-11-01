@@ -19,13 +19,7 @@ const RouterComponent = () => {
 				<Scene sceneStyle = {{ paddingTop: 0 }} key ="login" component = {LoginForm} title = "Please Login" />
 			</Scene>
 			<Scene key = "main"  hideNavBar >
-				<Scene 
-					 onLeft={()=>{Actions.menu()}} leftTitle='Menu'
-				 	 key = "employeeList" component = { Side_Menu } title = "HomePage"/>
-				<Scene key = "employeeCreate" component = { EmployeeCreate } title = "Create Employee" />
-				<Scene key = "menu" component = { Side_Menu } />
-				<Scene key = "profile" component = { Profile } title="Profile" />
-				<Scene key = "changePass" component = { ChangePassword } title="Change Password" />
+				<Scene  key = "employeeList" component = { Side_Menu } title = "HomePage"/>
 			</Scene>
 		</Router>
 	);

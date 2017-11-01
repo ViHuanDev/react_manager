@@ -21,7 +21,7 @@ class EmployeeList extends Component {
 		AsyncStorage.multiGet(keyGet).then((value)=>{
 			if(value){
 				const token = value[3][1];
-				fetch('http://96.96.10.10/api/checklists?token='+token) .then((response) => 
+				fetch('http://96.96.10.10/api/checklists?token='+token).then((response) => 
 					response.json()) .then((responseJson) => { 
 				this.setState({
 					isLoading: false,
@@ -29,7 +29,7 @@ class EmployeeList extends Component {
 				});
 
 				// console.log(this.state.mang);
-			}) .catch((error) => { 
+			}).catch((error) => { 
 				console.error(error); });
 		};
 	});

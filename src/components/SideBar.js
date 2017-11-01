@@ -1,15 +1,36 @@
 import React, { Component } from 'react';
-import { Picker, Text,TouchableOpacity,Image } from 'react-native';
+import { Picker, Text,TouchableOpacity,Image,AsyncStorage,Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 // import { employeeUpdate } from '../actions';
 // import EmployeeCreate from './EmployeeCreate';
 import { Card, CardSection, Input, Button } from './common';
+import {lang} from './languages/languages';
 import {Actions } from 'react-native-router-flux';
 import {
   StyleSheet,
   View
 } from 'react-native';
+const {height,width} = Dimensions.get('screen');
 class SideBar extends Component {
+  constructor(props) {
+  super(props);
+  this.state = {
+    _lang: lang,lang_load: false,
+  };
+        AsyncStorage.getItem('@locale:key').then((item)=>{
+    this.setState({
+      lang_load: item=='vi'?true:false,
+    });
+  });
+}
+_onPressLogout(){
+    AsyncStorage.getAllKeys((err, keys) => { 
+          AsyncStorage.multiRemove(keys).then((value)=>{
+             console.log("ok remoe");
+          });
+          Actions.auth();
+    }); 
+};
 // componentDidMount() { Actions.menu({key: 'menu', ref: this.refs.navigation}); }
 render() {
     return (
@@ -22,32 +43,37 @@ render() {
         </View>
         <View style={styles.div2}>
             <View style={styles.items}>
+                <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_Main')}}>
+                  <Text style={{fontSize: height/35,textAlign: 'center', color: 'white' }}>
+                    {this.state.lang_load?this.state._lang.vi.home:this.state._lang.en.home}
+                  </Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.items}>
                 <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_EmployList')}}>
-                  <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
-                     CheckList
+                  <Text style={{fontSize: height/35,textAlign: 'center', color: 'white' }}>
+                    {this.state.lang_load?this.state._lang.vi.listchList:this.state._lang.en.listchList}
                   </Text>
                 </TouchableOpacity>
             </View>
-            <View style={styles.items1}>
+            <View style={styles.items}>
                 <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_Profile')}}>
-                  <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
-                      Profile
+                  <Text style={{fontSize: height/35,textAlign: 'center', color: 'white' }}>
+                      {this.state.lang_load?this.state._lang.vi.profile:this.state._lang.en.profile}
                   </Text>
                 </TouchableOpacity>
             </View>
-        </View>
-        <View style={styles.div2}>
             <View style={styles.items}>
                 <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChoseLanguage')}}>
-                  <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
-                    Chose Language
+                  <Text style={{fontSize: height/35,textAlign: 'center', color: 'white' }}>
+                    {this.state.lang_load?this.state._lang.vi.changelanguage:this.state._lang.en.changelanguage}
                   </Text>
                 </TouchableOpacity>
             </View>
-            <View style={styles.items1}>
-                <TouchableOpacity>
-                  <Text style={{fontSize: 20,textAlign: 'center', color: '#f2b334' }}>
-                      Sign Out
+            <View style={styles.items}>
+                <TouchableOpacity onPress={()=>{this._onPressLogout()}} >
+                  <Text style={{fontSize: height/35,textAlign: 'center', color: 'white' }}>
+                      {this.state.lang_load?this.state._lang.vi.signout:this.state._lang.en.signout}
                   </Text>
                 </TouchableOpacity>
             </View>
@@ -65,7 +91,7 @@ const styles = StyleSheet.create({
       alignItems: 'stretch', 
   },
   logo:{
-    flex: 1,
+    flex: 0.3,
     flexDirection: 'column',
     alignItems: 'center', 
     justifyContent: 'center', 
@@ -80,8 +106,8 @@ const styles = StyleSheet.create({
         alignItems: 'stretch', 
   },
   div2:{
-        flex: 1,
-        backgroundColor: 'lightblue',
+        flex: 0.7,
+        backgroundColor: '#009F75',
   },
   div3:{
         flex: 1,
@@ -101,7 +127,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   items:{
-    flex: 1,
+    flex: 0.2,
     justifyContent: 'center',
     borderRightWidth: 2,
     alignItems: 'center',

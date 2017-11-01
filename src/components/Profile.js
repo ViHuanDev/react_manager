@@ -6,6 +6,7 @@ import {
   View,Text,Dimensions,TextInput,ScrollView,TouchableOpacity,AsyncStorage,Modal,Image
 } from 'react-native';
 import {Icon} from 'react-native-elements';
+import {lang} from './languages/languages';
 const {height,width} = Dimensions.get('screen');
 const MIN_HEIGHT = 20;
 const MAX_HEIGHT = 40;
@@ -20,7 +21,14 @@ constructor(props) {
   	arrayInfo: [],
   	name:'',email:'',phone:'',info:'',position:'',modalVisible:false,
   	error: [], _iconsuccess: true,_iconerror: true,loading: true,
+  	lang_load: false,_lang: lang,
   };
+    AsyncStorage.getItem('@locale:key').then((item)=>{
+  	this.setState({
+  		lang_load: item=='vi'?true:false,
+  	});
+  	// console.log(lang);
+  });
 };
 onModal(){
 	 this.setTimeout(function() {
@@ -46,7 +54,7 @@ onPhoneChange(text){
 		this.setState({
 			phone:text,
 		});
-	console.log(this.state.phone);
+	// console.log(this.state.phone);
 };
 onInfoChange(text){
 		this.setState({
@@ -140,7 +148,7 @@ _renderSuccess(){
 		<View style={styles.renderSuccess}>
 			<Text style={styles.centerText} >
 			<Text style={{color: 'green'}}>
-			  	Update successful
+			  	{ this.state.lang_load?this.state._lang.vi.update_succ:this.state._lang.en.update_succ }
 			</Text>
 			</Text>
 		</View>
@@ -152,7 +160,7 @@ _renderButtonUpdate(){
 			<TouchableOpacity onPress={()=>{this.onPressUpdateInfo()}} style={styles.itemUser}>
 			         		<Icon name='sync' type='material-icons' />
 			      			<Text>
-			      			  	Update Info
+			      			  	{ this.state.lang_load?this.state._lang.vi.update_info:this.state._lang.en.update_info }
 			      			</Text>
 			</TouchableOpacity>
 		);
@@ -189,6 +197,7 @@ _renderError(){
 };
   handleContentSizeChange = ({nativeEvent}) => {
     const {height} = nativeEvent.contentSize;
+    console.log(height);
     this.setState({height});
 };
 componentDidMount(){
@@ -235,22 +244,20 @@ componentDidMount(){
 				        <View style={styles.CloseM}>
 				         		<TouchableOpacity style={styles.button} onPress={()=>{this.onCloseModal()}} >
 									<Text style={styles.buttonText} >
-									  	Close
+									  	{ this.state.lang_load?this.state._lang.vi.close:this.state._lang.en.close }
 									</Text>
 								</TouchableOpacity>
 				        </View>
 				    </View>
 		         </View>	
         </Modal>
-	      <View style={[styles.faceUser,{backgroundColor: '#4267b2',paddingVertical: 5}]}>
-	      		<Icon type='font-awesome' color='white' name='user-circle-o' size={width/10*1.4}  />
- 	      </View>
+	      
 	      <View style={styles.contentUser}>
 	      		<View style={styles.itemUser}>
 	      			<View style={[styles.titleContent,{backgroundColor: '#007aff'}]}>
-	      				<Icon name='user' color='white' type='font-awesome'  size={height/27} />
+	      				<Icon name='user' color='white' type='font-awesome'  size={height/30} />
 	      				<Text style={styles.textCenter}>
-	      				  	Name
+	      				  	{ this.state.lang_load?this.state._lang.vi.name:this.state._lang.en.name }
 	      				</Text>
 	      			</View>
 	      			<View style={styles.dataContent}>
@@ -264,9 +271,9 @@ componentDidMount(){
 	      		</View>
 	      		<View style={styles.itemUser}>
 	      			<View style={[styles.titleContent,{backgroundColor: 'rgb(241, 67, 54)'}]}>
-	      				<Icon name='email' color='white' type='zocial'  size={height/27} />
+	      				<Icon name='email' color='white' type='zocial'  size={height/30} />
 	      				<Text style={styles.textCenter}>
-	      				  	Email
+	      				  	{ this.state.lang_load?this.state._lang.vi.email:this.state._lang.en.email }
 	      				</Text>
 	      			</View>
 	      			<View style={styles.dataContent}>
@@ -280,9 +287,9 @@ componentDidMount(){
 	      		</View>
 	      		<View style={styles.itemUser}>
 	      			<View style={[styles.titleContent,{backgroundColor: '#95d231'}]}>
-	      				<Icon name='phone' color='white' type='simple-line-icons'  size={height/27} />
+	      				<Icon name='phone' color='white' type='simple-line-icons'  size={height/30} />
 	      				<Text style={styles.textCenter}>
-	      				  	Phone
+	      				  	{ this.state.lang_load?this.state._lang.vi.phone:this.state._lang.en.phone }
 	      				</Text>
 	      			</View>
 	      			<View style={styles.dataContent}>
@@ -296,9 +303,9 @@ componentDidMount(){
 	      		</View>
 	      		<View style={styles.itemUser}>
 	      			<View style={[styles.titleContent,{backgroundColor: '#4e69a2'}]}>
-	      				<Icon name='assignment-ind' color='white' type='materialIcons'  size={height/27} />
+	      				<Icon name='assignment-ind' color='white' type='materialIcons'  size={height/30} />
 	      				<Text style={styles.textCenter}>
-	      				  	Position
+	      				  	{ this.state.lang_load?this.state._lang.vi.position:this.state._lang.en.position }
 	      				</Text>
 	      			</View>
 	      			<View style={styles.dataContent}>
@@ -312,9 +319,9 @@ componentDidMount(){
 	      		</View>
 	      		<View style={[styles.itemUser,{flex: 0.4}]}>
 	      			<View style={[styles.titleContent,{backgroundColor: '#ffc300'}]}>
-	      				<Icon name='info' color='white' type='simple-line-icons'  size={height/27} />
+	      				<Icon name='info' color='white' type='simple-line-icons'  size={height/30} />
 	      				<Text style={styles.textCenter}>
-	      				  	Info
+	      				  	{ this.state.lang_load?this.state._lang.vi.info:this.state._lang.en.info }
 	      				</Text>
 	      			</View>
 	      			<View style={styles.dataContent}>
@@ -330,7 +337,7 @@ componentDidMount(){
 	      		<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChangePass')}} style={styles.itemUser}>
 			         		<Icon name='security' color='#007aff' type='material-icons' />
 			      			<Text>
-			      			  	Change Password
+			      			  	{ this.state.lang_load?this.state._lang.vi.change_password:this.state._lang.en.change_password }
 			      			</Text>
 			</TouchableOpacity>
 	      </View>
@@ -341,7 +348,7 @@ componentDidMount(){
 
 const styles = StyleSheet.create({
 	row:{
-		padding:10,
+		padding: height/60,
 		flex:1, 
 		backgroundColor: 'rgb(232,232,232)'
 		// backgroundColor: 'white'
@@ -350,14 +357,14 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 	},
 	faceUser:{
-		marginBottom: 10,
+		marginBottom: height/60,
 		flex: 0.12,
 		backgroundColor: 'white',
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
 	contentUser:{
-		flex: 0.85,
+		flex: 0.93,
 		flexDirection: 'column', 
 	},
 	itemUser:{
@@ -366,31 +373,32 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',  
 		flexDirection: 'row', 
-		marginBottom: 10,
-		paddingVertical: 10,
-		paddingHorizontal: 10,
+		marginBottom: height/60,
+		paddingVertical: height/60,
+		paddingHorizontal: height/60,
 	},
 	titleContent:{
 		paddingVertical: 1,
-		flex: 0.15,
+		flex: 0.25,
 		flexDirection: 'column',
 		backgroundColor: '#007aff',
-		borderRadius: 10,
+		borderRadius: 5,
 		// borderWidth: 1
 	},
 	textCenter:{
 		textAlign: 'center',
 		color: 'black',
-		fontSize: 10,
+		fontSize: height/60,
 	},
 	dataContent:{
-		flex: 0.85,
+		flex: 0.75,
 		// borderBottomWidth: 1,
 	},
 	input: {
     // textAlignVertical: "top",
     textAlign: 'center', 
     height: MIN_HEIGHT,
+    paddingVertical: height/60,
     // backgroundColor: 'white',
     // borderColor: "rgb(232,232,232)",
   },
@@ -452,10 +460,10 @@ const styles = StyleSheet.create({
   	borderWidth: 1,
   	borderColor: 'green',
   	backgroundColor: 'rgba(192,192,192,0.2)',
-  	padding: 10,
+  	padding: height/60,
   },
   buttonText:{
-  	fontSize: 15,
+  	fontSize: height/40,
   	color: 'black',
   },
 });

@@ -5,7 +5,8 @@ import {
 	LOGIN_USER_SUCCESS,
 	LOGIN_USER_FAIL,
 	LOGIN_USER,
-	NO_CONNECT
+	NO_CONNECT,
+	CHANGE_LANGUAGE,
 } from './types';
 import { AsyncStorage, componentWillMount } from 'react-native';
 export const emailChanged = (text) => {
@@ -20,6 +21,12 @@ export const passwordChanged = (text) => {
 		payload: text
 	};
 };
+// export const language_success = (dispatch)=>{
+// 	dispatch({
+// 		type: CHANGE_LANGUAGE,
+// 	});
+// 	Actions.main();
+// };
 export const loginUserSuccess = (dispatch, user) => {
 	dispatch ({
 		type: LOGIN_USER_SUCCESS,
@@ -78,12 +85,18 @@ export const loginUser = ({email, password}) =>{
 					if(er!=='error'){
 					// console.log(rJson.user['fullname']);
 					var token_obj =  rJson.result.token;
+					var lang = rJson.user.languagedefault;
+					// console.log(lang+" auth");
 					// var id_user = rJson.user.id;
 					// console.log("wait"+id_user);
-					var key_log = [['@user_id:key',"'"+rJson.user.id+"'"],['@email:key',email],['@password:key',password],['@token:key',token_obj]];
-					console.log(token_obj);	
+					var key_log = [['@user_id:key',"'"+rJson.user.id+"'"],['@email:key',email],['@password:key',password],['@token:key',token_obj],['@locale:key',lang]];
+					// console.log(key_log);
 					AsyncStorage.multiSet(key_log);
-					// console.log("set Ok");
+					// var keyGet = ['@email:key','@password:key','@user_id:key'];
+					// 	AsyncStorage.multiGet(keyGet).then((value)=>{
+					// 		console.log(value);
+					// });
+						// console.log("set Ok");
 					// var value_token = await AsyncStorage.setItem('@token:key',token_obj);
 						// var id_user = await AsyncStorage.setItem('@id_user:key',id_user);
 						// console.log("Ok await");
@@ -101,12 +114,13 @@ export const loginUser = ({email, password}) =>{
 			loginUserFail(dispatch,"Bạn chưa nhập email và mật khẩu");
 		}
 	}).catch((error)=>{
-		loginUserFail(dispatch);
+		// loginUserFail(dispatch);
+		console.log("error");
 		console.error(error);
 	});
 }	
 catch(error){
-	noInternet(dispatch);
+	// noInternet(dispatch);
 	console.log("no_internet");
 };
 };
