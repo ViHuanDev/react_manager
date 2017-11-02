@@ -24,6 +24,7 @@ export const lang = {
 				'position': 'Chức vụ',
 				'change_password': 'Thay đổi mật khẩu',
 				'email': 'Email',
+				'report': 'Báo cáo'
 				},
 		"en":{
 				'signout':'Sign Out',
@@ -49,5 +50,6 @@ export const lang = {
 				'position': 'Position',
 				'change_password': 'Change Password',
 				'email': 'Email',
+				'report': 'Report'
 		}
 };

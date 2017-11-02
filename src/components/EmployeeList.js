@@ -44,7 +44,7 @@ class EmployeeList extends Component {
 							onRequestClose={() => {alert("Modal has been closed.")}} >
 								<View style={styles._img}>
 									<Image
-										style={{justifyContent: 'center', alignItems: 'center'  }}
+										style={{justifyContent: 'center', alignItems: 'center',height: height/10,width: height/10}}
 										source={require('../images/loading_green.gif')}
 									/>
 								</View>

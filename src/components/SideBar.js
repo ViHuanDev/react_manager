@@ -66,6 +66,13 @@ render() {
             <View style={styles.items}>
                 <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChoseLanguage')}}>
                   <Text style={{fontSize: height/35,textAlign: 'center', color: 'white' }}>
+                    {this.state.lang_load?this.state._lang.vi.report:this.state._lang.en.report}
+                  </Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.items}>
+                <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChoseLanguage')}}>
+                  <Text style={{fontSize: height/35,textAlign: 'center', color: 'white' }}>
                     {this.state.lang_load?this.state._lang.vi.changelanguage:this.state._lang.en.changelanguage}
                   </Text>
                 </TouchableOpacity>

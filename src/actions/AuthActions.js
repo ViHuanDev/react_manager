@@ -85,10 +85,10 @@ export const loginUser = ({email, password}) =>{
 					if(er!=='error'){
 					// console.log(rJson.user['fullname']);
 					var token_obj =  rJson.result.token;
-					var lang = rJson.user.languagedefault;
+					var lang = rJson.user.languagedefault==null?'en':rJson.user.languagedefault;
 					// console.log(lang+" auth");
 					// var id_user = rJson.user.id;
-					// console.log("wait"+id_user);
+					console.log(token_obj);
 					var key_log = [['@user_id:key',"'"+rJson.user.id+"'"],['@email:key',email],['@password:key',password],['@token:key',token_obj],['@locale:key',lang]];
 					// console.log(key_log);
 					AsyncStorage.multiSet(key_log);

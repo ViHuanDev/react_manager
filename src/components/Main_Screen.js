@@ -67,7 +67,7 @@ _onChangeLanguage(){
             </View>
       		</View>
       		<View style={[styles.itemContent,styles.center,{borderTopWidth: 1}]}>
-              <TouchableOpacity style={[styles.itemClick]} onPress={()=>{this.props.navigation.navigate('Screen_ListFaQ')}} >
+              <TouchableOpacity style={[styles.itemClick]} onPress={()=>{this.props.navigation.navigate('Screen_EmployList')}} >
                   <Icon style={[styles.flex3,styles.IconFirst]} color='#DE584D'  type='materialIcons' name='library-books' size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                       {this.state.lang_load?this.state._lang.vi.listchList:this.state._lang.en.listchList}
@@ -87,6 +87,15 @@ _onChangeLanguage(){
       		</View>
           <View style={[styles.itemContent,styles.center]}>
             <TouchableOpacity onPress={()=>this.props.navigation.navigate('Screen_ChoseLanguage')} style={[styles.itemClick]}>
+                  <Icon style={[styles.flex3,styles.IconFirst]} color='#48cfad' type='font-awesome' name="line-chart" size={height/20} />
+                  <Text style={[{flex: 0.4},styles.textItem]} >
+                      {this.state.lang_load?this.state._lang.vi.report:this.state._lang.en.report}  
+                  </Text>
+                  <Icon style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={height/30} />
+              </TouchableOpacity>
+          </View>
+          <View style={[styles.itemContent,styles.center]}>
+            <TouchableOpacity onPress={()=>this.props.navigation.navigate('Screen_ChoseLanguage')} style={[styles.itemClick]}>
                   <Icon style={[styles.flex3,styles.IconFirst]} color='#0457C9' type='font-awesome' name="language" size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                       {this.state.lang_load?this.state._lang.vi.changelanguage:this.state._lang.en.changelanguage}  
@@ -99,7 +108,6 @@ _onChangeLanguage(){
                   <Icon style={[styles.flex3,styles.IconFirst]}  type='material-icons' name="power-settings-new" size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                       {this.state.lang_load?this.state._lang.vi.signout:this.state._lang.en.signout}
-                      
                   </Text>
                   <Icon style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={height/30} />
               </TouchableOpacity>
