@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,
+import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,Picker,
 	StyleSheet,ScrollView,TouchableOpacity} from 'react-native';
 // import CheckBox from 'react-native-checkbox';
 import { Icon } from 'react-native-elements';
@@ -11,7 +11,7 @@ class ListFaQ extends Component {
 		this.state = {
 			id_faq: this.props.navigation.state.params.id,isLoading:true,
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
-			selectedIds:[],
+			selectedIds:[],language:'java',array_status: [],
 		};
 	};
 // _keyExtractor = (item, index) => index;
@@ -23,17 +23,31 @@ componentWillMount() {
         	fetch('http://96.96.10.10/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => { 
 					this.setState({
-						isLoading: false,
 						array_faq: responseJson.data,
 					});
 				}) .catch((error) => { 
 					console.error(error); 
-				});     
+				});
+			fetch('http://96.96.10.10/api/chkitemstatus?token='+value[3][1]).then((response) => 
+				response.json()).then((responseJson)=>{ 
+					// console.log(responseJson);
+					this.setState({
+						isLoading: false,
+						// array_status: responseJson.data,
+					});
+				}) .catch((error) => { 
+					console.error(error); 
+				});  
           });
     }); 
 };
+onPressAction(el){
+	console.log(el);
+}
 _eachItem(){
 	var arr = this.state.array_faq;
+	const lang = this.state.language;
+	console.log(lang);
 	var view = [];
 	arr.map(function(item){
 		view.push(
@@ -85,10 +99,12 @@ _eachItem(){
 												<Icon type='material-icons' name='do-not-disturb' size={20} />
 											</View>
 											<View style={styles._textAction}>
+											<TouchableOpacity key={"action:key"+item.id} onPress={()=>{this.onPressAction.bind('1')}} >
 												<Text style={styles._text}>
-									  				Status
+													click
 												</Text>
-											</View>
+											</TouchableOpacity>
+											</View>											
 										</View>
 										<View style={[styles._itemAction,styles._center]}>
 											<View style={styles._iconAction}>
