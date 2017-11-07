@@ -11,7 +11,7 @@ class ListFaQ extends Component {
 		this.state = {
 			id_faq: this.props.navigation.state.params.id,isLoading:true,
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
-			selectedIds:[],language:'java',array_status: [],
+			selectedIds:[],language:'java',array_status: [],test: true
 		};
 	};
 // _keyExtractor = (item, index) => index;
@@ -41,13 +41,18 @@ componentWillMount() {
           });
     }); 
 };
-onPressAction(el){
-	console.log(el);
+_onPressAction(el){
+	if(el%2==0){
+		alert(this.state.test);
+	}
+	else{
+		alert('not state');
+	}
 }
 _eachItem(){
 	var arr = this.state.array_faq;
 	const lang = this.state.language;
-	console.log(lang);
+	// console.log(lang);
 	var view = [];
 	arr.map(function(item){
 		view.push(
@@ -99,7 +104,7 @@ _eachItem(){
 												<Icon type='material-icons' name='do-not-disturb' size={20} />
 											</View>
 											<View style={styles._textAction}>
-											<TouchableOpacity key={"action:key"+item.id} onPress={()=>{this.onPressAction.bind('1')}} >
+											<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction()} >
 												<Text style={styles._text}>
 													click
 												</Text>
@@ -122,23 +127,99 @@ _eachItem(){
 				});
 			});
 		});
-	return view;
+	return(
+		<View style={{padding: 10}}>
+			{view}
+		</View>
+	);
 };
-// _eachItem(){
-// 	var arr = this.state.array_faq;
-// 	var view = [];
-// return(
-// 	<View>
-// 		{arr.map(function(item){
-// 			<View style={{backgroundColor: 'cyan'}}>
-// 				<Text>
-// 					{item.group.name+'gr'}
-// 				</Text>
-// 			</View>
-// 		})}
-// 	</View>
-// );
-// };
+eachItem(){
+	var arr = this.state.array_faq;
+	const lang = this.state.language;
+	// console.log(lang);
+	var view = [];
+	for(let i=0;i < arr.length;i++){
+		console.log(arr[i].group.name+'gr');
+		let item = arr[i];
+		view.push(
+			<View style={[styles._datasContent,{marginTop: height/60}]} key={"namegroup"+item.group.id}>
+				<View style={{flexDirection: 'row' }}>
+					<Text style={{width: width/4}}>
+					  	Group:
+					</Text>
+					<Text>
+					  	{item.group.name+"gr"}
+					</Text>
+				</View>
+			</View>
+		);
+			for(let a=0;a<arr[i].data.length;a++){
+				console.log(arr[i].data[a].name);
+				let item = arr[i].data[a];
+				view.push(
+					<View style={[styles._datasContent]} key={"nameCheck"+item.id}>
+						<View style={{flexDirection: 'row' }}>
+							<Text style={{width: width/4,textAlign: 'auto' }}>
+							  Answer:
+							</Text>
+							<Text>
+					  			{item.name}
+							</Text>
+						</View>
+					</View>
+				);
+					for(let b=0;b<arr[i].data[a].checklist_item.length;b++){
+						console.log(arr[i].data[a].checklist_item[b].id);
+							let item = arr[i].data[a].checklist_item[b];
+							view.push(
+							<View style={[styles._datasContent]} key={"checklist"+item.id}>
+								<View style={styles._dataContent}>
+									<Text>
+							  			{arr[i].data[a].checklist_item[b].content}
+									</Text>
+								</View>
+								<View style={[styles._actionsContent,{borderBottomWidth: 1}]}>
+										<View style={[styles._itemAction,styles._center]}>
+											<View style={styles._iconAction}>
+												<Icon type='material-icons' name='do-not-disturb' size={20} />
+											</View>
+											<View style={styles._textAction}>
+												<Text style={styles._text}>
+												  	Comment
+												</Text>
+											</View>
+										</View>
+										<View style={[styles._itemAction,styles._center]}>
+											<View style={styles._iconAction}>
+												<Icon type='material-icons' name='do-not-disturb' size={20} />
+											</View>
+											<View style={styles._textAction}>
+											<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item.id)} >
+												<Text style={styles._text}>
+													click
+												</Text>
+											</TouchableOpacity>
+											</View>											
+										</View>
+										<View style={[styles._itemAction,styles._center]}>
+											<View style={styles._iconAction}>
+												<Icon type='material-icons' name='do-not-disturb' size={20} />
+											</View>
+											<View style={styles._textAction}>
+												<Text style={styles._text}>
+									  				More
+												</Text>
+											</View>
+										</View>
+								</View>
+							</View>
+				);
+					}
+			}
+	}
+				return view;
+
+};
 // _keyExtractor(){
 // 	var arr = this.state.array_faq;
 // 	const id =[];
@@ -173,7 +254,7 @@ render() {
 				<View style={styles._content}>
 					<ScrollView>
 						<View style={styles._itemsContent}>
-							{this._eachItem()}
+							{this.eachItem()}
 						</View>
 					</ScrollView>
 				</View>
