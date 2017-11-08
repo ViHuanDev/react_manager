@@ -107,6 +107,7 @@ export const loginUser = ({email, password}) =>{
 			}
 			else{
 				loginUserFail(dispatch,rJson.message);
+				
 			}
 		}
 		else{

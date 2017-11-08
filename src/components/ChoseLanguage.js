@@ -254,7 +254,6 @@ _itemChose:{
 },
 _boxLanguage:{
 	flex:0.1,
-
 },
 _imageLanguage:{
 	flex: 0.3,

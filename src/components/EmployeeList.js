@@ -63,7 +63,7 @@ class EmployeeList extends Component {
 										<View style={styles.contentList}>
 											<View style={styles.contentLeft}>
 												<View style={styles.iconLeft}>
-													<Icon type='octicon' name="checklist" size={30} />
+													<Icon type='octicon' color='#16A086' name="checklist" size={height/20} />
 												</View>
 											</View>
 											<View style={styles.contentRight}>

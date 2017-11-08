@@ -81,13 +81,13 @@ export const HomeMenu = StackNavigator({
 	   	 		</TouchableOpacity>,
 			title: (
 	            <Image
-	                source={require('../../images/header_icon/checklist_icon.png')}
+	                source={require('../../images/header_icon/faq_icon.png')}
 	                style={{width: width*0.28, height: height/6,}}
 	                resizeMode={"contain"}
             	/>
         	),
 			headerStyle:{
-				backgroundColor: '#DE584D',
+				backgroundColor: '#16A086',
 			},
 			headerTitleStyle:{
 				alignSelf: 'center',

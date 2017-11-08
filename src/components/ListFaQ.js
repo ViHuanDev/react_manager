@@ -11,7 +11,7 @@ class ListFaQ extends Component {
 		this.state = {
 			id_faq: this.props.navigation.state.params.id,isLoading:true,
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
-			selectedIds:[],language:'java',array_status: [],test: true
+			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],
 		};
 	};
 // _keyExtractor = (item, index) => index;
@@ -25,6 +25,7 @@ componentWillMount() {
 					this.setState({
 						array_faq: responseJson.data,
 					});
+					// console.log(this.state.array_faq);
 				}) .catch((error) => { 
 					console.error(error); 
 				});
@@ -33,8 +34,9 @@ componentWillMount() {
 					// console.log(responseJson);
 					this.setState({
 						isLoading: false,
-						// array_status: responseJson.data,
-					});
+						array_status: responseJson,
+						});
+					// console.log(this.state.array_status);
 				}) .catch((error) => { 
 					console.error(error); 
 				});  
@@ -42,104 +44,78 @@ componentWillMount() {
     }); 
 };
 _onPressAction(el){
-	if(el%2==0){
-		alert(this.state.test);
+	this.setState({
+		_modal: true,
+		_idClick: el,
+	});
+}
+_thisSelectSatus(el){
+	var ar= el.split('-');
+	console.log(ar);
+	// this.setState({
+	// 	array_id: [],
+	// });
+	for(let i=0;i <= this.state.array_id.length-1;i++){
+		for(let j=i+1; j <this.state.array_id.length;j++){
+			if(this.state.array_id[i]==this.state.array_id[j]){
+				console.log(this.state.array_id[j]);
+				this.state.array_id.splice(j);
+			}
+		}
 	}
-	else{
-		alert('not state');
+	console.log(this.state.array_id);
+}
+_thisCheckbox(el){
+	var id = this.state._idClick;
+	var temp= '';
+		if(this.state.array_id.includes(id+'-'+el)){
+			return true;
+		}
+		else{
+			temp = Number(el)-1;
+			console.log((id+'-'+temp));
+			if(this.state.array_id.includes(id+'-'+temp)){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+}
+_eachStatus(){
+	let arr = this.state.array_status;
+	let view = [];
+	for(let i=0;i<arr.length;i++){
+		let item = arr[i];
+		view.push(
+			<View key={"mActions"+item.id} style={styles._mMainAction}>
+				<View style={[styles._mCheckbox,styles._center]}>
+					<CheckBox
+						center
+						isChecked={true}
+						checked={this._thisCheckbox(item.id)}
+						checkedColor='green'
+						onPress={()=>this._thisSelectSatus(this.state._idClick+'-'+item.id)}
+						uncheckedColor='black'
+						style={[styles._checkbox]}  />
+				</View>
+				<View style={[styles._mtextAction,styles._center]}>
+					<Text style={[styles._mText,styles._center]}>
+					  	{item.name}
+					</Text>
+				</View>
+			</View>
+		);
 	}
+	return view;
 }
 _eachItem(){
 	var arr = this.state.array_faq;
 	const lang = this.state.language;
 	// console.log(lang);
 	var view = [];
-	arr.map(function(item){
-		view.push(
-			<View style={[styles._datasContent,{marginTop: height/60}]} key={"namegroup"+item.group.id}>
-				<View style={{flexDirection: 'row' }}>
-					<Text style={{width: width/4}}>
-					  	Group:
-					</Text>
-					<Text>
-					  	{item.group.name+"gr"}
-					</Text>
-				</View>
-			</View>
-		);
-			item.data.map(function(item){
-				view.push(
-					<View style={[styles._datasContent]} key={"nameCheck"+item.id}>
-						<View style={{flexDirection: 'row' }}>
-							<Text style={{width: width/4,textAlign: 'auto' }}>
-							  Answer:
-							</Text>
-							<Text>
-					  			{item.name}
-							</Text>
-						</View>
-					</View>
-				);
-					item.checklist_item.map(function(item){
-						view.push(
-							<View style={[styles._datasContent]} key={"checklist"+item.id}>
-								<View style={styles._dataContent}>
-									<Text>
-							  			{item.content}
-									</Text>
-								</View>
-								<View style={[styles._actionsContent,{borderBottomWidth: 1}]}>
-										<View style={[styles._itemAction,styles._center]}>
-											<View style={styles._iconAction}>
-												<Icon type='material-icons' name='do-not-disturb' size={20} />
-											</View>
-											<View style={styles._textAction}>
-												<Text style={styles._text}>
-												  	Comment
-												</Text>
-											</View>
-										</View>
-										<View style={[styles._itemAction,styles._center]}>
-											<View style={styles._iconAction}>
-												<Icon type='material-icons' name='do-not-disturb' size={20} />
-											</View>
-											<View style={styles._textAction}>
-											<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction()} >
-												<Text style={styles._text}>
-													click
-												</Text>
-											</TouchableOpacity>
-											</View>											
-										</View>
-										<View style={[styles._itemAction,styles._center]}>
-											<View style={styles._iconAction}>
-												<Icon type='material-icons' name='do-not-disturb' size={20} />
-											</View>
-											<View style={styles._textAction}>
-												<Text style={styles._text}>
-									  				More
-												</Text>
-											</View>
-										</View>
-								</View>
-							</View>
-				);
-				});
-			});
-		});
-	return(
-		<View style={{padding: 10}}>
-			{view}
-		</View>
-	);
-};
-eachItem(){
-	var arr = this.state.array_faq;
-	const lang = this.state.language;
-	// console.log(lang);
-	var view = [];
 	for(let i=0;i < arr.length;i++){
-		console.log(arr[i].group.name+'gr');
+		// console.log(arr[i].group.name+'gr');
 		let item = arr[i];
 		view.push(
 			<View style={[styles._datasContent,{marginTop: height/60}]} key={"namegroup"+item.group.id}>
@@ -154,7 +130,7 @@ eachItem(){
 			</View>
 		);
 			for(let a=0;a<arr[i].data.length;a++){
-				console.log(arr[i].data[a].name);
+				// console.log(arr[i].data[a].name);
 				let item = arr[i].data[a];
 				view.push(
 					<View style={[styles._datasContent]} key={"nameCheck"+item.id}>
@@ -169,8 +145,18 @@ eachItem(){
 					</View>
 				);
 					for(let b=0;b<arr[i].data[a].checklist_item.length;b++){
-						console.log(arr[i].data[a].checklist_item[b].id);
+						// console.log(arr[i].data[a].checklist_item[b].id);
 							let item = arr[i].data[a].checklist_item[b];
+							let temp = [];
+							// console.log("what for");
+							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.pivot.chkitemstatus);
+							for(let i2=0;i2 <= this.state.array_id.length-1;i2++){
+								for(let j=i2+1; j <this.state.array_id.length;j++){
+									if(this.state.array_id[i2]==this.state.array_id[j]){
+										this.state.array_id.splice(j);
+									}
+								}
+							}
 							view.push(
 							<View style={[styles._datasContent]} key={"checklist"+item.id}>
 								<View style={styles._dataContent}>
@@ -194,11 +180,11 @@ eachItem(){
 												<Icon type='material-icons' name='do-not-disturb' size={20} />
 											</View>
 											<View style={styles._textAction}>
-											<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item.id)} >
-												<Text style={styles._text}>
-													click
-												</Text>
-											</TouchableOpacity>
+												<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item.id)} >
+													<Text style={styles._text}>
+														Actions
+													</Text>
+												</TouchableOpacity>
 											</View>											
 										</View>
 										<View style={[styles._itemAction,styles._center]}>
@@ -217,8 +203,7 @@ eachItem(){
 					}
 			}
 	}
-				return view;
-
+	return view;
 };
 // _keyExtractor(){
 // 	var arr = this.state.array_faq;
@@ -233,7 +218,7 @@ eachItem(){
 // }
 render() {
 	return (
-			<View style={styles.row}>
+			<View style={[styles.row]}>
 				<Modal 
 					animationType="slide"
 					transparent={false}
@@ -246,6 +231,40 @@ render() {
 							/>
 						</View>
 				</Modal>
+				<Modal 
+					animationType="slide"
+					transparent={true}
+					visible={this.state._modal}
+					onRequestClose={() => {alert("Modal has been closed.")}} >
+						<View style={[styles._actionRow,styles._center]}>
+							<View style={styles._mcontentAction}>
+								<View style={styles._mheadAction}>
+									<Text>
+									  	Actions
+									</Text>
+								</View>
+								<View style={styles._mdataAction}>
+									{this._eachStatus()}
+								</View>
+								<View style={[styles._mfootAction,styles._center]}>
+									<View>
+										<TouchableOpacity>
+											<Text>
+											  	Cancel
+											</Text>
+										</TouchableOpacity>
+									</View>
+									<View>
+										<TouchableOpacity>
+											<Text>
+											  	Save
+											</Text>
+										</TouchableOpacity>
+									</View>
+								</View>
+							</View>
+						</View>
+				</Modal>
 				<View style={styles._header}>
 					<Text style={styles._textHead}>
 						Checklist company
@@ -254,7 +273,7 @@ render() {
 				<View style={styles._content}>
 					<ScrollView>
 						<View style={styles._itemsContent}>
-							{this.eachItem()}
+							{this._eachItem()}
 						</View>
 					</ScrollView>
 				</View>
@@ -267,12 +286,49 @@ const styles= StyleSheet.create({
 	_center:{
 		justifyContent: 'center',
 		alignSelf: 'center',
-		alignItems: 'center',   
+		alignItems: 'center',
 	},
 	row:{
 		flex: 1,
 		flexDirection: 'column',
 		backgroundColor: 'rgba(192,192,192,0.5)',
+	},
+	_actionRow:{
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.3)',
+		width: width,
+	},
+	_mcontentAction:{
+		height: (height/4)*2,
+		backgroundColor: 'white',
+		width: width-20,
+		paddingVertical: 10,
+		flexDirection: 'column', 
+	},
+	_mheadAction:{
+		flex: 0.1,
+	},
+	_mdataAction:{
+		flex: 0.8,
+	},
+	_mfootAction:{
+		flex: 0.1,
+		flexDirection: 'row', 
+	},
+	_mMainAction:{
+		flex: 1,
+		flexDirection: 'row',
+		borderWidth: 1,
+	},
+	_checkbox:{
+		backgroundColor: 'rgba(255,255,255,0)',
+		paddingLeft: 20,
+	},
+	_mCheckbox:{
+		flex: 0.1,
+	},
+	_mtextAction:{
+		flex: 0.9,
 	},
 	_img:{
 		flex: 1,
