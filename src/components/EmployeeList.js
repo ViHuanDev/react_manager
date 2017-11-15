@@ -22,7 +22,8 @@ class EmployeeList extends Component {
 			if(value){
 				const token = value[3][1];
 				fetch('http://96.96.10.10/api/checklists?token='+token).then((response) => 
-					response.json()) .then((responseJson) => { 
+				response.json()) .then((responseJson) => { 
+				
 				this.setState({
 					isLoading: false,
 					mang: responseJson,

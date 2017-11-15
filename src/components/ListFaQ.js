@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,Picker,
+import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,Picker,TextInput,
 	StyleSheet,ScrollView,TouchableOpacity} from 'react-native';
 // import CheckBox from 'react-native-checkbox';
 import { Icon } from 'react-native-elements';
 import { CheckBox } from 'react-native-elements';
 import PopoverTooltip from 'react-native-popover-tooltip';
+const MIN_HEIGHT = 20;
+const MAX_HEIGHT = 40;
 class ListFaQ extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			id_faq: this.props.navigation.state.params.id,isLoading:true,
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
-			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],
+			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],comment:'',
 		};
 	};
 // _keyExtractor = (item, index) => index;
@@ -19,7 +21,7 @@ componentWillMount() {
 	//checklists/id_check?token
 	AsyncStorage.getAllKeys((err, keys) => { 
           AsyncStorage.multiGet(keys).then((value)=>{
-          	console.log(this.state.id_faq+'id');
+          	console.log(value);
         	fetch('http://96.96.10.10/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => { 
 					this.setState({
@@ -43,38 +45,275 @@ componentWillMount() {
           });
     }); 
 };
+_onCommentChange(text){
+		this.setState({
+			comment: text,
+		});
+};
 _onPressAction(el){
 	this.setState({
 		_modal: true,
 		_idClick: el,
 	});
+	console.log(this.state.array_local);
 }
-_thisSelectSatus(el){
-	var ar= el.split('-');
-	console.log(ar);
-	// this.setState({
-	// 	array_id: [],
-	// });
-	for(let i=0;i <= this.state.array_id.length-1;i++){
-		for(let j=i+1; j <this.state.array_id.length;j++){
-			if(this.state.array_id[i]==this.state.array_id[j]){
-				console.log(this.state.array_id[j]);
-				this.state.array_id.splice(j);
+_closeStatus(){
+	this.setState({
+		_modal: !this.state._modal,
+	});
+	console.log(this.state.array_local);
+}
+_renderStatus(id){
+	if(this.state.array_local.length>0){
+		for(let i=1;i<=12;i++){
+			if(this.state.array_local.includes(id+'-'+i)){
+			if(i==1||i==2){
+					return(
+						<Text style={styles._text}>
+							Satisfactory
+						</Text>
+					);
+				}
+				else if(i==3||i==4){
+					return(
+						<Text style={styles._text}>
+							Non-satisfactory
+						</Text>
+					);
+				}
+				else if(i==5||i==6){
+					return(
+						<Text style={styles._text}>
+							Finding
+						</Text>
+					);
+				}
+				else if(i==7||i==8){
+					return(
+						<Text style={styles._text}>
+							Observation
+						</Text>
+					);
+				}
+				else if(i==9||i==10){
+					return(
+						<Text style={styles._text}>
+							Comment
+						</Text>
+					);
+				}
+				else{
+					return(
+						<Text style={styles._text}>
+							Not applicable
+						</Text>
+					);
+				}
 			}
 		}
 	}
-	console.log(this.state.array_id);
+	else{
+		for(let i=1;i<=12;i++){
+			if(this.state.array_id.includes(id+'-'+i)){
+			if(i==1||i==2){
+					return(
+						<Text style={styles._text}>
+							Satisfactory
+						</Text>
+					);
+				}
+				else if(i==3||i==4){
+					return(
+						<Text style={styles._text}>
+							Non-satisfactory
+						</Text>
+					);
+				}
+				else if(i==5||i==6){
+					return(
+						<Text style={styles._text}>
+							Finding
+						</Text>
+					);
+				}
+				else if(i==7||i==8){
+					return(
+						<Text style={styles._text}>
+							Observation
+						</Text>
+					);
+				}
+				else if(i==9||i==10){
+					return(
+						<Text style={styles._text}>
+							Comment
+						</Text>
+					);
+				}
+				else{
+					return(
+						<Text style={styles._text}>
+							Not applicable
+						</Text>
+					);
+				}
+			}
+		}	}
 }
-_thisCheckbox(el){
+_renderIconStatus(id){
+	if(this.state.array_local.length>0){
+		for(let i=1;i<=12;i++){
+			if(this.state.array_local.includes(id+'-'+i)){
+			if(i==1||i==2){
+					return(
+						<Icon type='material-icons' color='#4F81F0'  name='star' size={height/30} />
+					);
+				}
+				else if(i==3||i==4){
+					return(
+						<Icon type='material-icons' color='#9DD182' name='star' size={height/30} />
+					);
+				}
+				else if(i==5||i==6){
+					return(
+						<Icon type='material-icons' color='#F0C751' name='star' size={height/30} />
+					);
+				}
+				else if(i==7||i==8){
+					return(
+						<Icon type='material-icons' color='#67CCF2' name='star' size={height/30} />
+					);
+				}
+				else if(i==9||i==10){
+					return(
+						<Icon type='material-icons' color='#D67A63' name='star' size={height/30} />
+					);
+				}
+				else{
+					return(
+						<Icon type='material-icons' color='black' name='star' size={height/30} />
+					);
+				}
+			}
+		}
+	}
+	else{
+		for(let i=1;i<=12;i++){
+			if(this.state.array_id.includes(id+'-'+i)){
+			if(i==1||i==2){
+					return(
+						<Icon type='material-icons' color='#4F81F0'  name='star' size={height/30} />
+					);
+				}
+				else if(i==3||i==4){
+					return(
+						<Icon type='material-icons' color='#9DD182' name='star' size={height/30} />
+					);
+				}
+				else if(i==5||i==6){
+					return(
+						<Icon type='material-icons' color='#F0C751' name='star' size={height/30} />
+					);
+				}
+				else if(i==7||i==8){
+					return(
+						<Icon type='material-icons' color='#67CCF2' name='star' size={height/30} />
+					);
+				}
+				else if(i==9||i==10){
+					return(
+						<Icon type='material-icons' color='#D67A63' name='star' size={height/30} />
+					);
+				}
+				else{
+					return(
+						<Icon type='material-icons' color='black' name='star' size={height/30} />
+					);
+				}
+			}
+		}
+	}
+};
+_thisSelectSatus(el){
+	var ar= el.split('-');
 	var id = this.state._idClick;
-	var temp= '';
-		if(this.state.array_id.includes(id+'-'+el)){
-			return true;
+	let temp = this.state.array_local.length >0?this.state.array_local:this.state.array_id;
+	this.setState({
+		array_id: [],
+	});
+	console.log(temp+' trc khi xu ly');
+		for(let m=1;m<=12;m++){
+			if(temp.includes(id+'-'+m)){
+				if(m==Number(ar[1])){
+				}
+				else{
+					temp.splice(temp.indexOf(id+'-'+m),1);
+				}
+			}
+	}
+	temp.push(el);
+	console.log(temp+' sau khi xu ly');
+	this.setState({
+		array_local: temp,
+	});
+	console.log(this.state.array_local);
+}
+_sendComment(checklist_id){
+	//id la trang thai status
+	var arr = this.state.array_local;
+	var temp=[];
+	for(let m=1;m<=12;m++){
+			if(arr.includes(checklist_id+'-'+m)){
+				temp.push(m);
+			}
+	}
+	console.log(temp[0]);
+	var content = this.state.comment;
+	AsyncStorage.getAllKeys((err, keys) => { 
+          AsyncStorage.multiGet(keys).then((value)=>{
+          	fetch('http://96.96.10.10/api/checklist_checklistitems/'+checklist_id+'?token='+value[3][1], {
+				  method: 'PUT',
+				  headers: {
+				    'Accept': 'application/json',
+				    'Content-Type': 'application/json',
+				  },
+				  body: JSON.stringify({
+				    "checklist_id": this.state.id_faq,
+				    "comment": content,
+				    "id": temp[0],
+				  })
+				}).then((responseJson)=>{
+					console.log(responseJson);
+					if(responseJson.status==200){
+						this.setState({
+							_modal: false,
+							comment: '',
+						});
+					}
+				});
+          });
+    });
+};
+_thisCheckbox(el){
+	//fix loi check 2 state if else with array_local and array_id...
+	var id = this.state._idClick;
+	var temp= Number(el)%2==0?Number(el)-1:Number(el)+1;
+		if(this.state.array_local.length >0){
+			if(this.state.array_local.includes(id+'-'+el)){
+				return true;
+			}
+			else if(this.state.array_local.includes(id+'-'+temp)){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		else{
-			temp = Number(el)-1;
-			console.log((id+'-'+temp));
-			if(this.state.array_id.includes(id+'-'+temp)){
+			if(this.state.array_id.includes(id+'-'+el)){
+				return true;
+			}
+			else if(this.state.array_id.includes(id+'-'+temp)){
 				return true;
 			}
 			else{
@@ -82,30 +321,59 @@ _thisCheckbox(el){
 			}
 		}
 }
+_eachColor(el){
+	console.log(el);
+		if(el==1 || el==2){
+			return '#4F81F0';
+		}
+		else if(el==3 || el==4){
+			return '#9DD182';
+		}
+		else if(el==5 || el==6){
+			return '#F0C751';
+		}
+		else if(el==7 || el==8){
+			return '#67CCF2';
+		}
+		else if(el==9 || el==10){
+			return '#D67A63';
+		}
+		else{
+			return 'black';
+		}
+};
 _eachStatus(){
 	let arr = this.state.array_status;
 	let view = [];
-	for(let i=0;i<arr.length;i++){
-		let item = arr[i];
-		view.push(
-			<View key={"mActions"+item.id} style={styles._mMainAction}>
-				<View style={[styles._mCheckbox,styles._center]}>
-					<CheckBox
-						center
-						isChecked={true}
-						checked={this._thisCheckbox(item.id)}
-						checkedColor='green'
-						onPress={()=>this._thisSelectSatus(this.state._idClick+'-'+item.id)}
-						uncheckedColor='black'
-						style={[styles._checkbox]}  />
+	if(arr.length > 0){
+		for(let i=0;i<arr.length;i++){
+			let item = arr[i];
+			view.push(
+				<View key={"mActions"+item.id} style={styles._mMainAction}>
+					<View style={[styles._mCheckbox,styles._center]}>
+						<CheckBox
+							center
+							iconType='font-awesome'
+							checkedIcon='star'
+							uncheckedIcon='star-o'
+							isChecked={this._thisCheckbox(item.id)}
+							checked={this._thisCheckbox(item.id)}
+							checkedColor={this._eachColor(item.id)}
+							onPress={()=>this._thisSelectSatus(this.state._idClick+'-'+item.id)}
+							uncheckedColor='black'
+							style={[styles._checkbox]}  />
+					</View>
+					<View style={[styles._mtextAction,styles._center]}>
+						<Text style={[styles._mText,styles._center,styles._colorText,{color: i==0?'#4F81F0':i==1?'#9DD182':i==2?'#F0C751':i==3?'#67CCF2':i==4?'#D67A63':'black'}]}>
+						  	{item.name}
+						</Text>
+					</View>
 				</View>
-				<View style={[styles._mtextAction,styles._center]}>
-					<Text style={[styles._mText,styles._center]}>
-					  	{item.name}
-					</Text>
-				</View>
-			</View>
-		);
+			);
+		}
+	}
+	else{
+		// alert('No Data!');
 	}
 	return view;
 }
@@ -148,7 +416,7 @@ _eachItem(){
 						// console.log(arr[i].data[a].checklist_item[b].id);
 							let item = arr[i].data[a].checklist_item[b];
 							let temp = [];
-							// console.log("what for");
+							console.log(item);
 							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.pivot.chkitemstatus);
 							for(let i2=0;i2 <= this.state.array_id.length-1;i2++){
 								for(let j=i2+1; j <this.state.array_id.length;j++){
@@ -167,7 +435,7 @@ _eachItem(){
 								<View style={[styles._actionsContent,{borderBottomWidth: 1}]}>
 										<View style={[styles._itemAction,styles._center]}>
 											<View style={styles._iconAction}>
-												<Icon type='material-icons' name='do-not-disturb' size={20} />
+												<Icon type='foundation' color='#4C88FF' name='comments' size={height/30} />
 											</View>
 											<View style={styles._textAction}>
 												<Text style={styles._text}>
@@ -177,29 +445,27 @@ _eachItem(){
 										</View>
 										<View style={[styles._itemAction,styles._center]}>
 											<View style={styles._iconAction}>
-												<Icon type='material-icons' name='do-not-disturb' size={20} />
+												  	{this._renderIconStatus(item.id)}
 											</View>
 											<View style={styles._textAction}>
 												<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item.id)} >
-													<Text style={styles._text}>
-														Actions
-													</Text>
+													{this._renderStatus(item.id)}
 												</TouchableOpacity>
 											</View>											
 										</View>
 										<View style={[styles._itemAction,styles._center]}>
 											<View style={styles._iconAction}>
-												<Icon type='material-icons' name='do-not-disturb' size={20} />
+												<Icon type='material-icons' name='do-not-disturb' size={height/30} />
 											</View>
 											<View style={styles._textAction}>
 												<Text style={styles._text}>
-									  				More
+									  				Refer
 												</Text>
 											</View>
 										</View>
 								</View>
 							</View>
-				);
+						);
 					}
 			}
 	}
@@ -239,23 +505,35 @@ render() {
 						<View style={[styles._actionRow,styles._center]}>
 							<View style={styles._mcontentAction}>
 								<View style={styles._mheadAction}>
-									<Text>
+									<Text style={[styles._colorText,{fontSize: height/40,}]} >
 									  	Actions
 									</Text>
 								</View>
 								<View style={styles._mdataAction}>
 									{this._eachStatus()}
 								</View>
+								<View style={styles._mComment}>
+									<Text style={styles._colorText}>
+									  	Comement:
+									</Text>
+									<TextInput style={[styles.input,{height: Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, height))} ]}
+	         				 			multiline
+										underlineColorAndroid='white'
+				          				onContentSizeChange={this.handleContentSizeChange}
+				          				onChangeText={(text)=>this._onCommentChange(text)}
+				          				value={this.state.comment}
+	         						/>
+								</View>
 								<View style={[styles._mfootAction,styles._center]}>
 									<View>
-										<TouchableOpacity>
+										<TouchableOpacity onPress={()=>{this._closeStatus()}}>
 											<Text>
 											  	Cancel
 											</Text>
 										</TouchableOpacity>
 									</View>
 									<View>
-										<TouchableOpacity>
+										<TouchableOpacity onPress={()=>this._sendComment(this.state._idClick)}>
 											<Text>
 											  	Save
 											</Text>
@@ -266,9 +544,14 @@ render() {
 						</View>
 				</Modal>
 				<View style={styles._header}>
-					<Text style={styles._textHead}>
-						Checklist company
-					</Text>
+					<View style={[styles._textHeader,styles._center]}>
+						<Text style={[styles._textHead,{borderWidth: 1}]}>
+							Checklist company
+						</Text>
+					</View>
+					<View style={styles._startFaQ}>
+						
+					</View>
 				</View>
 				<View style={styles._content}>
 					<ScrollView>
@@ -300,25 +583,45 @@ const styles= StyleSheet.create({
 	},
 	_mcontentAction:{
 		height: (height/4)*2,
-		backgroundColor: 'white',
+		backgroundColor: '#E8E9EC',
 		width: width-20,
-		paddingVertical: 10,
+		paddingVertical: 0,
 		flexDirection: 'column', 
 	},
 	_mheadAction:{
 		flex: 0.1,
+		marginHorizontal: 5,
+		marginVertical: 5,
+		justifyContent: 'flex-end',
+		alignItems: 'center', 
 	},
 	_mdataAction:{
-		flex: 0.8,
+		flex: 0.55,
+		marginHorizontal: 5,
+		marginVertical: 5,
+		// backgroundColor: 'white',
+	},
+	_mComment:{
+		flex: 0.2,
+		backgroundColor: '#E8E9EC',
+		flexDirection:  'column',
+		marginVertical: 5,
+		marginHorizontal: 5,
 	},
 	_mfootAction:{
 		flex: 0.1,
-		flexDirection: 'row', 
+		marginHorizontal: 5,
+		// marginVertical: 5,
+		marginBottom: 5,
+		// backgroundColor: 'white',
+		flexDirection: 'row',
+		borderWidth: 0.4,
 	},
 	_mMainAction:{
 		flex: 1,
 		flexDirection: 'row',
-		borderWidth: 1,
+		borderBottomWidth: 0.5,
+		borderColor: 'black',
 	},
 	_checkbox:{
 		backgroundColor: 'rgba(255,255,255,0)',
@@ -335,9 +638,31 @@ const styles= StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',  
 	},
+	input: {
+    // textAlignVertical: "top",
+    textAlign: 'left',
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: '#DDDFE2',
+    paddingVertical: height/60,
+    backgroundColor: 'white',
+    // borderColor: "rgb(232,232,232)",
+  	},
+  	_colorText:{
+		fontSize: height/50,
+		color: 'black',
+  	},
 	_header:{
 		flex: 0.1,
 		backgroundColor: 'white',
+		flexDirection: 'column', 
+	},
+	_textHeader:{
+		flex: 1,
+	},
+	_startFaQ:{
+		flex: 1,
+		backgroundColor: 'cyan'
 	},
 	_content:{
 		flex: 0.9,
