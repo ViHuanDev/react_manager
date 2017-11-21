@@ -5,6 +5,8 @@ import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,Picker,TextInput,
 import { Icon } from 'react-native-elements';
 import { CheckBox } from 'react-native-elements';
 import PopoverTooltip from 'react-native-popover-tooltip';
+import {lang} from './languages/languages';
+import {URL_HOME,normalize} from '../config';
 const MIN_HEIGHT = 20;
 const MAX_HEIGHT = 40;
 class ListFaQ extends Component {
@@ -13,15 +15,21 @@ class ListFaQ extends Component {
 		this.state = {
 			id_faq: this.props.navigation.state.params.id,isLoading:true,
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
-			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],comment:'',
+			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],
+			comment:'',_langid:'',_lang: lang,_mComment:false,array_comment:[],_showCmt:true,_mChildComment: false,
+			_idComment:[],_idChildComment:[],
 		};
 	};
 // _keyExtractor = (item, index) => index;
 componentWillMount() {
+	// console.log(normalize+'font-size');
 	//checklists/id_check?token
 	AsyncStorage.getAllKeys((err, keys) => { 
           AsyncStorage.multiGet(keys).then((value)=>{
           	console.log(value);
+          	this.setState({
+          		_langid: value[1][1]=='vi'?true:false,
+          	});
         	fetch('http://96.96.10.10/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => { 
 					this.setState({
@@ -50,18 +58,159 @@ _onCommentChange(text){
 			comment: text,
 		});
 };
+_onPressComment(el){
+	this.setState({
+		_idClick: el,
+		_mComment: true,
+		isLoading: false,
+	});
+	var  id= el;
+	var id_checklist = this.state.id_faq;
+	AsyncStorage.getAllKeys((err, keys) => { 
+          AsyncStorage.multiGet(keys).then((value)=>{
+          	console.log(value);
+          	this.setState({
+          		_langid: value[1][1]=='vi'?true:false,
+          	});
+        	fetch(URL_HOME+'/api/comments?token='+value[3][1]+'&checklist_id='+id_checklist+'&id='+id).
+        	then((response)=> response.json()).then((responseJson)=>{
+        		console.log(responseJson);
+				this.setState({
+					array_comment: responseJson,
+				});
+					for(let i =0;i<responseJson.length;i++){
+							console.log(responseJson[i].user.fullname);
+							console.log('----'+responseJson[i].content);
+					}
+			}).catch((error)=>{	
+				console.log(error);
+			});
+          });
+    });
+};
+_closeComment(){
+	this.setState({
+		_mComment: false,
+	});
+};
+_showRepComment(){
+	this.setState({
+		_showCmt: !this.state._showCmt,
+	});
+};
+_showChildComment(el){
+	console.log(this.state._idChildComment+'id===='+el);
+	this.setState({
+		_mChildComment: !this.state._mChildComment,
+		_idChildComment: el,
+	});
+};
+_renderChildComment(){
+	var arr = this.state.array_comment;
+	// console.log(this.state._idChildComment+"asdad");
+	// console.log(arr);
+	var temp = [];
+	temp.push(
+		<View key={'childcontent'+123} style={[styles._mChildComment,{display: 'flex'}]}>
+			<View style={styles._mChildUser}>
+				<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={20} />
+			</View>
+			<View style={styles._mChildContent}>
+					<Text>
+					  	{arr[0].content}
+					</Text>
+					<View style={styles._mChildActions}>
+						<TouchableOpacity>
+							<Text style={[styles._editChildComment,styles.font_size]}>
+							  	Sửa
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity>
+							<Text style={[styles._delChildComment,styles.font_size]}>
+							  	Xóa
+							</Text>
+						</TouchableOpacity>
+					</View>
+			</View>
+		</View>
+	);
+	return temp;
+}
+_renderComment(){
+	var arr = this.state.array_comment;
+	var temp = [];
+	for(let i=0;i<arr.length;i++){
+	    temp.push(
+	    	<View key={"Comment"+arr[i].id} style={styles._mItemsComment}>
+				<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
+					<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
+				</View>
+				<View style={styles._mitemContent}>
+					<View style={styles._itemText}>
+						<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+						  	{arr[i].user.fullname} 
+						</Text>
+					</View>
+					<View style={styles._itemText}>
+						<View style={styles._mItemText}>
+							<TouchableOpacity onPress={()=>{this._showChildComment(arr[i].checklist_chkitem_id)}}>
+								<Text>
+								  	{arr[i].content}
+								</Text>
+							</TouchableOpacity>
+						</View>
+						{arr[i].child.length>0?this._renderChildComment(arr[i].child):<Text>Null</Text>}
+					</View>
+					<View style={styles._textActions}>
+						<TouchableOpacity onPress={()=>{this._showRepComment()}} >
+							<Text style={[styles._repComment,styles.font_size]}>
+							  	Trả lời
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity>
+							<Text style={[styles._editComment,styles.font_size]}>
+							  	Sửa
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity>
+							<Text style={[styles._delComment,styles.font_size]}>
+							  	Xóa
+							</Text>
+						</TouchableOpacity>
+					</View>
+					<View style={[styles._actionRepComment,{display: this.state._showCmt?'none':'flex' }]}>
+						<View style={[styles._repUser,styles._center]}>
+							<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={15} />
+						</View>
+						<View style={styles._repTextInput}>
+							<TextInput style={{borderWidth: 0.3,borderRadius: 3,fontSize: 10,height: 20,paddingTop: 2,paddingBottom: 2}}
+								multiline={true}
+								underlineColorAndroid='transparent'>
+							</TextInput>
+						</View>
+						<View style={[styles._repActions,styles._center]}>
+							<TouchableOpacity style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black' }} >Cancel</Text></TouchableOpacity>
+							<TouchableOpacity style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black'}} >Save</Text></TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			</View>
+	    );
+	}
+	return temp;
+};
 _onPressAction(el){
 	this.setState({
 		_modal: true,
 		_idClick: el,
 	});
-	console.log(this.state.array_local);
+	// console.log(this.state.array_local);
 }
 _closeStatus(){
 	this.setState({
 		_modal: !this.state._modal,
 	});
-	console.log(this.state.array_local);
+	// console.log(this.state.array_local);
 }
 _renderStatus(id){
 	if(this.state.array_local.length>0){
@@ -69,43 +218,43 @@ _renderStatus(id){
 			if(this.state.array_local.includes(id+'-'+i)){
 			if(i==1||i==2){
 					return(
-						<Text style={styles._text}>
-							Satisfactory
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.satis:this.state._lang.en.satis}
 						</Text>
 					);
 				}
 				else if(i==3||i==4){
 					return(
-						<Text style={styles._text}>
-							Non-satisfactory
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.non_satis:this.state._lang.en.non_satis}
 						</Text>
 					);
 				}
 				else if(i==5||i==6){
 					return(
-						<Text style={styles._text}>
-							Finding
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.finding:this.state._lang.en.finding}
 						</Text>
 					);
 				}
 				else if(i==7||i==8){
 					return(
-						<Text style={styles._text}>
-							Observation
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.observation:this.state._lang.en.observation}
 						</Text>
 					);
 				}
 				else if(i==9||i==10){
 					return(
-						<Text style={styles._text}>
-							Comment
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
 						</Text>
 					);
 				}
 				else{
 					return(
-						<Text style={styles._text}>
-							Not applicable
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.not_appli:this.state._lang.en.not_appli}
 						</Text>
 					);
 				}
@@ -117,43 +266,43 @@ _renderStatus(id){
 			if(this.state.array_id.includes(id+'-'+i)){
 			if(i==1||i==2){
 					return(
-						<Text style={styles._text}>
-							Satisfactory
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.satis:this.state._lang.en.satis}
 						</Text>
 					);
 				}
 				else if(i==3||i==4){
 					return(
-						<Text style={styles._text}>
-							Non-satisfactory
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.non_satis:this.state._lang.en.non_satis}
 						</Text>
 					);
 				}
 				else if(i==5||i==6){
 					return(
-						<Text style={styles._text}>
-							Finding
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.finding:this.state._lang.en.finding}
 						</Text>
 					);
 				}
 				else if(i==7||i==8){
 					return(
-						<Text style={styles._text}>
-							Observation
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.observation:this.state._lang.en.observation}
 						</Text>
 					);
 				}
 				else if(i==9||i==10){
 					return(
-						<Text style={styles._text}>
-							Comment
+						<Text style={[styles._text,styles._textCenter]}>
+							{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
 						</Text>
 					);
 				}
 				else{
 					return(
 						<Text style={styles._text}>
-							Not applicable
+							{this.state._langid?this.state._lang.vi.not_appli:this.state._lang.en.not_appli}
 						</Text>
 					);
 				}
@@ -416,7 +565,7 @@ _eachItem(){
 						// console.log(arr[i].data[a].checklist_item[b].id);
 							let item = arr[i].data[a].checklist_item[b];
 							let temp = [];
-							console.log(item);
+							// console.log(item);
 							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.pivot.chkitemstatus);
 							for(let i2=0;i2 <= this.state.array_id.length-1;i2++){
 								for(let j=i2+1; j <this.state.array_id.length;j++){
@@ -438,9 +587,11 @@ _eachItem(){
 												<Icon type='foundation' color='#4C88FF' name='comments' size={height/30} />
 											</View>
 											<View style={styles._textAction}>
-												<Text style={styles._text}>
-												  	Comment
-												</Text>
+												<TouchableOpacity onPress={()=>{this._onPressComment(item.id)}}>
+													<Text style={styles._text}>
+													  	Comment
+													</Text>
+												</TouchableOpacity>
 											</View>
 										</View>
 										<View style={[styles._itemAction,styles._center]}>
@@ -495,6 +646,43 @@ render() {
 								style={{justifyContent: 'center', alignItems: 'center',height: height/10,width: height/10}}
 								source={require('../images/loading_green.gif')}
 							/>
+						</View>
+				</Modal>
+				<Modal 
+					animationType="slide"
+					transparent={true}
+					visible={this.state._mComment}
+					onRequestClose={() => {alert("Modal has been closed.")}} >
+						<View style={[styles._mRowComment,styles._center]}>
+							<View style={styles._mbodyComment}>
+								<View style={styles._mheadComment}>
+									<Text style={styles._textCenter}>
+									  	Comment
+									</Text>
+								</View>
+								<View style={styles._mdataComment}>
+									<ScrollView contentContainerStyle={styles._mScrolView}>
+										{this._renderComment()}
+									</ScrollView>
+									<View style={styles._mtextComment}>
+										<View style={[styles._minputText]}>
+											<TextInput style={{borderWidth: 0.3,borderRadius: 3}}
+													multiline={true}>
+											</TextInput>
+										</View>
+										<View style={styles._mClickComment}>
+											<TouchableOpacity onPress={()=>{this._closeComment()}} >
+												<Text style={styles._buttonComment}>
+												  	Cancel
+												</Text>
+											</TouchableOpacity>
+												<Text style={styles._buttonComment}>
+												  	Save
+												</Text>
+										</View>
+									</View>
+								</View>
+							</View>
 						</View>
 				</Modal>
 				<Modal 
@@ -571,10 +759,69 @@ const styles= StyleSheet.create({
 		alignSelf: 'center',
 		alignItems: 'center',
 	},
+	_textCenter:{
+		textAlign: 'center',
+		alignSelf: 'center',  
+	},
+	font_size:{
+		fontSize: normalize,
+	},
 	row:{
 		flex: 1,
 		flexDirection: 'column',
 		backgroundColor: 'rgba(192,192,192,0.5)',
+	},
+	_mRowComment:{
+		width: width,
+		height: height,
+		padding: 10,
+		backgroundColor: 'rgba(0,0,0,0.3)',
+	},
+	_mbodyComment:{
+		backgroundColor: 'white',
+		width: width-30,
+		height: height-15,
+		paddingHorizontal: 5,
+		paddingTop: 5,
+		flexDirection: 'column',
+		borderTopLeftRadius: 5,
+		borderTopRightRadius: 5, 
+	},
+	_mheadComment:{
+		height: ((height-15)/10),
+	},
+	_mdataComment:{
+		height: ((height-15)/10)*8,
+	},
+	_mScrolView:{
+		height: ((height-15)/10)*8,
+	},
+	_mItemsComment:{
+		flexDirection: 'row',
+		borderBottomWidth: 0.3,
+	},
+	_mitemUser:{
+		flex: 0.2,
+	},
+	_mitemContent:{
+		flex: 0.8,
+		flexDirection: 'column', 
+	},
+	_textActions:{
+		flexDirection: 'row', 
+		justifyContent: 'flex-end',
+		alignItems: 'center',
+		paddingRight: 5,
+	},
+	_mtextComment:{
+		height: ((height-10)/10)*1.5,
+	},
+	_minputText:{
+		flex: 1,
+	},
+	_mClickComment:{
+		flex: 1,
+		flexDirection: 'row', 
 	},
 	_actionRow:{
 		flex: 1,
@@ -587,6 +834,34 @@ const styles= StyleSheet.create({
 		width: width-20,
 		paddingVertical: 0,
 		flexDirection: 'column', 
+	},
+	_actionRepComment:{
+		paddingLeft: width/20,
+		flexDirection: 'row',
+		paddingBottom: 2,
+	},
+	_itemText:{
+		flexDirection: 'column', 
+	},
+	_mChildComment:{
+		flexDirection: 'row', 
+	},
+	_mChildActions:{
+		flexDirection: 'row', 
+	},
+	_mChildContent:{
+		flexDirection: 'column',
+	},
+	_repUser:{
+		flex: 0.1,
+	},
+	_repTextInput:{
+		flex: 0.5,
+	},
+	_repActions:{
+		flex: 0.2,
+		marginHorizontal: 2,
+		flexDirection: 'row',
 	},
 	_mheadAction:{
 		flex: 0.1,

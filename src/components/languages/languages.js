@@ -24,7 +24,13 @@ export const lang = {
 				'position': 'Chức vụ',
 				'change_password': 'Thay đổi mật khẩu',
 				'email': 'Email',
-				'report': 'Báo cáo'
+				'report': 'Báo cáo',
+				'satis': 'Phù hợp',
+				'non_satis': 'Không phù hợp',
+				'finding': 'Lỗi',
+				'observation': 'Giám sát khắc phục',
+				'comment' : 'Ý kiến',
+				'not_appli':'Không áp dụng'
 				},
 		"en":{
 				'signout':'Sign Out',
@@ -50,6 +56,12 @@ export const lang = {
 				'position': 'Position',
 				'change_password': 'Change Password',
 				'email': 'Email',
-				'report': 'Report'
+				'report': 'Report',
+				'satis': 'Satisfactory',
+				'non_satis': 'Non-satisfactory',
+				'finding': 'Finding',
+				'observation': 'Observation',
+				'comment' : 'Comment',
+				'not_appli':'Not applicable'
 		}
 };
