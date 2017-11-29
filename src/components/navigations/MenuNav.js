@@ -11,6 +11,8 @@ import EmployeeList from '../EmployeeList';
 import Profile from '../Profile';
 import {Icon} from 'react-native-elements';
 import SideBar from '../SideBar';
+import CommentList from '../comment/CommentList';
+import ChildCommentList from '../comment/ChildCommentList';
 const {width,height} = Dimensions.get('window');
 export const HomeMenu = StackNavigator({
 	Screen_Main:{
@@ -172,6 +174,54 @@ export const HomeMenu = StackNavigator({
 			},
 			headerLeft:
 				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.navigate('Screen_Main')}}>
+						<Icon type='entypo' color='white' name='chevron-thin-left' size={20} />
+	   	 		</TouchableOpacity>,
+		}),	
+	},
+	Screen_CommentList:{
+		screen: CommentList,
+		navigationOptions:({navigation})=>({
+			headerRight:
+				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
+						<Icon type='material-community-icons' color='white' name='menu' size={20} />
+	   	 		</TouchableOpacity>,
+			title: (
+	            <Text style={{color: 'white'}}>
+	              	Comment
+	            </Text>
+        	),
+			headerStyle:{
+				backgroundColor: '#0457C9',
+			},
+			headerTitleStyle:{
+				alignSelf: 'center',
+			},
+			headerLeft:
+				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.goBack()}}>
+						<Icon type='entypo' color='white' name='chevron-thin-left' size={20} />
+	   	 		</TouchableOpacity>,
+		}),	
+	},
+	Screen_ChildCommentList:{
+		screen: ChildCommentList,
+		navigationOptions:({navigation})=>({
+			headerRight:
+				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
+						<Icon type='material-community-icons' color='white' name='menu' size={20} />
+	   	 		</TouchableOpacity>,
+			title: (
+	            <Text style={{color: 'white'}}>
+	              	Comment
+	            </Text>
+        	),
+			headerStyle:{
+				backgroundColor: '#0457C9',
+			},
+			headerTitleStyle:{
+				alignSelf: 'center',
+			},
+			headerLeft:
+				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.goBack()}}>
 						<Icon type='entypo' color='white' name='chevron-thin-left' size={20} />
 	   	 		</TouchableOpacity>,
 		}),	

@@ -38,7 +38,7 @@ componentWillMount() {
 					// console.log(this.state.array_faq);
 				}) .catch((error) => { 
 					console.error(error); 
-				});
+			});
 			fetch('http://96.96.10.10/api/chkitemstatus?token='+value[3][1]).then((response) => 
 				response.json()).then((responseJson)=>{ 
 					// console.log(responseJson);
@@ -587,7 +587,7 @@ _eachItem(){
 												<Icon type='foundation' color='#4C88FF' name='comments' size={height/30} />
 											</View>
 											<View style={styles._textAction}>
-												<TouchableOpacity onPress={()=>{this._onPressComment(item.id)}}>
+												<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_CommentList',{checklist_id: this.state.id_faq,id_answer: item.id})}}>
 													<Text style={styles._text}>
 													  	Comment
 													</Text>
@@ -653,37 +653,7 @@ render() {
 					transparent={true}
 					visible={this.state._mComment}
 					onRequestClose={() => {alert("Modal has been closed.")}} >
-						<View style={[styles._mRowComment,styles._center]}>
-							<View style={styles._mbodyComment}>
-								<View style={styles._mheadComment}>
-									<Text style={styles._textCenter}>
-									  	Comment
-									</Text>
-								</View>
-								<View style={styles._mdataComment}>
-									<ScrollView contentContainerStyle={styles._mScrolView}>
-										{this._renderComment()}
-									</ScrollView>
-									<View style={styles._mtextComment}>
-										<View style={[styles._minputText]}>
-											<TextInput style={{borderWidth: 0.3,borderRadius: 3}}
-													multiline={true}>
-											</TextInput>
-										</View>
-										<View style={styles._mClickComment}>
-											<TouchableOpacity onPress={()=>{this._closeComment()}} >
-												<Text style={styles._buttonComment}>
-												  	Cancel
-												</Text>
-											</TouchableOpacity>
-												<Text style={styles._buttonComment}>
-												  	Save
-												</Text>
-										</View>
-									</View>
-								</View>
-							</View>
-						</View>
+						
 				</Modal>
 				<Modal 
 					animationType="slide"
