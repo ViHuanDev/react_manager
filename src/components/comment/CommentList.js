@@ -2,16 +2,19 @@ import React, { Component } from 'react';
 import {URL_HOME,normalize} from '../../config';
 import {
   StyleSheet,Dimensions,AsyncStorage,Text,TouchableOpacity,TextInput,ScrollView,
-  View,Modal,Image,FlatList,
+  View,Modal,Image,FlatList,WebView
 } from 'react-native';
 import { Icon } from 'react-native-elements';
+import HTML from 'react-native-render-html';
 const {height,width} = Dimensions.get('screen');
+// const htmlContent = `<p style="margin: 0 !important">This HTML snippet is now rendered with native components !</p>`;
 export default class CommentList extends Component {
 	constructor(props) {
 	  super(props);
 	  this.state = {
 	  	checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
-	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],
+	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
+	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',
 	  };
 	};
 	componentWillMount(){
@@ -31,6 +34,61 @@ export default class CommentList extends Component {
 		});
     });
 };
+_onCommentChange(text){
+	this.setState({
+		_isComment: text,
+	});
+};
+_onSendComment(){
+	var content = this.state._isComment;
+	// alert(this.state._isComment+'log');
+	AsyncStorage.getAllKeys((err, keys) => { 
+        AsyncStorage.multiGet(keys).then((value)=>{
+			fetch(URL_HOME+'/api/comments?token='+value[3][1],{
+				method: 'POST',
+				headers:{
+					'Accept': 'application/json',
+				    'Content-Type': 'application/json',
+				},
+				body:JSON.stringify({
+					"checklist_id": this.state.checklist_id,
+				    "content": content,
+				    "id": this.state.id_answer,
+				})
+			}).then((response)=>response.json()).then((responseJson)=>{
+				console.log(responseJson);
+				this.setState({
+					_isComment: '',
+				});
+				alert("Success");
+			});
+    	});
+	});
+};
+_saveComment(){
+	AsyncStorage.getAllKeys((err, keys) => { 
+        AsyncStorage.multiGet(keys).then((value)=>{
+			fetch(URL_HOME+'/api/comments/'+this.state._temp_id_comment,{
+				method: 'PUT',
+				headers:{
+					'Accept': 'application/json',
+				    'Content-Type': 'application/json',
+				},
+				body:JSON.stringify({
+				    "content": this.state._temp_comment,
+				    "token": value[3][1],
+				})
+			}).then((response)=>response.json()).then((responseJson)=>{
+				console.log(responseJson);
+				this.setState({
+					_stateEditComment: !this.state._stateEditComment,
+					_temp_comment: responseJson.content,
+				});
+				console.log("Success");
+			});
+    	});
+	});
+}
 _renderChildComment(){
 	console.log(this.state.temp_com.child);
 	this.setState({
@@ -75,6 +133,19 @@ _renderChildComment(){
 	// }
 	// return temp;
 };
+_rederEditCoomit(el){
+	if(!this.state._temp_id_comment.includes(el.id)){
+		return(
+			<HTML containerStyle={{paddingLeft: 10}} html={el.content} />
+		);
+	}else{
+		return(
+			<Text style={{paddingLeft: 10}}>
+			  	{this.state._temp_comment}
+			</Text>
+		);
+	}
+}
 _renderComment(){
 	var arr = this.state.array_comment;
 	var temp = [];
@@ -93,12 +164,10 @@ _renderComment(){
 					<View style={styles._itemText}>
 						<View style={styles._mItemText}>
 							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id})}}>
-								<Text>
-								  	{arr[i].content}
-								</Text>
+								{this._rederEditCoomit(arr[i])}
 							</TouchableOpacity>
 							<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id})}}>
-								<Text style={{textDecorationLine: 'underline',paddingLeft: 10 }}>
+								<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
 								  	{arr[i].child.length} trả lời
 								</Text>
 							</TouchableOpacity>
@@ -110,12 +179,12 @@ _renderComment(){
 							  	Trả lời
 							</Text>
 						</TouchableOpacity>
-						<TouchableOpacity>
+						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
 							<Text style={[styles._editComment,styles.font_size]}>
 							  	Sửa
 							</Text>
 						</TouchableOpacity>
-						<TouchableOpacity>
+						<TouchableOpacity style={styles._buttonClick}>
 							<Text style={[styles._delComment,styles.font_size]}>
 							  	Xóa
 							</Text>
@@ -128,11 +197,12 @@ _renderComment(){
 						<View style={styles._repTextInput}>
 							<TextInput style={{borderWidth: 0.3,borderRadius: 3,fontSize: 10,height: 20,paddingTop: 2,paddingBottom: 2}}
 								multiline={true}
-								underlineColorAndroid='transparent'>
-							</TextInput>
+								value={this.state._isComment}
+								onChangeText={(text)=>{this._onCommentChange(text)}}
+								underlineColorAndroid='transparent'/>
 						</View>
 						<View style={[styles._repActions,styles._center]}>
-							<TouchableOpacity style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black' }} >Cancel</Text></TouchableOpacity>
+							<TouchableOpacity onPress={()=>{this._onSendComment(arr[i].id)}} style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black' }} >Cancel</Text></TouchableOpacity>
 							<TouchableOpacity style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black'}} >Save</Text></TouchableOpacity>
 						</View>
 					</View>
@@ -158,6 +228,43 @@ _keyExtractor = (item, index) => item.id;
 				/>
 			</View>
 		</Modal>
+		<Modal
+			animationType="slide"	
+			transparent={true}
+			visible={this.state._stateEditComment}
+			onRequestClose={()=>{this.setState({_stateEditComment: !this.state._stateEditComment});}} >
+				<View style={[styles._editRow,styles._center]}>
+					<View style={styles._editTextComment}>
+						<View style={styles._editHead}>
+							<Text style={styles.font_size}>
+							  	Sửa bình luận
+							</Text>
+						</View>
+						<View style={styles._editContent}>
+							<TextInput
+								style={{flex: 1}}
+								multiline = {true}
+								underlineColorAndroid={'transparent'}
+								editable = {true}
+								numberOfLines={4}
+						        onChangeText={(text) => this.setState({_temp_comment: text})}
+						        value={this.state._temp_comment}/>
+						</View>
+						<View style={styles._editFooter}>
+							<TouchableOpacity onPress={()=>{this.setState({_stateEditComment: !this.state._stateEditComment,_temp_comment: this.state._cancel_comment})}} >
+								<Text style={styles.font_size}>
+								  	Hủy
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={()=>{this._saveComment()}}>
+								<Text style={styles.font_size}>
+									Lưu			  
+								</Text>				
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+		</Modal>
 		<View style={[styles._mRowComment,styles._center]}>
 			<View style={styles._mbodyComment}>
 				<View style={styles._mheadComment}>
@@ -172,8 +279,9 @@ _keyExtractor = (item, index) => item.id;
 					<View style={styles._mtextComment}>
 						<View style={[styles._minputText]}>
 							<TextInput style={{borderWidth: 0.3,borderRadius: 3}}
-									multiline={true}>
-							</TextInput>
+								value={this.state._isComment}
+								onChangeText={(text)=>this._onCommentChange(text)}
+								underlineColorAndroid='transparent'/>
 						</View>
 						<View style={[styles._mClickComment,styles._center]}>
 							<TouchableOpacity onPress={()=>{this._closeComment()}} >
@@ -181,9 +289,11 @@ _keyExtractor = (item, index) => item.id;
 								  	Cancel
 								</Text>
 							</TouchableOpacity>
+							<TouchableOpacity onPress={()=>{this._onSendComment()}}>
 								<Text style={styles._buttonComment}>
 								  	Save
 								</Text>
+							</TouchableOpacity>
 						</View>
 					</View>
 				</View>
@@ -208,6 +318,27 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		borderRadius: 5,
 	},
+	_editRow:{
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.3)',
+	},
+	_editTextComment:{
+		height: (height/8)*2,
+		backgroundColor: 'white',
+		width: width-20,
+		borderRadius: 5,
+	},
+	_editHead:{
+		flex: 0.2,
+		backgroundColor: 'cyan',
+	},
+	_editContent:{
+		flex: 0.6,
+	},
+	_editFooter:{
+		flex: 0.2,
+		backgroundColor: 'yellow',
+	},
 	_mRowComment:{
 		width: width,
 		height: height,
@@ -231,7 +362,6 @@ const styles = StyleSheet.create({
 		height: ((height)/10)*7.5,
 	},
 	_mScrolView:{
-		height: ((height)/10)*8,
 	},
 	_img:{
 		flex: 1,
@@ -242,6 +372,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		borderBottomWidth: 0.3,
 		borderColor: 'gray',
+		paddingTop: 2,
 	},
 	_mitemUser:{
 		flex: 0.2,
@@ -335,4 +466,8 @@ const styles = StyleSheet.create({
 		marginBottom: 2,
 		height: (height/10),
 	},
+	_buttonClick:{
+		padding: 2,
+		marginLeft: 3,
+	}
 });

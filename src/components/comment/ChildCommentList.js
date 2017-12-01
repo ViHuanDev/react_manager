@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet,Dimensions,ScrollView,
-  View,Text,TouchableOpacity,TextInput,
+  StyleSheet,Dimensions,ScrollView,Image,FlatList,
+  View,Text,TouchableOpacity,TextInput,Modal
 } from 'react-native';
+import HTML from 'react-native-render-html';
 import { Icon } from 'react-native-elements';
 const {height,width} = Dimensions.get('screen');
 class ChildCommentList extends Component {
@@ -10,75 +11,61 @@ class ChildCommentList extends Component {
 	  super(props);
 	  this.state = {
 	  	_arr_state: this.props.navigation.state.params.arr_child,id_ckl: this.props.navigation.state.params.id_arr,
-
+	  	_isLoading: false,
 	  };
 	}
-	componentWillMount() {
-		console.log(this.state._arr_state);
+	componentWillMount(){
+		// console.log(this.state._arr_state);
 	};
   render() {
     return (
      	<View style={styles._row}>
+     		<Modal 
+				animationType="slide"
+				transparent={false}
+				visible={this.state._isLoading}
+				onRequestClose={() => {alert("Modal has been closed.")}} >
+					<View style={styles._img}>
+						<Image
+							style={{justifyContent: 'center', alignItems: 'center',height: height/10,width: height/10}}
+							source={require('../../../images/loading_green.gif')}
+					/>
+				</View>
+			</Modal>
      		<View style={styles._sDataChildComment} >
-	     		<ScrollView style={styles._sScrollView} >
-		     		<View style={[styles._sChildComment,styles._center]}>
-						<View style={styles._sChildIconUser}>
-							<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-(width/10))/9)} />
-		     			</View>
-		     			<View style={styles._sContentChildUser}>
-							<View style={styles._sNameUser}>
-								<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
-							  		Name User Child 
-								</Text>
-							</View>
-							<View style={styles._sCommentUser}>
-								<Text>
-								  	data of child comment...
-								</Text>
-							</View>
-							<View style={styles._sChildActionsUser}>
-								<TouchableOpacity>
-									<Text style={[styles._editComment,styles.font_size]}>
-									  	Sửa
+	     		<ScrollView style={styles._sScrollView}>
+					<FlatList
+						keyExtractor={item=>item.id}
+						data={this.state._arr_state}
+						renderItem={({item})=>
+			     		<View style={[styles._sChildComment,styles._center]}>
+							<View style={styles._sChildIconUser}>
+								<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-(width/10))/9)} />
+			     			</View>
+			     			<View style={styles._sContentChildUser}>
+								<View style={styles._sNameUser}>
+									<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+								  		{item.user.fullname} 
 									</Text>
-								</TouchableOpacity>
-								<TouchableOpacity>
-									<Text style={[styles._delComment,styles.font_size]}>
-									  	Xóa
-									</Text>
-								</TouchableOpacity>
-		     				</View>
-		     			</View>
-		     		</View>
-		     		<View style={[styles._sChildComment,styles._center]}>
-						<View style={styles._sChildIconUser}>
-							<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-(width/10))/9)} />
-		     			</View>
-		     			<View style={styles._sContentChildUser}>
-							<View style={styles._sNameUser}>
-								<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
-							  		Name User Child 
-								</Text>
-							</View>
-							<View style={styles._sCommentUser}>
-								<Text>
-								  	data of child comment...
-								</Text>
-							</View>
-							<View style={styles._sChildActionsUser}>
-								<TouchableOpacity>
-									<Text style={[styles._editComment,styles.font_size]}>
-									  	Sửa
-									</Text>
-								</TouchableOpacity>
-								<TouchableOpacity>
-									<Text style={[styles._delComment,styles.font_size]}>
-									  	Xóa
-									</Text>
-								</TouchableOpacity>
-		     				</View>
-		     			</View>
-		     		</View>
+								</View>
+								<View style={styles._sCommentUser}>
+									<HTML containerStyle={{paddingLeft: 10}} html={item.content} />
+								</View>
+								<View style={styles._sChildActionsUser}>
+									<TouchableOpacity>
+										<Text style={[styles._editComment,styles.font_size]}>
+										  	Sửa
+										</Text>
+									</TouchableOpacity>
+									<TouchableOpacity>
+										<Text style={[styles._delComment,styles.font_size]}>
+										  	Xóa
+										</Text>
+									</TouchableOpacity>
+			     				</View>
+			     			</View>
+			     		</View>
+			     	}/>
 		     	</ScrollView>
 		    </View>
      		<View style={styles._sAddCommentChild}>
@@ -161,6 +148,11 @@ const styles = StyleSheet.create({
 	_mClickComment:{
 		flex: 0.4,
 		flexDirection: 'row', 
+	},
+	_img:{
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',  
 	},
 });
 

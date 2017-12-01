@@ -105,6 +105,10 @@ _showChildComment(el){
 		_idChildComment: el,
 	});
 };
+_onEditComment(id,val){
+	console.log('aaa');
+	console.log(id+'----'+val);
+}
 _renderChildComment(){
 	var arr = this.state.array_comment;
 	// console.log(this.state._idChildComment+"asdad");
@@ -159,39 +163,23 @@ _renderComment(){
 								</Text>
 							</TouchableOpacity>
 						</View>
-						{arr[i].child.length>0?this._renderChildComment(arr[i].child):<Text>Null</Text>}
 					</View>
 					<View style={styles._textActions}>
-						<TouchableOpacity onPress={()=>{this._showRepComment()}} >
+						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this._showRepComment()}} >
 							<Text style={[styles._repComment,styles.font_size]}>
 							  	Trả lời
 							</Text>
 						</TouchableOpacity>
-						<TouchableOpacity>
+						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this._onEditComment(arr[i].id,arr[i].content)}} >
 							<Text style={[styles._editComment,styles.font_size]}>
 							  	Sửa
 							</Text>
 						</TouchableOpacity>
-						<TouchableOpacity>
+						<TouchableOpacity style={styles._buttonClick} >
 							<Text style={[styles._delComment,styles.font_size]}>
 							  	Xóa
 							</Text>
 						</TouchableOpacity>
-					</View>
-					<View style={[styles._actionRepComment,{display: this.state._showCmt?'none':'flex' }]}>
-						<View style={[styles._repUser,styles._center]}>
-							<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={15} />
-						</View>
-						<View style={styles._repTextInput}>
-							<TextInput style={{borderWidth: 0.3,borderRadius: 3,fontSize: 10,height: 20,paddingTop: 2,paddingBottom: 2}}
-								multiline={true}
-								underlineColorAndroid='transparent'>
-							</TextInput>
-						</View>
-						<View style={[styles._repActions,styles._center]}>
-							<TouchableOpacity style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black' }} >Cancel</Text></TouchableOpacity>
-							<TouchableOpacity style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black'}} >Save</Text></TouchableOpacity>
-						</View>
 					</View>
 				</View>
 			</View>
@@ -931,6 +919,10 @@ const styles= StyleSheet.create({
 	},
 	_itemAction:{
 		flex: 0.3,
-}
+	},
+	_buttonClick:{
+		borderWidth: 0.3,
+		padding: 2,
+	},
 });
 export default ListFaQ;
