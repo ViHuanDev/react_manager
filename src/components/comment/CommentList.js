@@ -14,7 +14,7 @@ export default class CommentList extends Component {
 	  this.state = {
 	  	checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
 	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
-	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',
+	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',_temp_id_del_comment:[],_isEditComment:'',_stateComment: false,
 	  };
 	};
 	componentWillMount(){
@@ -34,13 +34,19 @@ export default class CommentList extends Component {
 		});
     });
 };
+_onEditCommentChange(text){
+	this.setState({
+		_isEditComment: text,
+		_temp_comment: text,
+	});
+};
 _onCommentChange(text){
 	this.setState({
 		_isComment: text,
 	});
 };
-_onSendComment(){
-	var content = this.state._isComment;
+_onSendEditComment(){
+	var content = this.state._isEditComment;
 	// alert(this.state._isComment+'log');
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
@@ -58,14 +64,14 @@ _onSendComment(){
 			}).then((response)=>response.json()).then((responseJson)=>{
 				console.log(responseJson);
 				this.setState({
-					_isComment: '',
+					_isEditComment: '',
 				});
 				alert("Success");
 			});
     	});
 	});
 };
-_saveComment(){
+_saveEditComment(){
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
 			fetch(URL_HOME+'/api/comments/'+this.state._temp_id_comment,{
@@ -89,50 +95,90 @@ _saveComment(){
     	});
 	});
 }
-_renderChildComment(){
-	console.log(this.state.temp_com.child);
-	this.setState({
-		_ChildComment: !this.state._ChildComment,
+_saveComment(){
+	console.log(this.state._isComment);
+	AsyncStorage.getAllKeys((err, keys) => { 
+        AsyncStorage.multiGet(keys).then((value)=>{
+			fetch(URL_HOME+'/api/comments?token='+value[3][1],{
+				method: 'POST',
+				headers:{
+					'Accept': 'application/json',
+				    'Content-Type': 'application/json',
+				},
+				body:JSON.stringify({
+					"checklist_id": this.state.checklist_id,
+					"id": this.state.id_answer,
+				    "content": this.state._isComment,
+				})
+			}).then((response)=>response.json()).then((responseJson)=>{
+				console.log(responseJson);
+				this.setState({
+					_stateComment: !this.state._stateComment,
+					_isComment: '',
+				});
+				this._renderNewComment(responseJson);
+				this.setState({
+					_stateComment: !this.state._stateComment,
+				});
+				// console.log("Success");
+			});
+    	});
 	});
-	// var arr = el.child;
-	// var temp=[];
-	// if(arr.length>0){
-	// 	for(let i=0;i < arr.length;i++){
-	// 		temp.push(
-	// 			<View style={[styles._sChildComment,styles._center]}>
-	// 				<View style={styles._sChildIconUser}>
-	// 					<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-(width/10))/9)} />
-	// 				 			</View>
-	// 				 			<View style={styles._sContentChildUser}>
-	// 					<View style={[styles._sNameUser,{flex: 0.4}]}>
-	// 						<Text style={[styles.font_size,{textAlign: 'left'  }]} >
-	// 					  		{arr[i].updated_at}
-	// 						</Text>
-	// 					</View>
-	// 					<View style={[styles._sCommentUser,{flex: 0.6}]}>
-	// 						<Text>
-	// 						  	{arr[i].content}
-	// 						</Text>
-	// 					</View>
-	// 					<View style={styles._sChildActionsUser}>
-	// 						<TouchableOpacity>
-	// 							<Text style={[styles._editComment,styles.font_size]}>
-	// 							  	Sửa
-	// 							</Text>
-	// 						</TouchableOpacity>
-	// 						<TouchableOpacity>
-	// 							<Text style={[styles._delComment,styles.font_size]}>
-	// 							  	Xóa
-	// 							</Text>
-	// 						</TouchableOpacity>
-	// 				 	</View>
-	// 				</View>
-	// 			</View>
-	// 		);
-	// 	}
-	// }
-	// return temp;
 };
+_renderNewComment(el){
+	var arr=el;
+	var temp=[];
+	temp.push(
+	    	<View key={"newComment"+arr.id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr.id)?'none':'flex'}]}>
+				<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
+					<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
+				</View>
+				<View style={styles._mitemContent}>
+					<View style={styles._itemText}>
+						<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+						  	{arr.user.fullname} 
+						</Text>
+					</View>
+					<View style={styles._itemText}>
+						<View style={styles._mItemText}>
+							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
+								{this._rederEditCoomit(arr)}
+							</TouchableOpacity>
+							<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr.child,id_arr: arr.id})}}>
+								<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
+								  	{arr.child.length} trả lời
+								</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+					<View style={styles._textActions}>
+						<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+							<Text style={[styles._repComment,styles.font_size]}>
+							  	Trả lời
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr.content,_temp_comment: this.state._temp_id_comment.includes(arr.id)?this.state._temp_comment:arr.content,_temp_id_comment: [arr.id],_stateEditComment: !this.state._stateEditComment});}} >
+							<Text style={[styles._editComment,styles.font_size]}>
+							  	Sửa
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles._buttonClick}>
+							<Text style={[styles._delComment,styles.font_size]}>
+							  	Xóa
+							</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+			</View>
+	    );
+	return temp;
+};
+// _renderChildComment(){
+// 	console.log(this.state.temp_com.child);
+// 	this.setState({
+// 		_ChildComment: !this.state._ChildComment,
+// 	});
+// };
 _rederEditCoomit(el){
 	if(!this.state._temp_id_comment.includes(el.id)){
 		return(
@@ -140,18 +186,19 @@ _rederEditCoomit(el){
 		);
 	}else{
 		return(
-			<Text style={{paddingLeft: 10}}>
-			  	{this.state._temp_comment}
-			</Text>
+			  	<HTML containerStyle={{paddingLeft: 10}} html={this.state._temp_comment} />
 		);
 	}
-}
+};
+// _renderItemComment(arr){
+	
+// };
 _renderComment(){
 	var arr = this.state.array_comment;
 	var temp = [];
 	for(let i=0;i<arr.length;i++){
 	    temp.push(
-	    	<View key={"Comment"+arr[i].id} style={styles._mItemsComment}>
+	    	<View key={"Comment"+arr[i].id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
 				<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
 					<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
 				</View>
@@ -166,7 +213,7 @@ _renderComment(){
 							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id})}}>
 								{this._rederEditCoomit(arr[i])}
 							</TouchableOpacity>
-							<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id})}}>
+							<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
 								<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
 								  	{arr[i].child.length} trả lời
 								</Text>
@@ -174,12 +221,12 @@ _renderComment(){
 						</View>
 					</View>
 					<View style={styles._textActions}>
-						<TouchableOpacity onPress={()=>{this._showRepComment()}} >
+						<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
 							<Text style={[styles._repComment,styles.font_size]}>
 							  	Trả lời
 							</Text>
 						</TouchableOpacity>
-						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
+						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
 							<Text style={[styles._editComment,styles.font_size]}>
 							  	Sửa
 							</Text>
@@ -190,28 +237,17 @@ _renderComment(){
 							</Text>
 						</TouchableOpacity>
 					</View>
-					<View style={[styles._actionRepComment,{display: 'none' }]}>
-						<View style={[styles._repUser,styles._center]}>
-							<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={15} />
-						</View>
-						<View style={styles._repTextInput}>
-							<TextInput style={{borderWidth: 0.3,borderRadius: 3,fontSize: 10,height: 20,paddingTop: 2,paddingBottom: 2}}
-								multiline={true}
-								value={this.state._isComment}
-								onChangeText={(text)=>{this._onCommentChange(text)}}
-								underlineColorAndroid='transparent'/>
-						</View>
-						<View style={[styles._repActions,styles._center]}>
-							<TouchableOpacity onPress={()=>{this._onSendComment(arr[i].id)}} style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black' }} >Cancel</Text></TouchableOpacity>
-							<TouchableOpacity style={{ paddingHorizontal: 1 }} ><Text style={{fontSize:9, color: 'black'}} >Save</Text></TouchableOpacity>
-						</View>
-					</View>
 				</View>
 			</View>
 	    );
 	}
 	return temp;
 };
+_renderNull(){
+	return(
+		<Text></Text>
+	);
+}
 _keyExtractor = (item, index) => item.id;
   render() {
     return (
@@ -235,7 +271,7 @@ _keyExtractor = (item, index) => item.id;
 			onRequestClose={()=>{this.setState({_stateEditComment: !this.state._stateEditComment});}} >
 				<View style={[styles._editRow,styles._center]}>
 					<View style={styles._editTextComment}>
-						<View style={styles._editHead}>
+						<View style={[styles._editHead,styles._center]}>
 							<Text style={styles.font_size}>
 							  	Sửa bình luận
 							</Text>
@@ -252,12 +288,12 @@ _keyExtractor = (item, index) => item.id;
 						</View>
 						<View style={styles._editFooter}>
 							<TouchableOpacity onPress={()=>{this.setState({_stateEditComment: !this.state._stateEditComment,_temp_comment: this.state._cancel_comment})}} >
-								<Text style={styles.font_size}>
+								<Text style={[styles.font_size,[styles._buttonComment,{textAlign: 'center'}]]}>
 								  	Hủy
 								</Text>
 							</TouchableOpacity>
-							<TouchableOpacity onPress={()=>{this._saveComment()}}>
-								<Text style={styles.font_size}>
+							<TouchableOpacity onPress={()=>{this._saveEditComment()}}>
+								<Text style={[styles.font_size,[styles._buttonComment,{textAlign: 'center'}]]}>
 									Lưu			  
 								</Text>				
 							</TouchableOpacity>
@@ -275,6 +311,7 @@ _keyExtractor = (item, index) => item.id;
 				<View style={styles._mdataComment}>
 					<ScrollView contentContainerStyle={styles._mScrolView}>
 						{this._renderComment()}
+						{this.state._stateComment?this._renderNewComment():this._renderNull()}
 					</ScrollView>
 					<View style={styles._mtextComment}>
 						<View style={[styles._minputText]}>
@@ -285,12 +322,12 @@ _keyExtractor = (item, index) => item.id;
 						</View>
 						<View style={[styles._mClickComment,styles._center]}>
 							<TouchableOpacity onPress={()=>{this._closeComment()}} >
-								<Text style={styles._buttonComment}>
+								<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
 								  	Cancel
 								</Text>
 							</TouchableOpacity>
-							<TouchableOpacity onPress={()=>{this._onSendComment()}}>
-								<Text style={styles._buttonComment}>
+							<TouchableOpacity onPress={()=>{this._saveComment()}}>
+								<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
 								  	Save
 								</Text>
 							</TouchableOpacity>
@@ -321,6 +358,7 @@ const styles = StyleSheet.create({
 	_editRow:{
 		flex: 1,
 		backgroundColor: 'rgba(0,0,0,0.3)',
+		borderRadius: 5,
 	},
 	_editTextComment:{
 		height: (height/8)*2,
@@ -330,14 +368,23 @@ const styles = StyleSheet.create({
 	},
 	_editHead:{
 		flex: 0.2,
-		backgroundColor: 'cyan',
+		borderTopLeftRadius: 10,
+		borderTopRightRadius: 10,
 	},
 	_editContent:{
-		flex: 0.6,
+		flex: 0.5,
+		borderTopWidth: 0.3,
+		borderBottomWidth: 0.3,
 	},
 	_editFooter:{
 		flex: 0.2,
-		backgroundColor: 'yellow',
+		borderRadius: 10,
+		justifyContent: 'flex-end',
+		alignItems: 'center',  
+		borderBottomLeftRadius: 10,
+		borderBottomRightRadius: 10,
+		flexDirection: 'row',
+		paddingRight: 2,
 	},
 	_mRowComment:{
 		width: width,
@@ -469,5 +516,12 @@ const styles = StyleSheet.create({
 	_buttonClick:{
 		padding: 2,
 		marginLeft: 3,
-	}
+	},
+	_buttonComment:{
+		padding: 2,
+		marginLeft: 3,
+		borderWidth: 0.3,
+		width: width/5,
+		borderRadius: 5,	
+	},
 });
