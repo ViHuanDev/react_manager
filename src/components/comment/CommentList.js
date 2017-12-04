@@ -15,6 +15,7 @@ export default class CommentList extends Component {
 	  	checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
 	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
 	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',_temp_id_del_comment:[],_isEditComment:'',_stateComment: false,
+	  	_temp_new_comment:[],
 	  };
 	};
 	componentWillMount(){
@@ -39,6 +40,37 @@ _onEditCommentChange(text){
 		_isEditComment: text,
 		_temp_comment: text,
 	});
+};
+_onClickDelComment(id){
+	console.log(id);
+	AsyncStorage.getAllKeys((err, keys) => { 
+        AsyncStorage.multiGet(keys).then((value)=>{
+		console.log(this.state.checklist_id+'---'+this.state.id_answer);
+		fetch(URL_HOME+'/api/comments/multidelete',{
+			method: 'POST',
+				headers:{
+					'Accept': 'application/json',
+				    'Content-Type': 'application/json',
+				},
+				body:JSON.stringify({
+				    "token": value[3][1],
+				    "id": id,
+				})
+		})
+		.then((response) => response.json()).then((responseJson)=> {
+				var temp=this.state._temp_id_del_comment;
+				temp.push(id);
+				// console.log(responseJson.toString()=="true"?'1':'2');
+				if(responseJson.toString()=="true"){
+					this.setState({
+						_temp_id_del_comment: temp,
+					});
+				}
+			}) .catch((error) => { 
+				console.error(error); 
+			});
+		});
+    });
 };
 _onCommentChange(text){
 	this.setState({
@@ -95,8 +127,63 @@ _saveEditComment(){
     	});
 	});
 }
+_renderNewComment(arr){
+	if(arr.length>0){
+		console.log(arr.length);
+		var temp=[];
+		for(let i=0;i<arr.length;i++){
+			temp.push(
+			    	<View key={"newComment"+arr[i].id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
+						<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
+							<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
+						</View>
+						<View style={styles._mitemContent}>
+							<View style={styles._itemText}>
+								<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+								  	{arr[i].user.fullname} 
+								</Text>
+							</View>
+							<View style={styles._itemText}>
+								<View style={styles._mItemText}>
+									<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
+										{this._rederEditCoomit(arr[i])}
+									</TouchableOpacity>
+									<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[0].child,id_arr: arr[0].id})}}>
+										<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
+										  	{arr[i].child.length} trả lời
+										</Text>
+									</TouchableOpacity>
+								</View>
+							</View>
+							<View style={styles._textActions}>
+								<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+									<Text style={[styles._repComment,styles.font_size]}>
+									  	Trả lời
+									</Text>
+								</TouchableOpacity>
+								<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
+									<Text style={[styles._editComment,styles.font_size]}>
+									  	Sửa
+									</Text>
+								</TouchableOpacity>
+								<TouchableOpacity onPress={()=>{this._onClickDelComment(arr[i].id)}} style={styles._buttonClick}>
+									<Text style={[styles._delComment,styles.font_size]}>
+									  	Xóa
+									</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
+					</View>
+			    );
+		}
+		return temp;
+	}
+	else{
+		return(<View></View>);
+	}
+};
 _saveComment(){
-	console.log(this.state._isComment);
+	// console.log(this.state._isComment);
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
 			fetch(URL_HOME+'/api/comments?token='+value[3][1],{
@@ -111,68 +198,24 @@ _saveComment(){
 				    "content": this.state._isComment,
 				})
 			}).then((response)=>response.json()).then((responseJson)=>{
-				console.log(responseJson);
+				// console.log(responseJson.id);
+				var temp = this.state._temp_new_comment;
+				temp.push(responseJson);
 				this.setState({
-					_stateComment: !this.state._stateComment,
+					_stateComment: true,
 					_isComment: '',
+					_temp_new_comment: temp,
 				});
-				this._renderNewComment(responseJson);
-				this.setState({
-					_stateComment: !this.state._stateComment,
-				});
+				// this._renderNewComment(responseJson);
+				// this.setState({
+				// 	_stateComment: !this.state._stateComment,
+				// });
 				// console.log("Success");
 			});
     	});
 	});
 };
-_renderNewComment(el){
-	var arr=el;
-	var temp=[];
-	temp.push(
-	    	<View key={"newComment"+arr.id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr.id)?'none':'flex'}]}>
-				<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
-					<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
-				</View>
-				<View style={styles._mitemContent}>
-					<View style={styles._itemText}>
-						<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
-						  	{arr.user.fullname} 
-						</Text>
-					</View>
-					<View style={styles._itemText}>
-						<View style={styles._mItemText}>
-							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
-								{this._rederEditCoomit(arr)}
-							</TouchableOpacity>
-							<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr.child,id_arr: arr.id})}}>
-								<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
-								  	{arr.child.length} trả lời
-								</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-					<View style={styles._textActions}>
-						<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
-							<Text style={[styles._repComment,styles.font_size]}>
-							  	Trả lời
-							</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr.content,_temp_comment: this.state._temp_id_comment.includes(arr.id)?this.state._temp_comment:arr.content,_temp_id_comment: [arr.id],_stateEditComment: !this.state._stateEditComment});}} >
-							<Text style={[styles._editComment,styles.font_size]}>
-							  	Sửa
-							</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles._buttonClick}>
-							<Text style={[styles._delComment,styles.font_size]}>
-							  	Xóa
-							</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</View>
-	    );
-	return temp;
-};
+
 // _renderChildComment(){
 // 	console.log(this.state.temp_com.child);
 // 	this.setState({
@@ -194,54 +237,54 @@ _rederEditCoomit(el){
 	
 // };
 _renderComment(){
-	var arr = this.state.array_comment;
-	var temp = [];
-	for(let i=0;i<arr.length;i++){
-	    temp.push(
-	    	<View key={"Comment"+arr[i].id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
-				<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
-					<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
-				</View>
-				<View style={styles._mitemContent}>
-					<View style={styles._itemText}>
-						<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
-						  	{arr[i].user.fullname} 
-						</Text>
+	var arr= this.state.array_comment;
+		var temp = [];
+		for(let i=0;i<arr.length;i++){
+		    temp.push(
+		    	<View key={"Comment"+arr[i].id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
+					<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
+						<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
 					</View>
-					<View style={styles._itemText}>
-						<View style={styles._mItemText}>
-							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id})}}>
-								{this._rederEditCoomit(arr[i])}
+					<View style={styles._mitemContent}>
+						<View style={styles._itemText}>
+							<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+							  	{arr[i].user.fullname} 
+							</Text>
+						</View>
+						<View style={styles._itemText}>
+							<View style={styles._mItemText}>
+								<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id})}}>
+									{this._rederEditCoomit(arr[i])}
+								</TouchableOpacity>
+								<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
+									<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
+									  	{arr[i].child.length} trả lời
+									</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
+						<View style={styles._textActions}>
+							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+								<Text style={[styles._repComment,styles.font_size]}>
+								  	Trả lời
+								</Text>
 							</TouchableOpacity>
-							<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
-								<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
-								  	{arr[i].child.length} trả lời
+							<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
+								<Text style={[styles._editComment,styles.font_size]}>
+								  	Sửa
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity onPress={()=>{this._onClickDelComment(arr[i].id)}} style={styles._buttonClick}>
+								<Text style={[styles._delComment,styles.font_size]}>
+								  	Xóa
 								</Text>
 							</TouchableOpacity>
 						</View>
 					</View>
-					<View style={styles._textActions}>
-						<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
-							<Text style={[styles._repComment,styles.font_size]}>
-							  	Trả lời
-							</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
-							<Text style={[styles._editComment,styles.font_size]}>
-							  	Sửa
-							</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles._buttonClick}>
-							<Text style={[styles._delComment,styles.font_size]}>
-							  	Xóa
-							</Text>
-						</TouchableOpacity>
-					</View>
 				</View>
-			</View>
-	    );
-	}
-	return temp;
+		    );
+		}
+		return temp;
 };
 _renderNull(){
 	return(
@@ -311,7 +354,7 @@ _keyExtractor = (item, index) => item.id;
 				<View style={styles._mdataComment}>
 					<ScrollView contentContainerStyle={styles._mScrolView}>
 						{this._renderComment()}
-						{this.state._stateComment?this._renderNewComment():this._renderNull()}
+						{this._renderNewComment(this.state._temp_new_comment)}
 					</ScrollView>
 					<View style={styles._mtextComment}>
 						<View style={[styles._minputText]}>
