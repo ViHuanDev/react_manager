@@ -50,6 +50,7 @@ class LoginForm extends Component{
 							loading: false,
 						});
 						console.log(email+"-"+password+" login");
+						console.log(this.props.loginUser({password,email}));
 						this.props.loginUser({password,email});
 					}
 					if(value[0][1]==null && value[1][1]==null){

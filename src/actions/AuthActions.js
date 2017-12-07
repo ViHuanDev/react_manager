@@ -76,11 +76,11 @@ export const loginUser = ({email, password}) =>{
 					"password": password,
 					"email" : email
 				})
-			}).then(async (responseJson)=>{
-				// console.log(responseJson);
-				if(responseJson.ok==true){
+			}).then(async(response)=> response.json()).then((responseJson)=>{
+				console.log(responseJson);
+				if(responseJson.response==="success"){
 					// console.log(responseJson);
-					var rJson = JSON.parse(responseJson._bodyInit);
+					var rJson = responseJson;
 					var er = rJson.response;
 					if(er!=='error'){
 					// console.log(rJson.user['fullname']);
@@ -110,10 +110,14 @@ export const loginUser = ({email, password}) =>{
 				
 			}
 		}
-		else{
-			console.log(responseJson);
-			loginUserFail(dispatch,"Bạn chưa nhập email và mật khẩu");
-		}
+		// if(responseJson._bodyInit.reponse){
+		// 	console.log("adasd");
+		// 	loginUserFail(dispatch,responseJson._bodyInit.message);
+		// }
+		// else{
+		// 	console.log(responseJson);
+		// 	loginUserFail(dispatch,"Bạn chưa nhập email và mật khẩu");
+		// }
 	}).catch((error)=>{
 		// loginUserFail(dispatch);
 		console.log("error");

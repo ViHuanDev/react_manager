@@ -5,6 +5,7 @@ import {
   View,Modal,Image,FlatList,WebView
 } from 'react-native';
 import { Icon } from 'react-native-elements';
+import {lang} from '../languages/languages';
 import HTML from 'react-native-render-html';
 const {height,width} = Dimensions.get('screen');
 // const htmlContent = `<p style="margin: 0 !important">This HTML snippet is now rendered with native components !</p>`;
@@ -15,18 +16,23 @@ export default class CommentList extends Component {
 	  	checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
 	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
 	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',_temp_id_del_comment:[],_isEditComment:'',_stateComment: false,
-	  	_temp_new_comment:[],
+	  	_temp_new_comment:[],_id_user:'',_langid:'',_lang:lang,
 	  };
 	};
 	componentWillMount(){
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
+        	this.setState({
+          		_langid: value[1][1]=='vi'?true:false,
+          	});
 		console.log(this.state.checklist_id+'---'+this.state.id_answer);
 		fetch(URL_HOME+'/api/comments?token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
 		.then((response) => response.json()).then((responseJson)=> {
+					console.log(responseJson);
 					this.setState({
 						array_comment: responseJson,
 						_isLoading: false,
+						_id_user: value[4][1],
 					});
 					// console.log(responseJson);
 				}) .catch((error) => { 
@@ -166,7 +172,7 @@ _renderNewComment(arr){
 									  	Sửa
 									</Text>
 								</TouchableOpacity>
-								<TouchableOpacity onPress={()=>{this._onClickDelComment(arr[i].id)}} style={styles._buttonClick}>
+								<TouchableOpacity onPress={()=>{this._onClickDelComment(arr[i].id)}} style={[styles._buttonClick]}>
 									<Text style={[styles._delComment,styles.font_size]}>
 									  	Xóa
 									</Text>
@@ -237,9 +243,12 @@ _rederEditCoomit(el){
 	
 // };
 _renderComment(){
-	var arr= this.state.array_comment;
+		var arr= this.state.array_comment;
+		// console.log(arr);
+		console.log(this.state._id_user.replace(/'/g,''));
 		var temp = [];
 		for(let i=0;i<arr.length;i++){
+			var user_action = this.state._id_user.replace(/'/g,'')==arr[i].user.id?'flex':'none';
 		    temp.push(
 		    	<View key={"Comment"+arr[i].id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
 					<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
@@ -266,17 +275,17 @@ _renderComment(){
 						<View style={styles._textActions}>
 							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
 								<Text style={[styles._repComment,styles.font_size]}>
-								  	Trả lời
+								  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
 								</Text>
 							</TouchableOpacity>
-							<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
+							<TouchableOpacity style={[styles._buttonClick,{display: user_action}]} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
 								<Text style={[styles._editComment,styles.font_size]}>
-								  	Sửa
+								  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
 								</Text>
 							</TouchableOpacity>
-							<TouchableOpacity onPress={()=>{this._onClickDelComment(arr[i].id)}} style={styles._buttonClick}>
+							<TouchableOpacity style={[styles._buttonClick,{display: user_action}]} onPress={()=>{this._onClickDelComment(arr[i].id)}} >
 								<Text style={[styles._delComment,styles.font_size]}>
-								  	Xóa
+								  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
 								</Text>
 							</TouchableOpacity>
 						</View>

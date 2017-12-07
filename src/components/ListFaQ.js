@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,Picker,TextInput,
+import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,Picker,TextInput,TouchableHighlight,
 	StyleSheet,ScrollView,TouchableOpacity} from 'react-native';
 // import CheckBox from 'react-native-checkbox';
 import { Icon } from 'react-native-elements';
@@ -13,11 +13,11 @@ class ListFaQ extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			id_faq: this.props.navigation.state.params.id,isLoading:true,
+			id_faq: this.props.navigation.state.params.id,name_org: this.props.navigation.state.params.name_org,isLoading:true,
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
-			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],
-			comment:'',_langid:'',_lang: lang,_mComment:false,array_comment:[],_showCmt:true,_mChildComment: false,
-			_idComment:[],_idChildComment:[],
+			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],_mReport:false,
+			comment:'',_langid:'',_lang: lang,array_comment:[],_showCmt:true,_mChildComment: false,
+			_idComment:[],_idChildComment:[],_statusFAQ:'',array_report:[],mRefer:false,
 		};
 	};
 // _keyExtractor = (item, index) => index;
@@ -25,73 +25,49 @@ componentWillMount() {
 	// console.log(normalize+'font-size');
 	//checklists/id_check?token
 	AsyncStorage.getAllKeys((err, keys) => { 
-          AsyncStorage.multiGet(keys).then((value)=>{
-          	console.log(value);
+        AsyncStorage.multiGet(keys).then((value)=>{
+          	console.log(value[1][1]);
           	this.setState({
           		_langid: value[1][1]=='vi'?true:false,
           	});
-        	fetch('http://96.96.10.10/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
-				response.json()) .then((responseJson) => { 
+        	fetch(URL_HOME+'/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
+				response.json()) .then((responseJson) => {
 					this.setState({
 						array_faq: responseJson.data,
+						_statusFAQ: responseJson.status,
 					});
 					// console.log(this.state.array_faq);
 				}) .catch((error) => { 
 					console.error(error); 
 			});
-			fetch('http://96.96.10.10/api/chkitemstatus?token='+value[3][1]).then((response) => 
+			fetch(URL_HOME+'/api/chkitemstatus?token='+value[3][1]).then((response) => 
 				response.json()).then((responseJson)=>{ 
-					// console.log(responseJson);
+					console.log(responseJson); 
 					this.setState({
-						isLoading: false,
 						array_status: responseJson,
 						});
 					// console.log(this.state.array_status);
-				}) .catch((error) => { 
+			}) .catch((error) => { 
 					console.error(error); 
-				});  
-          });
+			});  
+			fetch(URL_HOME+'/api/checklists/statistic?data='+this.state.id_faq+'&token='+value[3][1]).then((response) => 
+				response.json()).then((responseJson)=>{ 
+					console.log(responseJson);
+					this.setState({
+						array_report: responseJson,
+						isLoading: false,
+						});
+					// console.log(this.state.array_status);
+			}) .catch((error) => { 
+					console.error(error); 
+			});
+		});
     }); 
 };
 _onCommentChange(text){
 		this.setState({
 			comment: text,
 		});
-};
-_onPressComment(el){
-	this.setState({
-		_idClick: el,
-		_mComment: true,
-		isLoading: false,
-	});
-	var  id= el;
-	var id_checklist = this.state.id_faq;
-	AsyncStorage.getAllKeys((err, keys) => { 
-          AsyncStorage.multiGet(keys).then((value)=>{
-          	console.log(value);
-          	this.setState({
-          		_langid: value[1][1]=='vi'?true:false,
-          	});
-        	fetch(URL_HOME+'/api/comments?token='+value[3][1]+'&checklist_id='+id_checklist+'&id='+id).
-        	then((response)=> response.json()).then((responseJson)=>{
-        		console.log(responseJson);
-				this.setState({
-					array_comment: responseJson,
-				});
-					for(let i =0;i<responseJson.length;i++){
-							console.log(responseJson[i].user.fullname);
-							console.log('----'+responseJson[i].content);
-					}
-			}).catch((error)=>{	
-				console.log(error);
-			});
-          });
-    });
-};
-_closeComment(){
-	this.setState({
-		_mComment: false,
-	});
 };
 _showRepComment(){
 	this.setState({
@@ -126,7 +102,7 @@ _renderChildComment(){
 					<View style={styles._mChildActions}>
 						<TouchableOpacity>
 							<Text style={[styles._editChildComment,styles.font_size]}>
-							  	Sửa
+							  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
 							</Text>
 						</TouchableOpacity>
 						<TouchableOpacity>
@@ -140,6 +116,80 @@ _renderChildComment(){
 	);
 	return temp;
 }
+_funRefer(arr,parent){
+	var out = [];
+		for(var i in arr) {
+			if(arr[i].parent_id == parent) {
+				var children = this._funRefer(arr, arr[i].id);
+				if(children.length) {
+					arr[i].children = children;
+				}
+				out.push(arr[i]);
+			}
+		}
+	return out;
+};
+_renderRefer(id){
+	AsyncStorage.getAllKeys((err, keys) => { 
+        AsyncStorage.multiGet(keys).then((value)=>{
+          	console.log(value[1][1]);
+          	this.setState({
+          		_langid: value[1][1]=='vi'?true:false,
+          	});
+        	fetch(URL_HOME+'/api/checklistitems/'+id+'?token='+value[3][1]).then((response) => 
+				response.json()) .then((responseJson) => {
+					// this.setState({
+					// 	array_faq: responseJson.data,
+					// 	_statusFAQ: responseJson.status,
+					// });
+					// console.log(this.state.array_faq);
+					var x=[];
+					for(let i=0;i<responseJson.documentitem.length;i++){
+						x[i]=responseJson.documentitem[i];
+						x[i].data=this._funRefer(responseJson.documentitem[i].data,responseJson.documentitem[i].parent_id);
+					}
+					console.log(x);
+					// this._renderItemRefer(x);
+					// x chinh laf datas su dung de quy de in ra checklist.
+				}) .catch((error) => { 
+					console.error(error); 
+			});
+		});
+    }); 
+};
+_renderItemRefer(arr){
+	// for(let i=0;i<arr.length)
+}
+_renderReport(){
+	// console.log(this.state.array_report.sttchk?this.state.array_report.sttchk.length:"null");
+	if(this.state.array_report.sttchk){
+		var arr = this.state.array_report.sttchk;
+		var temp = [];
+		for(let i=0;i<arr.length;i++){
+			var color_true = i%2==0?"#ECEEEF":"white";
+			temp.push(
+				<View key={"report"+i} style={[styles._itemsDataReport,{backgroundColor: color_true}]}>
+					<View style={[styles._itemReport,styles._center]}>
+						<Text style={styles._textCenter} >
+						  {arr[i].name}
+						</Text>
+					</View>
+					<View style={[styles._itemReport,styles._center]}>
+						<Text style={styles._textCenter} >
+						  {arr[i].total}
+						</Text>
+					</View>
+					<View style={[styles._itemReport,styles._center]}>
+						<Text style={styles._textCenter} >
+						 {arr[i].total}/{this.state.array_report.totalchk}
+						</Text>
+					</View>
+				</View>
+			);
+		}
+		return temp;	
+	}
+};
 _renderComment(){
 	var arr = this.state.array_comment;
 	var temp = [];
@@ -575,9 +625,9 @@ _eachItem(){
 												<Icon type='foundation' color='#4C88FF' name='comments' size={height/30} />
 											</View>
 											<View style={styles._textAction}>
-												<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_CommentList',{checklist_id: this.state.id_faq,id_answer: item.id})}}>
+												<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_CommentList',{checklist_id: this.state.id_faq,id_answer: item.id,_status: this.state._statusFAQ})}}>
 													<Text style={styles._text}>
-													  	Comment
+													  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
 													</Text>
 												</TouchableOpacity>
 											</View>
@@ -597,9 +647,11 @@ _eachItem(){
 												<Icon type='material-icons' name='do-not-disturb' size={height/30} />
 											</View>
 											<View style={styles._textAction}>
-												<Text style={styles._text}>
-									  				Refer
-												</Text>
+												<TouchableOpacity onPress={()=>{this._renderRefer(item.id)}} >
+													<Text style={styles._text}>
+										  				{this.state._langid?this.state._lang.vi.refer:this.state._lang.en.refer}
+													</Text>
+												</TouchableOpacity>
 											</View>
 										</View>
 								</View>
@@ -638,10 +690,76 @@ render() {
 				</Modal>
 				<Modal 
 					animationType="slide"
-					transparent={true}
-					visible={this.state._mComment}
+					transparent={false}
+					visible={this.state.mRefer}
 					onRequestClose={() => {alert("Modal has been closed.")}} >
-						
+						<View style={styles.row}>
+							<View style={styles._mContentRefer}>
+								
+							</View>
+						</View>
+				</Modal>
+				<Modal 
+					animationType="slide"
+					transparent={true}
+					visible={this.state._mReport}
+					onRequestClose={() =>{this.setState({_mReport: !this.state._mReport})}} >
+						<View style={[styles._rowReport]}>
+							<View style={[styles._mContentReport,styles._center]}>
+								<View style={styles._mBodyReport}>
+									<View style={[styles._mHeadReport,styles._center]}>
+										<Text style={[styles._textCenter,{fontWeight: 'bold'}]} >
+										  	{this.state._langid?this.state._lang.vi.statistic:this.state._lang.en.statistic}
+										</Text>
+									</View>
+									<View style={styles._mDataReport}>
+										<View style={[styles._itemsDataReport,{backgroundColor: '#ECEEEF'}]}>
+											<View style={[styles._itemReport,styles._center]}>
+												<Text style={[styles._textCenter,{fontWeight: 'bold'}]}>
+												  	STATUS
+												</Text>
+											</View>
+											<View style={[styles._itemReport,styles._center]}>
+												<Text style={[styles._textCenter,{fontWeight: 'bold'}]}>
+												  	Number of questions
+												</Text>
+											</View>
+											<View style={[styles._itemReport,styles._center]}>
+												<Text style={[styles._textCenter,{fontWeight: 'bold'}]}>
+												  	Point
+												</Text>
+											</View>
+										</View>
+										<View style={styles._itemsDataReport}>
+											<View style={[styles._itemReport,styles._center]}>
+												<Text style={[styles._textCenter]} >
+												 	Total
+												</Text>
+											</View>
+											<View style={[styles._itemReport,styles._center]}>
+												<Text style={styles._textCenter} >
+												  {this.state.array_report.totalchk}
+												</Text>
+											</View>
+											<View style={[styles._itemReport,styles._center]}>
+												<Text style={styles._textCenter} >
+												  {this.state.array_report.totalchk}
+												</Text>
+											</View>
+										</View>
+										{this._renderReport()}
+									</View>
+									<View style={[styles._mFootReport,styles._center]}>
+										<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_mReport: !this.state._mReport})}}>
+									  		<Text>
+									  	  		Đóng
+									  		</Text>
+										</TouchableOpacity>
+									</View>
+								</View>
+							</View>
+							
+						</View>
 				</Modal>
 				<Modal 
 					animationType="slide"
@@ -691,12 +809,18 @@ render() {
 				</Modal>
 				<View style={styles._header}>
 					<View style={[styles._textHeader,styles._center]}>
-						<Text style={[styles._textHead,{borderWidth: 1}]}>
-							Checklist company
+						<Text style={[styles._textHead]}>
+							Checklist {this.state.name_org}
 						</Text>
 					</View>
-					<View style={styles._startFaQ}>
-						
+					<View style={[styles._startFaQ,styles._center]}>
+						<TouchableOpacity style={[styles._flex_FaQ,styles._center,{display: 'none'}]}><Text>Open</Text></TouchableOpacity>
+						<TouchableOpacity style={[styles._flex_FaQ,styles._center,{display: 'none'}]}><Text>Close</Text></TouchableOpacity>
+						<TouchableOpacity onPress={()=>{this.setState({_mReport: !this.state._mReport})}} style={[styles._flex_FaQ,styles._center]}>
+							<Text>
+								{this.state._langid?this.state._lang.vi.statistic:this.state._lang.en.statistic}
+							</Text>
+						</TouchableOpacity>
 					</View>
 				</View>
 				<View style={styles._content}>
@@ -895,7 +1019,10 @@ const styles= StyleSheet.create({
 	},
 	_startFaQ:{
 		flex: 1,
-		backgroundColor: 'cyan'
+		flexDirection: 'row',  
+	},
+	_flex_FaQ:{
+		flex: 0.3,
 	},
 	_content:{
 		flex: 0.9,
@@ -921,8 +1048,48 @@ const styles= StyleSheet.create({
 		flex: 0.3,
 	},
 	_buttonClick:{
-		borderWidth: 0.3,
-		padding: 2,
+		borderWidth: 0.5,
+		paddingHorizontal: 4,
+		//ngang
+		paddingVertical: 1,
+		//doc
+		borderRadius: 5,
+		borderColor: '#4267B2',
+	},
+	_rowReport:{
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.3)',
+		padding: 10,
+	},
+	_mHeadReport:{
+		flex: 0.1,
+		width: width-20,
+	},
+	_mContentReport:{
+		height: (height/3)*2,
+		width: width-20,
+		backgroundColor: 'white',
+	},
+	_mBodyReport:{
+		flex: 1,
+	},
+	_mFootReport:{
+		flex: 0.1,
+		width: width-20,
+	},
+	_mDataReport:{
+		flex: 0.8,
+		width: width-20,
+		flexDirection: 'column',
+	},
+	_itemsDataReport:{
+		flex: 1,
+		borderBottomWidth: 1,
+		borderColor: '#ECEEEF',
+		flexDirection: 'row', 
+	},
+	_itemReport:{
+		flex: 3,
 	},
 });
 export default ListFaQ;

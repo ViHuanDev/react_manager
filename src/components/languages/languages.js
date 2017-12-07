@@ -30,7 +30,12 @@ export const lang = {
 				'finding': 'Lỗi',
 				'observation': 'Giám sát khắc phục',
 				'comment' : 'Ý kiến',
-				'not_appli':'Không áp dụng'
+				'not_appli':'Không áp dụng',
+				'statistic' : 'Thống kê',
+				'refer': 'Tham chiếu',
+				'edit': 'Sửa',
+				'del': 'Xóa',
+				'replly': 'Trả lời'
 				},
 		"en":{
 				'signout':'Sign Out',
@@ -62,6 +67,11 @@ export const lang = {
 				'finding': 'Finding',
 				'observation': 'Observation',
 				'comment' : 'Comment',
-				'not_appli':'Not applicable'
+				'not_appli':'Not applicable',
+				'statistic': 'Statistic',
+				'refer': 'Refer',
+				'edit': 'Edit',
+				'del': 'Delete',
+				'replly': 'Replly'
 		}
 };
