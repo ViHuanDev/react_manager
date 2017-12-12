@@ -32,7 +32,7 @@ class LoginForm extends Component{
 		}
 		return(
 			<Button	onPress = {this.onButtonPress.bind(this)}> 
-			Login 
+				Login 
 			</Button>
 			);
 		}
@@ -75,15 +75,15 @@ class LoginForm extends Component{
 				// console.log(value);
 				return(
 					<Card style={styles.backgroundLogin}>
-					<View style={{width: width, height: height, backgroundColor: 'rgba(255,255,255,0.1)',
-					justifyContent: 'center',alignItems: 'center',display: this.state.loadingLogin?'flex':'none'}}>
-						<Image
-						  style={{width: 50,height: 50}}
-						  source={require('../images/loading_apple.gif')}
-						/>
-					</View>	
-						<Image source={require('../images/bg-login.jpg')} style={styles.bg_images} >
+						<View style={{width: width, height: height, backgroundColor: 'rgba(255,255,255,0.1)',
+						justifyContent: 'center',alignItems: 'center',display: this.state.loadingLogin?'flex':'none'}}>
+							<Image
+							  style={{width: 50,height: 50}}
+							  source={require('../images/loading_apple.gif')}
+							/>
+						</View>	
 								<CardSection style={styles.backgroundLogin} >	
+									
 									<CardSection>
 											<Input 
 											label = "Email"
@@ -111,7 +111,6 @@ class LoginForm extends Component{
 										{this.renderButton()}
 									</CardSection>
 								</CardSection>
-						</Image>
 					</Card>
 					);
 				}
@@ -131,7 +130,7 @@ const styles = {
 		flexDirection: 'column',
 		justifyContent: 'center',
     	alignItems: 'center', 
-		backgroundColor: 'rgba(255,255,255,0.1)',
+		backgroundColor: '#3688AE',
 	},
 	bg_images:{
 		flex: 1,

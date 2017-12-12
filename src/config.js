@@ -59,4 +59,4 @@ let temp='';
   // if older device ie pixelRatio !== 2 || 3 || 3.5
   temp = 13;
 export const normalize =temp;
-export const URL_HOME = 'http://96.96.10.10';
+export const URL_HOME = 'https:pa.glviews.com';

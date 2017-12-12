@@ -1,6 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
+import {URL_HOME,normalize} from '../config';
 import { Actions } from 'react-native-router-flux';
 import { NavigationActions } from 'react-navigation'
 import {connect} from 'react-redux';
@@ -42,7 +43,7 @@ _onChangeLanguage(){
   	AsyncStorage.multiGet(keyGet).then((value)=>{
 		if(value){
 			const token = value[3][1];
-			fetch('http://96.96.10.10/api/users/language/update'+'?token='+token,{
+			fetch(URL_HOME+'/api/users/language/update'+'?token='+token,{
 				"method": "PUT",
 				headers:{
 					"Accept":"application/json",

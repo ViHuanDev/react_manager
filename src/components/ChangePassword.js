@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import {Icon} from 'react-native-elements';
+import {URL_HOME,normalize} from '../config';
 import {
   StyleSheet,Text,
   View,Dimensions,TextInput,TouchableOpacity,AsyncStorage,Modal,
@@ -42,7 +43,7 @@ var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
 				const token = value[3][1];
 				const id =  (value[2][1]).replace(/[\\']/g,'');
 				// console.log(id);
-				fetch("http://96.96.10.10/api/users/changepassword?token="+token,{
+				fetch(URL_HOME+"/api/users/changepassword?token="+token,{
 							"method": "POST",
 							headers:{
 								"Accept":"application/json",

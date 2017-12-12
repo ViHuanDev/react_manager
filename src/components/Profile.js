@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { employeeUpdate } from '../actions';
 import { Actions } from 'react-native-router-flux';
+import {URL_HOME,normalize} from '../config';
 import {
   StyleSheet,
   View,Text,Dimensions,TextInput,ScrollView,TouchableOpacity,AsyncStorage,Modal,Image
@@ -76,7 +77,7 @@ onPressUpdateInfo(){
 				const token = value[3][1];
 				const id =  (value[2][1]).replace(/[\\']/g,'');
 				// console.log(id);
-				fetch("http://96.96.10.10/api/users/"+id+"?token="+token,{
+				fetch(URL_HOME+"/api/users/"+id+"?token="+token,{
 							"method": "PUT",
 							headers:{
 								"Accept":"application/json",

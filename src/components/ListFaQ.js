@@ -16,8 +16,8 @@ class ListFaQ extends Component {
 			id_faq: this.props.navigation.state.params.id,name_org: this.props.navigation.state.params.name_org,isLoading:true,
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
 			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],_mReport:false,
-			comment:'',_langid:'',_lang: lang,array_comment:[],_showCmt:true,_mChildComment: false,
-			_idComment:[],_idChildComment:[],_statusFAQ:'',array_report:[],mRefer:false,
+			comment:'',_langid:'',_lang: lang,array_comment:[],_showCmt:true,_mChildComment: false,array_refer_dq:[],
+			_idComment:[],_idChildComment:[],_statusFAQ:'',array_report:[],mRefer:false,array_refer:[],
 		};
 	};
 // _keyExtractor = (item, index) => index;
@@ -139,8 +139,7 @@ _renderRefer(id){
         	fetch(URL_HOME+'/api/checklistitems/'+id+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => {
 					// this.setState({
-					// 	array_faq: responseJson.data,
-					// 	_statusFAQ: responseJson.status,
+					// 	array_refer: responseJson.documentitem,
 					// });
 					// console.log(this.state.array_faq);
 					var x=[];
@@ -148,8 +147,11 @@ _renderRefer(id){
 						x[i]=responseJson.documentitem[i];
 						x[i].data=this._funRefer(responseJson.documentitem[i].data,responseJson.documentitem[i].parent_id);
 					}
-					console.log(x);
-					// this._renderItemRefer(x);
+					// console.log(x);
+					this._renderItemRefer(x,responseJson.documentitem);
+					this.setState({
+						mRefer: true,
+					});
 					// x chinh laf datas su dung de quy de in ra checklist.
 				}) .catch((error) => { 
 					console.error(error); 
@@ -157,9 +159,71 @@ _renderRefer(id){
 		});
     }); 
 };
-_renderItemRefer(arr){
-	// for(let i=0;i<arr.length)
+_funItemrefer(arr){
+	// console.log(arr.length);
+	var temp = [];
+	if(arr.length>0){
+		for(let i=0;i<arr.length;i++){
+		temp.push(
+			<View style={{flexDirection: 'column'}} key={"content"+i} >
+				<View style={{flexDirection: 'row',paddingLeft: 10}} >
+					<Icon style={[styles._center,{flex: 0.1}]} type="material-community" name="circle-outline" size={10} />
+					<Text style={{flex: 0.9}}>{arr[i].index} {arr[i].docitemheader}</Text>
+				</View>
+				<View  style={{paddingLeft: 10}}>
+					<Text>{arr[i].content}</Text>
+				</View>
+			</View>
+		);
+		if(arr[i].children){
+			temp.push(
+						<View style={{paddingLeft: 20}} key={"keychild"+i}>
+						{this._funItemrefer(arr[i].children)}
+					</View>
+				);
+			}
+		}
+	}
+	return temp;
 }
+_renderItemRefer(item_refer,refer){
+	// console.log(item_refer);
+	// console.log(refer);
+	var temp =[];
+	var x=[];
+	for(let i=0;i<refer.length;i++){
+		if(refer.length>0){
+			temp.push(
+				<View style={{flexDirection: 'row' }} key={"viewrefer"+refer[i].id}>
+					<Icon style={[styles._center,{flex: 0.1}]} type="material-community" name="circle" size={10} />
+					<Text style={{flex: 0.9}}>
+					  	 {refer[i].index} {refer[i].document.name}
+					</Text>
+				</View>
+			);
+			var x =this._funItemrefer(item_refer[i].data);
+			temp.push(
+				<View key={"keydataX"+i} style={{paddingLeft: 10}}>
+					{x}
+				</View>
+			);
+		}
+	}
+	// this._renderReferView(temp);
+	// console.log(temp);
+	this.setState({
+		_viewRefer: temp,
+	});
+}
+_renderReferView(arr){
+	console.log(arr);
+	return arr;
+}
+_renderNull(){
+	return(
+		<Text></Text>
+	);
+};
 _renderReport(){
 	// console.log(this.state.array_report.sttchk?this.state.array_report.sttchk.length:"null");
 	if(this.state.array_report.sttchk){
@@ -458,7 +522,7 @@ _sendComment(checklist_id){
 	var content = this.state.comment;
 	AsyncStorage.getAllKeys((err, keys) => { 
           AsyncStorage.multiGet(keys).then((value)=>{
-          	fetch('http://96.96.10.10/api/checklist_checklistitems/'+checklist_id+'?token='+value[3][1], {
+          	fetch(URL_HOME+'/api/checklist_checklistitems/'+checklist_id+'?token='+value[3][1], {
 				  method: 'PUT',
 				  headers: {
 				    'Accept': 'application/json',
@@ -644,7 +708,9 @@ _eachItem(){
 										</View>
 										<View style={[styles._itemAction,styles._center]}>
 											<View style={styles._iconAction}>
-												<Icon type='material-icons' name='do-not-disturb' size={height/30} />
+												<TouchableOpacity onPress={()=>{this._renderRefer(item.id)}} >
+													<Icon type='ionicon' name='ios-help-circle-outline' size={height/30} />
+												</TouchableOpacity>
 											</View>
 											<View style={styles._textAction}>
 												<TouchableOpacity onPress={()=>{this._renderRefer(item.id)}} >
@@ -694,8 +760,24 @@ render() {
 					visible={this.state.mRefer}
 					onRequestClose={() => {alert("Modal has been closed.")}} >
 						<View style={styles.row}>
-							<View style={styles._mContentRefer}>
-								
+							<View style={styles._mBodyRefer}>
+								<View style={[styles._mHeadRefer,styles._center]}>
+									<Text style={styles._textCenter}>
+									  	Thống kê
+									</Text>
+								</View>
+								<View style={styles._mContentRefer}>
+									<ScrollView>
+										{this.state.mRefer?this.state._viewRefer:this._renderNull()}
+									</ScrollView>
+								</View>
+								<View style={[styles._mFootRefer,styles._center]}>
+									<TouchableOpacity onPress={()=>{this.setState({mRefer: false})}} >
+										<Text style={[styles._textCenter,styles._textAction]}>
+										  	Đóng
+										</Text>
+									</TouchableOpacity>
+								</View>
 							</View>
 						</View>
 				</Modal>
@@ -1091,5 +1173,30 @@ const styles= StyleSheet.create({
 	_itemReport:{
 		flex: 3,
 	},
+	_mBodyRefer:{
+		flex: 1,
+		margin: 10,
+	},
+	_mContentRefer:{
+		borderTopLeftRadius: 5,
+		borderTopRightRadius: 5,
+		flex: 0.9,
+		backgroundColor: 'white',
+		// borderBottomWidth: 0.5,
+	},
+	_mHeadRefer:{
+		flex:0.05,
+		width: width-20,
+		backgroundColor: 'white',
+		// borderBottomWidth: 0.5,
+	},
+	_mFootRefer:{
+		flex: 0.05,
+		width: width-20,
+		backgroundColor: 'white',
+		borderBottomLeftRadius: 5,
+		borderBottomRightRadius: 5,
+		// borderTopWidth: 1,
+	}
 });
 export default ListFaQ;

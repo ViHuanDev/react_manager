@@ -15,7 +15,7 @@ import Stack from './Stack/Stack';
 const RouterComponent = () => {
 	return (
 		<Router >
-			<Scene key = "auth" >				
+			<Scene key = "auth" hideNavBar >				
 				<Scene sceneStyle = {{ paddingTop: 0 }} key ="login" component = {LoginForm} title = "Please Login" />
 			</Scene>
 			<Scene key = "main"  hideNavBar >

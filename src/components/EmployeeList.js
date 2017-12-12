@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {View, Text,AsyncStorage,ListView,FlatList,Modal,Image,
 	StyleSheet,Dimensions,TouchableOpacity} from 'react-native';
 import { Icon } from 'react-native-elements';
+import {lang} from './languages/languages';
+import {URL_HOME,normalize} from '../config';
 // import Icon from 'react-native-vector-icons';
 // import IconOc from 'react-native-vector-icons/Octicons';
 const {height,width} = Dimensions.get('screen');
@@ -11,28 +13,32 @@ class EmployeeList extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			mang: [],isLoading: true,ress: demo,
+			mang: [],isLoading: true,ress: demo,_lang:lang,_langid: '',
 		};
 	}
 	componentWillMount(){
 		console.log(width+"'"+height);
 		console.log(this.state.ress);
-		var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
-		AsyncStorage.multiGet(keyGet).then((value)=>{
+		var keyGet = ['@email:key','@password:key','@user_id:key','@token:key',''];
+		AsyncStorage.getAllKeys((err, keys) => { 
+		AsyncStorage.multiGet(keys).then((value)=>{
 			if(value){
+				// console.log(value);
+				this.setState({_langid: value[1][1]=='vi'?true:false,});
+				// console.log(value);
 				const token = value[3][1];
-				fetch('http://96.96.10.10/api/checklists?token='+token).then((response) => 
+				fetch(URL_HOME+'/api/checklists?token='+token).then((response) => 
 				response.json()) .then((responseJson) => { 
-				
 				this.setState({
 					isLoading: false,
 					mang: responseJson,
 				});
 
 				// console.log(this.state.mang);
-			}).catch((error) => { 
+				}).catch((error) => { 
 				console.error(error); });
-		};
+			};
+		});
 	});
 };
 		render(){
@@ -52,7 +58,7 @@ class EmployeeList extends Component {
 						</Modal>
 						<View style={styles.headList}>
 							<Text>
-							  	Manage Check List
+							  	{this.state._langid?this.state._lang.vi.manage:this.state._lang.en.manage} Check List
 							</Text>
 						</View>
 						<View style={styles.contentList}>

@@ -9,6 +9,7 @@ import {
 	CHANGE_LANGUAGE,
 } from './types';
 import { AsyncStorage, componentWillMount } from 'react-native';
+import {URL_HOME,normalize} from '../config';
 export const emailChanged = (text) => {
 	return {
 		type: EMAIL_CHANGED,
@@ -66,7 +67,7 @@ export const loginUser = ({email, password}) =>{
 		// });
 		dispatch({type: LOGIN_USER});
 		try {
-			fetch("http://96.96.10.10/api/users/signin",{
+			fetch(URL_HOME+"/api/users/signin",{
 				"method": "POST",
 				headers:{
 					"Accept":"application/json",
