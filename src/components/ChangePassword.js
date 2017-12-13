@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import {Icon} from 'react-native-elements';
 import {URL_HOME,normalize} from '../config';
+import {lang} from './languages/languages';
 import {
   StyleSheet,Text,
   View,Dimensions,TextInput,TouchableOpacity,AsyncStorage,Modal,
@@ -12,9 +13,19 @@ class ChangePassword extends Component {
 constructor(props) {
   super(props);
   this.state = {
-  	oldPass:'',newPass:'',retypePass:'',visibleModal: false,notify:'',error:'',
+  	oldPass:'',newPass:'',retypePass:'',visibleModal: false,notify:'',error:'',_lang: lang,
   	_iconsuccess: true,_iconerror: true,
   };
+};
+componentWillMount(){
+	AsyncStorage.getAllKeys((err, keys) => { 
+        AsyncStorage.multiGet(keys).then((value)=>{
+        	console.log(value);
+        	this.setState({
+          		_langid: value[4][1]=='vi'?true:false,
+          	});
+        });
+    });
 };
 onCloseModal(){
 	this.setState({
@@ -37,11 +48,14 @@ _onchangeRetypePass(text){
 	});
 };
 _updatePassword(){
-var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
-		AsyncStorage.multiGet(keyGet).then((value)=>{
+	AsyncStorage.getAllKeys((err, keys) => { 
+		AsyncStorage.multiGet(keys).then((value)=>{
+			// this.setState({
+   //        		_langid: value[1][1]=='vi'?true:false,
+   //        	});
 			if(value){
 				const token = value[3][1];
-				const id =  (value[2][1]).replace(/[\\']/g,'');
+				const id =  (value[4][1]).replace(/[\\']/g,'');
 				// console.log(id);
 				fetch(URL_HOME+"/api/users/changepassword?token="+token,{
 							"method": "POST",
@@ -74,6 +88,7 @@ var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
 						}).catch((error)=>{
 					});
 				}
+		});
 	});
 };
 _renderError(){
@@ -97,7 +112,7 @@ _renderSuccess(){
 		<View style={styles.renderSuccess}>
 			<Text style={[styles.centerText,{color: 'green'}]} >
 				<Text style={{color: 'green',fontSize: 15,}}>
-			  		Update successful
+			  		{this.state._langid?this.state._lang.vi.update_succ:this.state._lang.en.update_succ}
 			 	</Text>
 			</Text>
 		</View>
@@ -125,7 +140,7 @@ _renderSuccess(){
 				         		<TouchableOpacity style={styles.button}
 				         		 onPress={()=>{this.state._iconerror?this.onCloseModal():this.props.navigation.goBack()}} >
 									<Text style={[styles.buttonText]} >
-									  	Close
+									  	{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
 									</Text>
 								</TouchableOpacity>
 				        </View>
@@ -134,14 +149,14 @@ _renderSuccess(){
 	    </Modal>
     	<View style={[styles.headChange,styles.center]} >
     		<Text style={styles.textHead} >
-    			Password Reset
+    			{this.state._langid?"Đổi mật khẩu":"Password reset"}
     		</Text>
     	</View>
     	<View style={styles.contentChange}>
     		<View style={styles.itemChange}>
     			<View style={styles.textChange}>
     				<Text style={styles.dataText}>
-    				  	New Password: 
+    				  	{this.state._langid?"Mật khẩu mới":"New password"} 
     				</Text>
     			</View>
     			<View 	style={styles.viewChange}>
@@ -155,7 +170,7 @@ _renderSuccess(){
     		<View style={styles.itemChange}>
     			<View style={styles.textChange}>
     				<Text style={styles.dataText}>
-    				  	Retype Password: 
+    				  	{this.state._langid?"Nhập lại mật khẩu":"Retype password"} 
     				</Text>
     			</View>
     			<View 	style={styles.viewChange}>
@@ -172,7 +187,7 @@ _renderSuccess(){
     						onPress={()=>{this.props.navigation.goBack()}}
     					  style={[styles.button,styles.center]} >
     						<Text style={{color: 'black',fontSize: width/30,}} >
-    						  	Cancel
+    						  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
     						</Text>
     					</TouchableOpacity>
     			</View>
@@ -181,7 +196,7 @@ _renderSuccess(){
 						onPress={()=>{this._updatePassword()}}
     					style={[styles.button,styles.center]} >
     						<Text style={{color: 'black',fontSize: width/30,}} >
-    						  	Update
+    						  	{this.state._langid?this.state._lang.vi.update:this.state._lang.en.update}
     						</Text>
     					</TouchableOpacity>
     			</View>

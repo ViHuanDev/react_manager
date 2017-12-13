@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import {URL_HOME,normalize} from '../../config';
 import HTML from 'react-native-render-html';
+import {lang} from '../languages/languages';
 import { Icon } from 'react-native-elements';
 const {height,width} = Dimensions.get('screen');
 class ChildCommentList extends Component {
@@ -14,9 +15,12 @@ class ChildCommentList extends Component {
 	  	_arr_state: this.props.navigation.state.params.arr_child,id_ckl_parent: this.props.navigation.state.params.id_arr,
 	  	_id_ckl: this.props.navigation.state.params.ckl_id,_id_answer: this.props.navigation.state.params.id_aw,
 	  	_isLoading: false,_id_del_childComment:[],_temp_id_comment:[],_isComment:'',_temp_comment:'',_stateEditComment:false,
-	  	_stateComment:false,_temp_new_comment:[],_isComment:'',
+	  	_stateComment:false,_temp_new_comment:[],_isComment:'',_lang: lang,_heigth: height,
 	  };
 	}
+componentWillMount() {
+		console.log(this.state._heigth);
+};
 _renderEditCommit(el){
 	// console.log(el);
 	if(!this.state._temp_id_comment.includes(el.id)){
@@ -59,6 +63,7 @@ _onClickDelComment(id){
 	});
 }
 _saveEditComment(){
+	// console.log(this.state._heigth);
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
 			fetch(URL_HOME+'/api/comments/'+this.state._temp_id_comment,{
@@ -189,12 +194,13 @@ _renderChildComment(){
 									</TouchableOpacity>
 			     				</View>
 			     			</View>
-				</View>
+					</View>
 		);
 	}
 	return temp;
 };
 _onChildCommentChange(text){
+	console.log(this.state._heigth);
 	this.setState({
 		_isComment: text,
 	});
@@ -223,7 +229,7 @@ render() {
 					<View style={styles._editTextComment}>
 						<View style={[styles._editHead,styles._center]}>
 							<Text style={styles.font_size}>
-							  	Sửa bình luận
+							  	{this.state._langid?"Sửa ý kiến":"Edit comment"}
 							</Text>
 						</View>
 						<View style={styles._editContent}>
@@ -239,12 +245,12 @@ render() {
 						<View style={styles._editFooter}>
 							<TouchableOpacity onPress={()=>{this.setState({_stateEditComment: !this.state._stateEditComment,_temp_comment: this.state._cancel_comment})}} >
 								<Text style={[styles.font_size,[styles._buttonComment,{textAlign: 'center'}]]}>
-								  	Hủy
+								  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
 								</Text>
 							</TouchableOpacity>
 							<TouchableOpacity onPress={()=>{this._saveEditComment()}}>
 								<Text style={[styles.font_size,[styles._buttonComment,{textAlign: 'center'}]]}>
-									Lưu			  
+									{this.state._langid?this.state._lang.vi.save:this.state._lang.en.save}			  
 								</Text>				
 							</TouchableOpacity>
 						</View>
@@ -270,12 +276,12 @@ render() {
 				<View style={[styles._mClickComment,styles._center]}>
 					<TouchableOpacity onPress={()=>{this.setState({_isComment:''})}} >
 						<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
-						  	Cancel
+						  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
 						</Text>
 					</TouchableOpacity>
 					<TouchableOpacity  onPress={()=>{this._saveComment()}}>
 						<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
-						  	Send
+						  	{this.state._langid?this.state._lang.vi.send:this.state._lang.en.send}
 						</Text>
 					</TouchableOpacity>
 				</View>
@@ -339,8 +345,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'column' 
 	},
 	_sChildComment:{
-		flex: 0.75,
-		height: height/10,
+		flex: 2/10,
+		// height: height/10,
 		width: width,
 		flexDirection: 'row',
 		backgroundColor: 'white',
@@ -361,13 +367,13 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 	},
 	_sDataChildComment:{
-		flex: 0.85,
+		flex: 8/10,
 	},
 	_sScrollView:{
-		height: height,
+		flex: 8/10,
 	},
 	_sAddCommentChild:{
-		flex: 0.15,
+		flex: 2/10,
 		marginBottom: 2,
 		backgroundColor: 'white',
 	},

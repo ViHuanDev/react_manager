@@ -7,6 +7,7 @@ import { CheckBox } from 'react-native-elements';
 import PopoverTooltip from 'react-native-popover-tooltip';
 import {lang} from './languages/languages';
 import {URL_HOME,normalize} from '../config';
+import HTML from 'react-native-render-html';
 const MIN_HEIGHT = 20;
 const MAX_HEIGHT = 40;
 class ListFaQ extends Component {
@@ -32,6 +33,7 @@ componentWillMount() {
           	});
         	fetch(URL_HOME+'/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => {
+					console.log(responseJson);
 					this.setState({
 						array_faq: responseJson.data,
 						_statusFAQ: responseJson.status,
@@ -42,7 +44,7 @@ componentWillMount() {
 			});
 			fetch(URL_HOME+'/api/chkitemstatus?token='+value[3][1]).then((response) => 
 				response.json()).then((responseJson)=>{ 
-					console.log(responseJson); 
+					// console.log(responseJson); 
 					this.setState({
 						array_status: responseJson,
 						});
@@ -52,7 +54,7 @@ componentWillMount() {
 			});  
 			fetch(URL_HOME+'/api/checklists/statistic?data='+this.state.id_faq+'&token='+value[3][1]).then((response) => 
 				response.json()).then((responseJson)=>{ 
-					console.log(responseJson);
+					// console.log(responseJson);
 					this.setState({
 						array_report: responseJson,
 						isLoading: false,
@@ -107,7 +109,7 @@ _renderChildComment(){
 						</TouchableOpacity>
 						<TouchableOpacity>
 							<Text style={[styles._delChildComment,styles.font_size]}>
-							  	Xóa
+							  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
 							</Text>
 						</TouchableOpacity>
 					</View>
@@ -253,53 +255,6 @@ _renderReport(){
 		}
 		return temp;	
 	}
-};
-_renderComment(){
-	var arr = this.state.array_comment;
-	var temp = [];
-	for(let i=0;i<arr.length;i++){
-	    temp.push(
-	    	<View key={"Comment"+arr[i].id} style={styles._mItemsComment}>
-				<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
-					<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
-				</View>
-				<View style={styles._mitemContent}>
-					<View style={styles._itemText}>
-						<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
-						  	{arr[i].user.fullname} 
-						</Text>
-					</View>
-					<View style={styles._itemText}>
-						<View style={styles._mItemText}>
-							<TouchableOpacity onPress={()=>{this._showChildComment(arr[i].checklist_chkitem_id)}}>
-								<Text>
-								  	{arr[i].content}
-								</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-					<View style={styles._textActions}>
-						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this._showRepComment()}} >
-							<Text style={[styles._repComment,styles.font_size]}>
-							  	Trả lời
-							</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles._buttonClick} onPress={()=>{this._onEditComment(arr[i].id,arr[i].content)}} >
-							<Text style={[styles._editComment,styles.font_size]}>
-							  	Sửa
-							</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles._buttonClick} >
-							<Text style={[styles._delComment,styles.font_size]}>
-							  	Xóa
-							</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</View>
-	    );
-	}
-	return temp;
 };
 _onPressAction(el){
 	this.setState({
@@ -640,7 +595,7 @@ _eachItem(){
 			<View style={[styles._datasContent,{marginTop: height/60}]} key={"namegroup"+item.group.id}>
 				<View style={{flexDirection: 'row' }}>
 					<Text style={{width: width/4}}>
-					  	Group:
+					  	{this.state._langid?this.state._lang.vi.group:this.state._lang.en.group} :
 					</Text>
 					<Text>
 					  	{item.group.name+"gr"}
@@ -655,7 +610,7 @@ _eachItem(){
 					<View style={[styles._datasContent]} key={"nameCheck"+item.id}>
 						<View style={{flexDirection: 'row' }}>
 							<Text style={{width: width/4,textAlign: 'auto' }}>
-							  Answer:
+							  {this.state._langid?this.state._lang.vi.answer:this.state._lang.en.answer} :
 							</Text>
 							<Text>
 					  			{item.name}
@@ -679,9 +634,7 @@ _eachItem(){
 							view.push(
 							<View style={[styles._datasContent]} key={"checklist"+item.id}>
 								<View style={styles._dataContent}>
-									<Text>
-							  			{arr[i].data[a].checklist_item[b].content}
-									</Text>
+							  		<HTML	html={arr[i].data[a].checklist_item[b].content} />
 								</View>
 								<View style={[styles._actionsContent,{borderBottomWidth: 1}]}>
 										<View style={[styles._itemAction,styles._center]}>
@@ -758,12 +711,12 @@ render() {
 					animationType="slide"
 					transparent={false}
 					visible={this.state.mRefer}
-					onRequestClose={() => {alert("Modal has been closed.")}} >
+					onRequestClose={() => {this.setState({mRefer: false})}} >
 						<View style={styles.row}>
 							<View style={styles._mBodyRefer}>
 								<View style={[styles._mHeadRefer,styles._center]}>
 									<Text style={styles._textCenter}>
-									  	Thống kê
+									  	{this.state._langid?this.state._lang.vi.statistic:this.state._lang.en.statistic}
 									</Text>
 								</View>
 								<View style={styles._mContentRefer}>
@@ -774,7 +727,7 @@ render() {
 								<View style={[styles._mFootRefer,styles._center]}>
 									<TouchableOpacity onPress={()=>{this.setState({mRefer: false})}} >
 										<Text style={[styles._textCenter,styles._textAction]}>
-										  	Đóng
+										  	{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
 										</Text>
 									</TouchableOpacity>
 								</View>
@@ -798,24 +751,24 @@ render() {
 										<View style={[styles._itemsDataReport,{backgroundColor: '#ECEEEF'}]}>
 											<View style={[styles._itemReport,styles._center]}>
 												<Text style={[styles._textCenter,{fontWeight: 'bold'}]}>
-												  	STATUS
+												  	{this.state._langid?this.state._lang.vi.status:this.state._lang.en.status}
 												</Text>
 											</View>
 											<View style={[styles._itemReport,styles._center]}>
 												<Text style={[styles._textCenter,{fontWeight: 'bold'}]}>
-												  	Number of questions
+												  	{this.state._langid?this.state._lang.vi.numberOfQ:this.state._lang.en.numberOfQ}
 												</Text>
 											</View>
 											<View style={[styles._itemReport,styles._center]}>
 												<Text style={[styles._textCenter,{fontWeight: 'bold'}]}>
-												  	Point
+												  	{this.state._langid?this.state._lang.vi.point:this.state._lang.en.point}
 												</Text>
 											</View>
 										</View>
 										<View style={styles._itemsDataReport}>
 											<View style={[styles._itemReport,styles._center]}>
 												<Text style={[styles._textCenter]} >
-												 	Total
+												 	{this.state._langid?this.state._lang.vi.total:this.state._lang.en.total}
 												</Text>
 											</View>
 											<View style={[styles._itemReport,styles._center]}>
@@ -834,7 +787,7 @@ render() {
 									<View style={[styles._mFootReport,styles._center]}>
 										<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_mReport: !this.state._mReport})}}>
 									  		<Text>
-									  	  		Đóng
+									  	  		{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
 									  		</Text>
 										</TouchableOpacity>
 									</View>
@@ -852,7 +805,7 @@ render() {
 							<View style={styles._mcontentAction}>
 								<View style={styles._mheadAction}>
 									<Text style={[styles._colorText,{fontSize: height/40,}]} >
-									  	Actions
+									  	{this.state._langid?this.state._lang.vi.action:this.state._lang.en.action}
 									</Text>
 								</View>
 								<View style={styles._mdataAction}>
@@ -860,7 +813,7 @@ render() {
 								</View>
 								<View style={styles._mComment}>
 									<Text style={styles._colorText}>
-									  	Comement:
+									  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment} :
 									</Text>
 									<TextInput style={[styles.input,{height: Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, height))} ]}
 	         				 			multiline
@@ -872,16 +825,16 @@ render() {
 								</View>
 								<View style={[styles._mfootAction,styles._center]}>
 									<View>
-										<TouchableOpacity onPress={()=>{this._closeStatus()}}>
+										<TouchableOpacity style={{paddingHorizontal: 5, borderWidth: 0.3,borderRadius: 5, marginHorizontal: 5}} onPress={()=>{this._closeStatus()}}>
 											<Text>
-											  	Cancel
+											  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
 											</Text>
 										</TouchableOpacity>
 									</View>
 									<View>
-										<TouchableOpacity onPress={()=>this._sendComment(this.state._idClick)}>
+										<TouchableOpacity style={{paddingHorizontal: 5, borderWidth: 0.3,borderRadius: 5, marginHorizontal: 5}} onPress={()=>this._sendComment(this.state._idClick)}>
 											<Text>
-											  	Save
+											  	{this.state._langid?this.state._lang.vi.save:this.state._lang.en.save}
 											</Text>
 										</TouchableOpacity>
 									</View>
@@ -1050,11 +1003,11 @@ const styles= StyleSheet.create({
 	_mfootAction:{
 		flex: 0.1,
 		marginHorizontal: 5,
-		// marginVertical: 5,
+		// marginVertical: 10,
 		marginBottom: 5,
 		// backgroundColor: 'white',
 		flexDirection: 'row',
-		borderWidth: 0.4,
+		// borderWidth: 0.4,
 	},
 	_mMainAction:{
 		flex: 1,

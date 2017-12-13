@@ -15,7 +15,7 @@ class Main_Screen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalVisible: false,_lang:lang,lang_load: false,selectedIds:[],visibleModal: false,
+      modalVisible: false,_lang:lang,lang_load: false,selectedIds:[],visibleModal: false,_mReport: false
     };
       AsyncStorage.getItem('@locale:key').then((item)=>{
         console.log(item);
@@ -58,6 +58,26 @@ _onChangeLanguage(){
   render(){
     return (
       <View style={styles.row}>
+        <Modal 
+          animationType="slide"
+          transparent={true}
+          visible={this.state._mReport}
+          onRequestClose={() => {this.setState({_mReport: false})}} >
+            <View style={[styles.center,{flex: 1,padding: 20, backgroundColor: 'rgba(0,0,0,0.4)',flexDirection: 'column'}]}>
+              <View style={[styles.center,{height: height/3,width: width-40,backgroundColor: 'white',borderTopLeftRadius: 10,borderTopRightRadius: 10}]} >
+                <Text style={{fontSize: 18, textAlign: 'center',color:'black'}} >
+                    Chức năng đang được phát triển, xin lỗi bạn về sự bất tiện này
+                </Text>
+              </View>
+              <View style={[styles.center,{height: height/20,width: width-40,backgroundColor: 'white',borderBottomLeftRadius: 10,borderBottomRightRadius: 10}]}>
+                <TouchableOpacity onPress={()=>{this.setState({_mReport: false})}} >
+                  <Text>
+                      {this.state.lang_load?this.state._lang.vi.close:this.state._lang.en.close}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+        </Modal>
       	<View style={styles.content}>
       		<View style={styles.head}>
       			 <View style={styles.logo}>
@@ -76,17 +96,16 @@ _onChangeLanguage(){
               </TouchableOpacity>
       		</View>
       		<View style={[styles.itemContent,styles.center]}>
-            <TouchableOpacity style={[styles.itemClick]} onPress={()=>{this.props.navigation.navigate('Screen_Profile')}}>
+            <TouchableOpacity style={[styles.itemClick]} onPress={()=>this.props.navigation.navigate('Screen_Profile')} >
                   <Icon  style={[styles.flex3,styles.IconFirst]} color='#5F84CE'  type='font-awesome' name="user-circle-o" size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                     {this.state.lang_load?this.state._lang.vi.profile:this.state._lang.en.profile}
-                     
                   </Text>
                    <Icon  style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={height/30} />
               </TouchableOpacity>
       		</View>
           <View style={[styles.itemContent,styles.center]}>
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('Screen_ChoseLanguage')} style={[styles.itemClick]}>
+            <TouchableOpacity onPress={()=>{this.setState({_mReport: true})}}  style={[styles.itemClick]}>
                   <Icon style={[styles.flex3,styles.IconFirst]} color='#48cfad' type='font-awesome' name="line-chart" size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                       {this.state.lang_load?this.state._lang.vi.report:this.state._lang.en.report}  

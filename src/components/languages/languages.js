@@ -9,9 +9,15 @@ export const lang = {
 				'homepage': 'Trang chủ',
 				'manage' : 'Quản lý',
 				'vi': 'Tiếng Việt',
+				'group': 'Nhóm',
+				'answer': 'Câu hỏi',
 				'en': 'Tiếng Anh',
 				'close': 'Đóng',
 				'save': 'Lưu',
+				'status': 'Trạng thái',
+				'numberOfQ': 'Số câu hỏi',
+				'point': 'Point',
+				'total': 'Điểm',
 				'change': 'Thay đổi',
 				'save_change': 'Lưu Thay Đổi',
 				'select': 'Chọn',
@@ -36,7 +42,10 @@ export const lang = {
 				'refer': 'Tham chiếu',
 				'edit': 'Sửa',
 				'del': 'Xóa',
-				'replly': 'Trả lời'
+				'replly': 'Trả lời',
+				'cancel': 'Hủy',
+				'send': 'Gửi',
+				'action': 'Hành động'
 				},
 		"en":{
 				'signout':'Sign Out',
@@ -48,9 +57,15 @@ export const lang = {
 				'homepage': 'Home Page 2',
 				'manage': 'Manage',
 				'vi': 'Vietnamese',
+				'group': 'Group',
+				'answer': 'Answer',
 				'en': 'English',
 				'close': 'Close',
+				'status': 'Status',
+				'numberOfQ':'Number of questions',
+				'point': 'Point',
 				'save': 'Save',
+				'total': 'Total',
 				'change': 'Change',
 				'save_change': 'Save Change',
 				'language': 'Language',
@@ -74,6 +89,9 @@ export const lang = {
 				'refer': 'Refer',
 				'edit': 'Edit',
 				'del': 'Delete',
-				'replly': 'Replly'
+				'replly': 'Replly',
+				'cancel': 'Cancel',
+				'send': 'Send',
+				'action': 'Actions'
 		}
 };

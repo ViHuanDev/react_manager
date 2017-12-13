@@ -201,12 +201,12 @@ _renderError(){
     console.log(height);
     this.setState({height});
 };
-componentDidMount(){
+componentWillMount(){
 		var keyGet = ['@email:key','@password:key','@user_id:key','@token:key'];
 		AsyncStorage.multiGet(keyGet).then((value)=>{
 			if(value){
 				const token = value[3][1];
-				fetch('http://96.96.10.10/api/getuser?token='+token) .then((response) => 
+				fetch(URL_HOME+'/api/getuser?token='+token) .then((response) => 
 					response.json()) .then((responseJson) => { 
 				this.setState({
 					isLoading: false,
@@ -252,8 +252,9 @@ componentDidMount(){
 				    </View>
 		         </View>	
         </Modal>
-	      
-	      <View style={styles.contentUser}>
+
+	    <View style={styles.contentUser}>
+				<ScrollView style={{flex: 0.88}}>
 	      		<View style={styles.itemUser}>
 	      			<View style={[styles.titleContent,{backgroundColor: '#007aff'}]}>
 	      				<Icon name='user' color='white' type='font-awesome'  size={height/30} />
@@ -318,7 +319,7 @@ componentDidMount(){
 	         			/>
 	         		</View>
 	      		</View>
-	      		<View style={[styles.itemUser,{flex: 0.4}]}>
+	      		<View style={[styles.itemUser]}>
 	      			<View style={[styles.titleContent,{backgroundColor: '#ffc300'}]}>
 	      				<Icon name='info' color='white' type='simple-line-icons'  size={height/30} />
 	      				<Text style={styles.textCenter}>
@@ -326,7 +327,7 @@ componentDidMount(){
 	      				</Text>
 	      			</View>
 	      			<View style={styles.dataContent}>
-		      			<TextInput style={[ styles.input,{height: Math.max(80, Math.min(MAX_HEIGHT+60, height))} ]}
+		      			<TextInput style={[ styles.input,{height: Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, height))} ]}
 	         				 multiline
 	         				 onChangeText={(text)=>this.onInfoChange(text)}
 	         				 value={this.state.info}
@@ -334,6 +335,7 @@ componentDidMount(){
 	         			/>
 	         		</View>
 	      		</View>
+	      		</ScrollView>
 	      		{this._renderButtonUpdate()}
 	      		<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChangePass')}} style={styles.itemUser}>
 			         		<Icon name='security' color='#007aff' type='material-icons' />
@@ -342,6 +344,7 @@ componentDidMount(){
 			      			</Text>
 			</TouchableOpacity>
 	      </View>
+
       </View>
     );
   }
@@ -365,11 +368,11 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	contentUser:{
-		flex: 0.93,
+		flex: 0.88,
 		flexDirection: 'column', 
 	},
 	itemUser:{
-		flex: 0.15,
+		flex: 0.12,
 		backgroundColor: 'white',
 		justifyContent: 'center',
 		alignItems: 'center',  

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {URL_HOME,normalize} from '../../config';
 import {
   StyleSheet,Dimensions,AsyncStorage,Text,TouchableOpacity,TextInput,ScrollView,
-  View,Modal,Image,FlatList,WebView
+  View,Modal,Image,FlatList,WebView,ListView
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import {lang} from '../languages/languages';
@@ -12,11 +12,12 @@ const {height,width} = Dimensions.get('screen');
 export default class CommentList extends Component {
 	constructor(props) {
 	  super(props);
+	  const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 	  this.state = {
-	  	checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
+	  	dataSource: ds,checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
 	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
 	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',_temp_id_del_comment:[],_isEditComment:'',_stateComment: false,
-	  	_temp_new_comment:[],_id_user:'',_langid:'',_lang:lang,
+	  	_temp_new_comment:[],_id_user:'',_langid:'',_lang:lang,_page: 1,
 	  };
 	};
 	componentWillMount(){
@@ -25,15 +26,21 @@ export default class CommentList extends Component {
         	this.setState({
           		_langid: value[1][1]=='vi'?true:false,
           	});
-		console.log(this.state.checklist_id+'---'+this.state.id_answer);
-		fetch(URL_HOME+'/api/comments?token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
+		// console.log(this.state.checklist_id+'---'+this.state.id_answer);
+		fetch(URL_HOME+'/api/comments?page='+this.state._page+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
 		.then((response) => response.json()).then((responseJson)=> {
-					console.log(responseJson);
-					this.setState({
-						array_comment: responseJson,
-						_isLoading: false,
-						_id_user: value[4][1],
-					});
+					// console.log(responseJson.data.length);
+					// if(responseJson.error){
+						
+					// }else{
+						// console.log(responseJson);
+						this.setState({
+							array_comment: this.state.dataSource.cloneWithRows(responseJson.data),
+							dataSource: this.state.dataSource.cloneWithRows(responseJson.data),
+							_isLoading: false,
+							_id_user: value[4][1],
+						});
+					// }
 					// console.log(responseJson);
 				}) .catch((error) => { 
 					console.error(error); 
@@ -188,6 +195,12 @@ _renderNewComment(arr){
 		return(<View></View>);
 	}
 };
+_closeComment(){
+	this.setState({
+		_isComment: '',
+	});
+	console.log(this.state.dataSource._dataBlob.s1.length);
+};
 _saveComment(){
 	// console.log(this.state._isComment);
 	AsyncStorage.getAllKeys((err, keys) => { 
@@ -295,6 +308,92 @@ _renderComment(){
 		}
 		return temp;
 };
+_onEndReached(){
+	AsyncStorage.getAllKeys((err, keys) => { 
+        AsyncStorage.multiGet(keys).then((value)=>{
+		fetch(URL_HOME+'/api/comments?page='+(this.state._page+1)+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
+		.then((response) => response.json()).then((responseJson)=> {
+			if(responseJson.length!=0){
+				var arr =  (this.state.dataSource._dataBlob.s1).concat(responseJson.data);
+					this.setState({
+						dataSource: this.state.dataSource.cloneWithRows(arr),
+						_page: this.state._page+1,
+					});
+				}else{
+					Alert.alert(
+					  'Alert Title',
+					  'My Alert Msg',
+					  [
+					    {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+					    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+					    {text: 'OK', onPress: () => console.log('OK Pressed')},
+					  ],
+					  { cancelable: false }
+					)
+				}
+			}) .catch((error) => { 
+				console.error(error); 
+			});
+		});
+    });
+};
+_renderComment2(){
+		// var user_action = this.state._id_user.replace(/'/g,'')==arr[i].user.id?'flex':'none';
+		// var arr= this.state.array_comment;
+		// console.log(this.state.dataSource);
+		// console.log(this.state._id_user.replace(/'/g,''));
+		var temp = [];
+		// for(let i=0;i<arr.length;i++){
+		    // temp.push(
+		    <ListView
+		    dataSource={this.state.dataSource}
+		    renderRow={(rowData) =>
+		    	<View key={"Comment"+rowData.id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(rowData.id)?'none':'flex'}]}>
+					<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
+						<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
+					</View>
+					<View style={styles._mitemContent}>
+						<View style={styles._itemText}>
+							<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+							  	{rowData.user.fullname} 
+							</Text>
+						</View>
+						<View style={styles._itemText}>
+							<View style={styles._mItemText}>
+								<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id})}}>
+									{this._rederEditCoomit(rowData)}
+								</TouchableOpacity>
+								<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
+									<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
+									  	{rowData.child.length} trả lời
+									</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
+						<View style={styles._textActions}>
+							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+								<Text style={[styles._repComment,styles.font_size]}>
+								  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==rowData.user.id?'flex':'none'}]} onPress={()=>{this.setState({_cancel_comment:rowData.content,_temp_comment: this.state._temp_id_comment.includes(rowData.id)?this.state._temp_comment:rowData.content,_temp_id_comment: [rowData.id],_stateEditComment: !this.state._stateEditComment});}} >
+								<Text style={[styles._editComment,styles.font_size]}>
+								  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==rowData.user.id?'flex':'none'}]} onPress={()=>{this._onClickDelComment(rowData.id)}} >
+								<Text style={[styles._delComment,styles.font_size]}>
+								  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
+								</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+				}/>
+		    // );
+		// }
+		// return temp;
+};
 _renderNull(){
 	return(
 		<Text></Text>
@@ -325,7 +424,7 @@ _keyExtractor = (item, index) => item.id;
 					<View style={styles._editTextComment}>
 						<View style={[styles._editHead,styles._center]}>
 							<Text style={styles.font_size}>
-							  	Sửa bình luận
+							  	{this.state._langid?"Sửa ý kiến":"Edit Comment"}
 							</Text>
 						</View>
 						<View style={styles._editContent}>
@@ -341,12 +440,12 @@ _keyExtractor = (item, index) => item.id;
 						<View style={styles._editFooter}>
 							<TouchableOpacity onPress={()=>{this.setState({_stateEditComment: !this.state._stateEditComment,_temp_comment: this.state._cancel_comment})}} >
 								<Text style={[styles.font_size,[styles._buttonComment,{textAlign: 'center'}]]}>
-								  	Hủy
+								  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
 								</Text>
 							</TouchableOpacity>
 							<TouchableOpacity onPress={()=>{this._saveEditComment()}}>
 								<Text style={[styles.font_size,[styles._buttonComment,{textAlign: 'center'}]]}>
-									Lưu			  
+									{this.state._langid?this.state._lang.vi.save:this.state._lang.en.save}			  
 								</Text>				
 							</TouchableOpacity>
 						</View>
@@ -355,14 +454,60 @@ _keyExtractor = (item, index) => item.id;
 		</Modal>
 		<View style={[styles._mRowComment,styles._center]}>
 			<View style={styles._mbodyComment}>
-				<View style={styles._mheadComment}>
-					<Text style={styles._textCenter}>
-					  	Comment
+				<View style={[styles._mheadComment,styles._center]}>
+					<Text style={[styles._textCenter,{fontSize: 18}]}>
+					  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
 					</Text>
 				</View>
 				<View style={styles._mdataComment}>
 					<ScrollView contentContainerStyle={styles._mScrolView}>
-						{this._renderComment()}
+						<ListView
+							onEndReached={this._onEndReached.bind(this)}
+							onEndReachedThreshold={0.1}
+						    dataSource={this.state.dataSource}
+						    renderRow={(rowData) =>
+						    	<View key={"Comment"+rowData.id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(rowData.id)?'none':'flex'}]}>
+									<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
+										<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
+									</View>
+									<View style={styles._mitemContent}>
+										<View style={styles._itemText}>
+											<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+											  	{rowData.user.fullname} 
+											</Text>
+										</View>
+										<View style={styles._itemText}>
+											<View style={styles._mItemText}>
+												<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id})}}>
+													{this._rederEditCoomit(rowData)}
+												</TouchableOpacity>
+												<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
+													<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
+													  	{rowData.child.length} trả lời
+													</Text>
+												</TouchableOpacity>
+											</View>
+										</View>
+										<View style={styles._textActions}>
+											<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+												<Text style={[styles._repComment,styles.font_size]}>
+												  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
+												</Text>
+											</TouchableOpacity>
+											<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==rowData.user.id?'flex':'none'}]} onPress={()=>{this.setState({_cancel_comment:rowData.content,_temp_comment: this.state._temp_id_comment.includes(rowData.id)?this.state._temp_comment:rowData.content,_temp_id_comment: [rowData.id],_stateEditComment: !this.state._stateEditComment});}} >
+												<Text style={[styles._editComment,styles.font_size]}>
+												  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
+												</Text>
+											</TouchableOpacity>
+											<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==rowData.user.id?'flex':'none'}]} onPress={()=>{this._onClickDelComment(rowData.id)}} >
+												<Text style={[styles._delComment,styles.font_size]}>
+												  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
+												</Text>
+											</TouchableOpacity>
+										</View>
+									</View>
+								</View>
+								}/>
 						{this._renderNewComment(this.state._temp_new_comment)}
 					</ScrollView>
 					<View style={styles._mtextComment}>
@@ -375,12 +520,12 @@ _keyExtractor = (item, index) => item.id;
 						<View style={[styles._mClickComment,styles._center]}>
 							<TouchableOpacity onPress={()=>{this._closeComment()}} >
 								<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
-								  	Cancel
+								  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
 								</Text>
 							</TouchableOpacity>
 							<TouchableOpacity onPress={()=>{this._saveComment()}}>
 								<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
-								  	Save
+								  	{this.state._langid?this.state._lang.vi.send:this.state._lang.en.send}
 								</Text>
 							</TouchableOpacity>
 						</View>
@@ -440,7 +585,7 @@ const styles = StyleSheet.create({
 	},
 	_mRowComment:{
 		width: width,
-		height: height,
+		flex: 1,
 		backgroundColor: 'rgba(0,0,0,0.3)',
 	},
 	_rowChildComment:{
@@ -451,14 +596,16 @@ const styles = StyleSheet.create({
 	_mbodyComment:{
 		backgroundColor: 'white',
 		width: width,
-		height: height,
+		flex: 1,
 		flexDirection: 'column',
 	},
 	_mheadComment:{
-		height: ((height)/20),
+		// height: ((height)/20),
+		flex: 1/10,
 	},
 	_mdataComment:{
-		height: ((height)/10)*7.5,
+		// height: ((height)/10)*7.5,
+		flex: 9/10,
 	},
 	_mScrolView:{
 	},
