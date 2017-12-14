@@ -33,7 +33,6 @@ componentWillMount() {
           	});
         	fetch(URL_HOME+'/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => {
-					console.log(responseJson);
 					this.setState({
 						array_faq: responseJson.data,
 						_statusFAQ: responseJson.status,
@@ -372,32 +371,32 @@ _renderIconStatus(id){
 			if(this.state.array_local.includes(id+'-'+i)){
 			if(i==1||i==2){
 					return(
-						<Icon type='material-icons' color='#4F81F0'  name='star' size={height/30} />
+						<Icon type='font-awesome' color='#4F81F0'  name='gear' size={height/30} />
 					);
 				}
 				else if(i==3||i==4){
 					return(
-						<Icon type='material-icons' color='#9DD182' name='star' size={height/30} />
+						<Icon type='font-awesome' color='#9DD182' name='gear' size={height/30} />
 					);
 				}
 				else if(i==5||i==6){
 					return(
-						<Icon type='material-icons' color='#F0C751' name='star' size={height/30} />
+						<Icon type='font-awesome' color='#F0C751' name='gear' size={height/30} />
 					);
 				}
 				else if(i==7||i==8){
 					return(
-						<Icon type='material-icons' color='#67CCF2' name='star' size={height/30} />
+						<Icon type='font-awesome' color='#67CCF2' name='gear' size={height/30} />
 					);
 				}
 				else if(i==9||i==10){
 					return(
-						<Icon type='material-icons' color='#D67A63' name='star' size={height/30} />
+						<Icon type='font-awesome' color='#D67A63' name='gear' size={height/30} />
 					);
 				}
 				else{
 					return(
-						<Icon type='material-icons' color='black' name='star' size={height/30} />
+						<Icon type='font-awesome' color='black' name='gear' size={height/30} />
 					);
 				}
 			}
@@ -408,32 +407,32 @@ _renderIconStatus(id){
 			if(this.state.array_id.includes(id+'-'+i)){
 			if(i==1||i==2){
 					return(
-						<Icon type='material-icons' color='#4F81F0'  name='star' size={height/30} />
+						<Icon type='font-awesome' color='#4F81F0'  name='gear' size={height/30} />
 					);
 				}
 				else if(i==3||i==4){
 					return(
-						<Icon type='material-icons' color='#9DD182' name='star' size={height/30} />
+						<Icon type='font-awesome' color='#9DD182' name='gear' size={height/30} />
 					);
 				}
 				else if(i==5||i==6){
 					return(
-						<Icon type='material-icons' color='#F0C751' name='star' size={height/30} />
+						<Icon type='font-awesome' color='#F0C751' name='gear' size={height/30} />
 					);
 				}
 				else if(i==7||i==8){
 					return(
-						<Icon type='material-icons' color='#67CCF2' name='star' size={height/30} />
+						<Icon type='font-awesome' color='#67CCF2' name='gear' size={height/30} />
 					);
 				}
 				else if(i==9||i==10){
 					return(
-						<Icon type='material-icons' color='#D67A63' name='star' size={height/30} />
+						<Icon type='font-awesome' color='#D67A63' name='gear' size={height/30} />
 					);
 				}
 				else{
 					return(
-						<Icon type='material-icons' color='black' name='star' size={height/30} />
+						<Icon type='font-awesome' color='black' name='gear' size={height/30} />
 					);
 				}
 			}
@@ -559,14 +558,14 @@ _eachStatus(){
 					<View style={[styles._mCheckbox,styles._center]}>
 						<CheckBox
 							center
-							iconType='font-awesome'
-							checkedIcon='star'
-							uncheckedIcon='star-o'
+							iconType='foundation'
+							checkedIcon='record'
+							uncheckedIcon='record'
 							isChecked={this._thisCheckbox(item.id)}
 							checked={this._thisCheckbox(item.id)}
 							checkedColor={this._eachColor(item.id)}
 							onPress={()=>this._thisSelectSatus(this.state._idClick+'-'+item.id)}
-							uncheckedColor='black'
+							uncheckedColor='white'
 							style={[styles._checkbox]}  />
 					</View>
 					<View style={[styles._mtextAction,styles._center]}>
@@ -592,13 +591,13 @@ _eachItem(){
 		// console.log(arr[i].group.name+'gr');
 		let item = arr[i];
 		view.push(
-			<View style={[styles._datasContent,{marginTop: height/60}]} key={"namegroup"+item.group.id}>
-				<View style={{flexDirection: 'row' }}>
-					<Text style={{width: width/4}}>
-					  	{this.state._langid?this.state._lang.vi.group:this.state._lang.en.group} :
-					</Text>
-					<Text>
-					  	{item.group.name+"gr"}
+			<View style={[styles._datasContent,{backgroundColor: '#5F84CE',paddingVertical: 10}]} key={"namegroup"+item.group.id}>
+				<View style={[styles._center,{flexDirection: 'row'}]}>
+					{/*<Text style={{width: width/4}}>
+										  	{this.state._langid?this.state._lang.vi.group:this.state._lang.en.group} :
+										</Text>*/}
+					<Text style={{fontWeight: 'bold',fontSize: 16,color: 'black'}}>
+					  	{item.group.name}
 					</Text>
 				</View>
 			</View>
@@ -607,12 +606,12 @@ _eachItem(){
 				// console.log(arr[i].data[a].name);
 				let item = arr[i].data[a];
 				view.push(
-					<View style={[styles._datasContent]} key={"nameCheck"+item.id}>
+					<View style={[styles._datasContent,{paddingHorizontal: 5}]} key={"nameCheck"+item.id}>
 						<View style={{flexDirection: 'row' }}>
-							<Text style={{width: width/4,textAlign: 'auto' }}>
-							  {this.state._langid?this.state._lang.vi.answer:this.state._lang.en.answer} :
-							</Text>
-							<Text>
+							{/*<Text style={{width: width/4,textAlign: 'auto' }}>
+														  {this.state._langid?this.state._lang.vi.answer:this.state._lang.en.answer} :
+														</Text>*/}
+							<Text style={{fontSize: 14 ,color: 'black',textDecorationLine: 'underline',textDecorationStyle: "solid",}} >
 					  			{item.name}
 							</Text>
 						</View>
@@ -633,13 +632,13 @@ _eachItem(){
 							}
 							view.push(
 							<View style={[styles._datasContent]} key={"checklist"+item.id}>
-								<View style={styles._dataContent}>
+								<View style={[styles._dataContent,{paddingHorizontal: 10}]}>
 							  		<HTML	html={arr[i].data[a].checklist_item[b].content} />
 								</View>
-								<View style={[styles._actionsContent,{borderBottomWidth: 1}]}>
+								<View style={[styles._actionsContent,{borderBottomWidth: 0.3,borderColor: 'gray'}]}>
 										<View style={[styles._itemAction,styles._center]}>
 											<View style={styles._iconAction}>
-												<Icon type='foundation' color='#4C88FF' name='comments' size={height/30} />
+												<Icon type='evilicon' color='#4C88FF' name='comment' size={height/30} />
 											</View>
 											<View style={styles._textAction}>
 												<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_CommentList',{checklist_id: this.state.id_faq,id_answer: item.id,_status: this.state._statusFAQ})}}>
@@ -715,8 +714,8 @@ render() {
 						<View style={styles.row}>
 							<View style={styles._mBodyRefer}>
 								<View style={[styles._mHeadRefer,styles._center]}>
-									<Text style={styles._textCenter}>
-									  	{this.state._langid?this.state._lang.vi.statistic:this.state._lang.en.statistic}
+									<Text style={[styles._textCenter,{fontWeight: 'bold',fontSize: 18,color: 'black'}]}>
+									  	{this.state._langid?this.state._lang.vi.refer:this.state._lang.en.refer}
 									</Text>
 								</View>
 								<View style={styles._mContentRefer}>
@@ -743,7 +742,7 @@ render() {
 							<View style={[styles._mContentReport,styles._center]}>
 								<View style={styles._mBodyReport}>
 									<View style={[styles._mHeadReport,styles._center]}>
-										<Text style={[styles._textCenter,{fontWeight: 'bold'}]} >
+										<Text style={[styles._textCenter,{fontWeight: 'bold',fontSize: 18}]} >
 										  	{this.state._langid?this.state._lang.vi.statistic:this.state._lang.en.statistic}
 										</Text>
 									</View>
@@ -800,7 +799,7 @@ render() {
 					animationType="slide"
 					transparent={true}
 					visible={this.state._modal}
-					onRequestClose={() => {alert("Modal has been closed.")}} >
+					onRequestClose={()=>{this.setState({_modal: false})}} >
 						<View style={[styles._actionRow,styles._center]}>
 							<View style={styles._mcontentAction}>
 								<View style={styles._mheadAction}>
@@ -845,7 +844,7 @@ render() {
 				<View style={styles._header}>
 					<View style={[styles._textHeader,styles._center]}>
 						<Text style={[styles._textHead]}>
-							Checklist {this.state.name_org}
+							{this.state.name_org}
 						</Text>
 					</View>
 					<View style={[styles._startFaQ,styles._center]}>
@@ -886,7 +885,7 @@ const styles= StyleSheet.create({
 	row:{
 		flex: 1,
 		flexDirection: 'column',
-		backgroundColor: 'rgba(192,192,192,0.5)',
+		backgroundColor: 'white',
 	},
 	_mRowComment:{
 		width: width,
@@ -1068,7 +1067,7 @@ const styles= StyleSheet.create({
 	},
 	_datasContent:{
 		backgroundColor: 'white',
-		paddingHorizontal: 5,
+		// paddingHorizontal: 5,
 		flexDirection: 'column',
 	},
 	_dataContent:{

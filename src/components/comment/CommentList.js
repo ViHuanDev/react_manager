@@ -454,11 +454,11 @@ _keyExtractor = (item, index) => item.id;
 		</Modal>
 		<View style={[styles._mRowComment,styles._center]}>
 			<View style={styles._mbodyComment}>
-				<View style={[styles._mheadComment,styles._center]}>
-					<Text style={[styles._textCenter,{fontSize: 18}]}>
-					  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
-					</Text>
-				</View>
+				{/*<View style={[styles._mheadComment,styles._center]}>
+									<Text style={[styles._textCenter,{fontSize: 18}]}>
+									  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
+									</Text>
+								</View>*/}
 				<View style={styles._mdataComment}>
 					<ScrollView contentContainerStyle={styles._mScrolView}>
 						<ListView
@@ -489,11 +489,11 @@ _keyExtractor = (item, index) => item.id;
 											</View>
 										</View>
 										<View style={styles._textActions}>
-											<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
-												<Text style={[styles._repComment,styles.font_size]}>
-												  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
-												</Text>
-											</TouchableOpacity>
+											{/*<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+																							<Text style={[styles._repComment,styles.font_size]}>
+																							  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
+																							</Text>
+																						</TouchableOpacity>*/}
 											<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==rowData.user.id?'flex':'none'}]} onPress={()=>{this.setState({_cancel_comment:rowData.content,_temp_comment: this.state._temp_id_comment.includes(rowData.id)?this.state._temp_comment:rowData.content,_temp_id_comment: [rowData.id],_stateEditComment: !this.state._stateEditComment});}} >
 												<Text style={[styles._editComment,styles.font_size]}>
 												  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
@@ -518,11 +518,11 @@ _keyExtractor = (item, index) => item.id;
 								underlineColorAndroid='transparent'/>
 						</View>
 						<View style={[styles._mClickComment,styles._center]}>
-							<TouchableOpacity onPress={()=>{this._closeComment()}} >
-								<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
-								  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
-								</Text>
-							</TouchableOpacity>
+							{/*<TouchableOpacity onPress={()=>{this._closeComment()}} >
+															<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
+															  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
+															</Text>
+														</TouchableOpacity>*/}
 							<TouchableOpacity onPress={()=>{this._saveComment()}}>
 								<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
 								  	{this.state._langid?this.state._lang.vi.send:this.state._lang.en.send}

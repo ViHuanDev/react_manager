@@ -64,12 +64,43 @@ _onChangeLanguage(){
           visible={this.state._mReport}
           onRequestClose={() => {this.setState({_mReport: false})}} >
             <View style={[styles.center,{flex: 1,padding: 20, backgroundColor: 'rgba(0,0,0,0.4)',flexDirection: 'column'}]}>
-              <View style={[styles.center,{height: height/3,width: width-40,backgroundColor: 'white',borderTopLeftRadius: 10,borderTopRightRadius: 10}]} >
-                <Text style={{fontSize: 18, textAlign: 'center',color:'black'}} >
-                    Chức năng đang được phát triển, xin lỗi bạn về sự bất tiện này
-                </Text>
+              <View style={[styles.center,{flex: 9/10,width: width-40,backgroundColor: 'white',borderTopLeftRadius: 10,borderTopRightRadius: 10}]} >
+                <View style={styles._mContentReport}>
+                  <View style={styles._mItemsReport}>
+                    <View style={[styles._mItemReport,styles.center,{borderRightWidth: 0.3}]}>
+                      <Text>
+                        {this.state.lang_load?this.state._lang.vi.status:this.state._lang.en.status}
+                      </Text>
+                    </View>
+                    <View style={[styles._mItemReport,styles.center]}>
+                      <Text>
+                        {this.state.lang_load?this.state._lang.vi.amount:this.state._lang.en.amount}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles._mItemsReport}>
+                    <View style={styles._mItemReport}></View>
+                    <View style={styles._mItemReport}></View>
+                  </View>
+                  <View style={styles._mItemsReport}>
+                    <View style={styles._mItemReport}></View>
+                    <View style={styles._mItemReport}></View>
+                  </View>
+                  <View style={styles._mItemsReport}>
+                    <View style={styles._mItemReport}></View>
+                    <View style={styles._mItemReport}></View>
+                  </View>
+                  <View style={styles._mItemsReport}>
+                    <View style={styles._mItemReport}></View>
+                    <View style={styles._mItemReport}></View>
+                  </View>
+                  <View style={styles._mItemsReport}>
+                    <View style={styles._mItemReport}></View>
+                    <View style={styles._mItemReport}></View>
+                  </View>
+                </View>
               </View>
-              <View style={[styles.center,{height: height/20,width: width-40,backgroundColor: 'white',borderBottomLeftRadius: 10,borderBottomRightRadius: 10}]}>
+              <View style={[styles.center,{flex: 1/10,width: width-40,backgroundColor: 'white',borderBottomLeftRadius: 10,borderBottomRightRadius: 10}]}>
                 <TouchableOpacity onPress={()=>{this.setState({_mReport: false})}} >
                   <Text>
                       {this.state.lang_load?this.state._lang.vi.close:this.state._lang.en.close}
@@ -82,21 +113,21 @@ _onChangeLanguage(){
       		<View style={styles.head}>
       			 <View style={styles.logo}>
               <Image style={styles.img}
-                source={require('./../../images/logo.jpg')}
+                source={require('./../../images/Logo_hse.png')}
               />
             </View>
       		</View>
-      		<View style={[styles.itemContent,styles.center,{borderTopWidth: 1}]}>
-              <TouchableOpacity style={[styles.itemClick]} onPress={()=>{this.props.navigation.navigate('Screen_EmployList')}} >
+      		<View style={[styles.itemContent,styles.center,{borderTopWidth: 0.4}]}>
+              <TouchableOpacity style={[styles.itemClick,styles.center]} onPress={()=>{this.props.navigation.navigate('Screen_EmployList')}} >
                   <Icon style={[styles.flex3,styles.IconFirst]} color='#DE584D'  type='materialIcons' name='library-books' size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
-                      {this.state.lang_load?this.state._lang.vi.listchList:this.state._lang.en.listchList}
+                      {this.state.lang_load?this.state._lang.vi.audit:this.state._lang.en.audit}
                   </Text>
                   <Icon style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={height/30} />
               </TouchableOpacity>
       		</View>
       		<View style={[styles.itemContent,styles.center]}>
-            <TouchableOpacity style={[styles.itemClick]} onPress={()=>this.props.navigation.navigate('Screen_Profile')} >
+            <TouchableOpacity style={[styles.itemClick,styles.center]} onPress={()=>this.props.navigation.navigate('Screen_Profile')} >
                   <Icon  style={[styles.flex3,styles.IconFirst]} color='#5F84CE'  type='font-awesome' name="user-circle-o" size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                     {this.state.lang_load?this.state._lang.vi.profile:this.state._lang.en.profile}
@@ -105,7 +136,7 @@ _onChangeLanguage(){
               </TouchableOpacity>
       		</View>
           <View style={[styles.itemContent,styles.center]}>
-            <TouchableOpacity onPress={()=>{this.setState({_mReport: true})}}  style={[styles.itemClick]}>
+            <TouchableOpacity onPress={()=>{this.setState({_mReport: true})}}  style={[styles.itemClick,styles.center]}>
                   <Icon style={[styles.flex3,styles.IconFirst]} color='#48cfad' type='font-awesome' name="line-chart" size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                       {this.state.lang_load?this.state._lang.vi.report:this.state._lang.en.report}  
@@ -114,7 +145,7 @@ _onChangeLanguage(){
               </TouchableOpacity>
           </View>
           <View style={[styles.itemContent,styles.center]}>
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('Screen_ChoseLanguage')} style={[styles.itemClick]}>
+            <TouchableOpacity onPress={()=>this.props.navigation.navigate('Screen_ChoseLanguage')} style={[styles.itemClick,styles.center]}>
                   <Icon style={[styles.flex3,styles.IconFirst]} color='#0457C9' type='font-awesome' name="language" size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                       {this.state.lang_load?this.state._lang.vi.changelanguage:this.state._lang.en.changelanguage}  
@@ -122,8 +153,8 @@ _onChangeLanguage(){
                   <Icon style={[styles.mLeftIcon,styles.flex3,styles.IconLast]} type='font-awesome' name="chevron-right" size={height/30} />
               </TouchableOpacity>
           </View>
-          <View style={[styles.itemContent,styles.center]}>
-            <TouchableOpacity onPress={()=>this.onPressLogout()} style={[styles.itemClick]}>
+          <View style={[styles.itemContent,styles.center,{marginBottom: 10}]}>
+            <TouchableOpacity onPress={()=>this.onPressLogout()} style={[styles.itemClick,styles.center]}>
                   <Icon style={[styles.flex3,styles.IconFirst]}  type='material-icons' name="power-settings-new" size={height/20} />
                   <Text style={[{flex: 0.4},styles.textItem]} >
                       {this.state.lang_load?this.state._lang.vi.signout:this.state._lang.en.signout}
@@ -165,11 +196,11 @@ const styles = StyleSheet.create({
 		flexDirection: 'column', 
 	},
 	itemContent:{
-		height: height/12,
+		flex: 0.2,
 		width: width,
 		// borderWidth: 1,
     flexDirection: 'row',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.4,
     borderTopWidth: 0,
 	},
   mLeftIcon:{
@@ -177,9 +208,12 @@ const styles = StyleSheet.create({
   },
   img:{
     flex: 1,
+    width: width/4,
+    height: width/4,
     resizeMode: 'contain',
     justifyContent: 'center',
     alignItems: 'stretch',
+    margin: 5,
   },
   arrowLeft:{
     justifyContent: 'center',
@@ -207,6 +241,20 @@ const styles = StyleSheet.create({
   IconLast:{
     alignItems: 'flex-end',  
   },
+  _mContentReport:{
+    flex: 1,
+    // backgroundColor: 'cyan',
+  },
+  _mItemsReport:{
+    flex: 0.2,
+    flexDirection: 'row',
+    width: width-40,
+  },
+  _mItemReport:{
+    flex: 1,
+    // borderWidth: 1,
+    borderBottomWidth: 0.3,
+  }
 });
 
 

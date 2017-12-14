@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text,AsyncStorage,ListView,FlatList,Modal,Image,
+import {View, Text,AsyncStorage,ListView,FlatList,Modal,Image,TextInput,
 	StyleSheet,Dimensions,TouchableOpacity} from 'react-native';
 import { Icon } from 'react-native-elements';
 import {lang} from './languages/languages';
@@ -13,7 +13,7 @@ class EmployeeList extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			mang: [],isLoading: true,ress: demo,_lang:lang,_langid: '',
+			mang: [],isLoading: true,ress: demo,_lang:lang,_langid: '',_search: '',
 		};
 	}
 	componentWillMount(){
@@ -57,30 +57,45 @@ class EmployeeList extends Component {
 									/>
 								</View>
 						</Modal>
-						<View style={styles.headList}>
-							<Text>
-							  	{this.state._langid?this.state._lang.vi.manage:this.state._lang.en.manage} Check List
-							</Text>
+						<View style={styles._headList}>
+							<View style={{height: height/15,flex: 0.9}}>
+								<TextInput
+									underlineColorAndroid={'transparent'}
+							        style={{borderColor: 'gray', borderWidth: 1,flex: 1,backgroundColor: 'white',color: 'black'}}
+							        onChangeText={(text) => this.setState({_search: text})}
+							        placeholder="Search"
+							        placeholderTextColor="gray"
+							        value={this.state._search} />
+							</View>
+							<View style={{flex: 0.1}}>
+								<Icon type='evilicon' color='#808080' name="search" size={height/20}/>
+							</View>
 						</View>
-						<View style={styles.contentList}>
+						<View style={styles.contentCheckList}>
 								<FlatList
-							 		 data={this.state.mang}
+							 		data={this.state.mang}
 							  		keyExtractor={item => item.id}
 							  		renderItem={({item})=>
-							  			<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ListFaQ',{id: item.id,name_org: item.organization.name})}}>
+							  		<TouchableOpacity style={{borderBottomWidth: 1,borderColor: 'gray'}} onPress={()=>{this.props.navigation.navigate('Screen_ListFaQ',{id: item.id,name_org: item.name})}}>
 										<View style={styles.contentList}>
 											<View style={styles.contentLeft}>
 												<View style={styles.iconLeft}>
-													<Icon type='octicon' color='#16A086' name="checklist" size={height/20} />
+													{/*<Icon type='octicon' color='#16A086' name="checklist" size={height/20} />*/}
+													{item.status=="close"?<Icon type='evilicon' color='#808080' name="exclamation" size={height/20} />:item.status=="on progress"?<Icon type='material-community' color='#5DFF5D' name="timelapse" size={height/20} />:
+													item.status=="pending"?<Icon type='evilicon' color='#f0c54c' name="clock" size={height/20} />:item.status=="approval"?<Icon type='evilicon' color='#36c6d3' name="check" size={height/20} />:
+													item.status=="refuse"?<Icon type='evilicon' color='red' name="close-o" size={height/20} />:''}
+													<Text style={{fontSize: 11}}>
+													  {item.status}
+													</Text>
 												</View>
 											</View>
 											<View style={styles.contentRight}>
 													<View style={styles.item}>
-														<Text style={styles.center}>
-														  	Check list {item.organization.name}
-														</Text>
-														<Text style={styles.center}>
+														<Text style={[styles.center,{textAlign: 'left',fontWeight: 'bold',fontSize: 16,color: 'black'}]}>
 															 {item.name}
+														</Text>
+														<Text style={{fontSize: 13}} >
+														  	{this.state._langid?this.state._lang.vi.org:this.state._lang.en.org} {item.organization.name}
 														</Text>													
 													</View>
 											</View>
@@ -109,30 +124,33 @@ const styles = StyleSheet.create({
 	},
 	contentList:{
 		marginTop: 5,
-		height: (height*2)/10*(demo),
+		flex: 4/10,
 		flexDirection: 'row',
-		borderWidth: 1,
 		// borderBottomWidth: 0,
 		// backgroundColor: '#'
 	},
+	contentCheckList:{
+		flex: 0.9,
+		flexDirection: 'row',
+	},
 	contentLeft:{
-		flex:1,
+		flex:2/10,
 		flexDirection: 'column',
-		height: ((height*2)/30*(demo)),
+		height: ((height*2)/25*(demo)),
 		backgroundColor: 'white'
 	},
 	contentRight:{
-		flex:6,
-		height: ((height*2)/30*(demo)),
+		flex: 8/10,
+		height: ((height*2)/25*(demo)),
 		flexDirection: 'row', 
 		backgroundColor: 'white',
-		borderBottomWidth: 1,
+		// justifyContent: 'flex-start', 
 	},
 	item:{
-		flex: 0.9,
+		flex: 1,
 		// alignSelf: 'center',  
 		justifyContent: 'center',
-		alignItems: 'center', 
+		alignItems: 'flex-start', 
 		// borderBottomWidth: 1,
 		// borderRightWidth: 1,
 	},
@@ -143,10 +161,12 @@ const styles = StyleSheet.create({
 	},
 	center:{
 	},
-	headList:{
-		flex: 0.1,
+	_headList:{
+		height: height/15,
+		width: width,
 		justifyContent: 'center',
-		alignItems: 'center' 
+		alignItems: 'center',
+		flexDirection: 'row', 
 	},
 	contentList:{
 		flex: 0.9,

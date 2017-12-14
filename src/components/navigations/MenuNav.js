@@ -53,11 +53,14 @@ export const HomeMenu = StackNavigator({
 						<Icon type='material-community-icons' color='white' name='menu' size={20} />
 	   	 		</TouchableOpacity>,
 			title: (
-	            <Image
-	                source={require('../../images/header_icon/checklist_icon.png')}
-	                style={{width: width*0.28, height: height/6,}}
-	                resizeMode={"contain"}
-            	/>
+	            // <Image
+	            //     source={require('../../images/header_icon/checklist_icon.png')}
+	            //     style={{width: width*0.28, height: height/6,}}
+	            //     resizeMode={"contain"}
+            	// />
+            	<Text>
+	              	Auditing
+	            </Text>
         	),
 			headerStyle:{
 				backgroundColor: '#DE584D',
@@ -89,7 +92,8 @@ export const HomeMenu = StackNavigator({
             	/>
         	),
 			headerStyle:{
-				backgroundColor: '#16A086',
+				// backgroundColor: '#16A086',
+				backgroundColor: '#DE584D',
 			},
 			headerTitleStyle:{
 				alignSelf: 'center',
@@ -185,11 +189,11 @@ export const HomeMenu = StackNavigator({
 				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
 						<Icon type='material-community-icons' color='white' name='menu' size={20} />
 	   	 		</TouchableOpacity>,
-			title: (
+			title:
 	            <Text style={{color: 'white'}}>
 	              	Comment
 	            </Text>
-        	),
+        	,
 			headerStyle:{
 				backgroundColor: '#0457C9',
 			},

@@ -86,7 +86,7 @@ _renderButtonChange(){
 	if(this.state.loading){
 		return(
 			<TouchableOpacity onPress={()=>{this._onChangeLanguage()}} style={[styles._button,styles._center]} >
-							<Text style={styles._buttonText,{textAlign: 'center' }} >
+							<Text style={styles._buttonText,{textAlign: 'center',color: 'white' }} >
 							  	{this.state.lang_load?this.state._lang.vi.save_change:this.state._lang.en.save_change}
 							</Text>
 			</TouchableOpacity>
@@ -199,7 +199,7 @@ _clickCheck(id){
 							</Text>
 						</View>
 					</View>
-					<View style={[styles._itemChose,styles._center]}>
+					<View style={[styles._itemChoseButton,styles._center]}>
 						{this._renderButtonChange()}
 					</View>
 			</View>
@@ -253,6 +253,13 @@ _itemChose:{
 	marginVertical: 5,
 	padding: 5,
 },
+_itemChoseButton:{
+	height: height/13,
+	borderRadius: 5,
+	flexDirection: 'row',
+	marginVertical: 5,
+	padding: 5,
+},
 _boxLanguage:{
 	flex:0.1,
 },
@@ -273,9 +280,9 @@ _imgFlag:{
 },
 _button:{
   	borderRadius: 5,
-  	borderWidth: 1,
-  	borderColor: 'green',
-  	backgroundColor: 'rgba(192,192,192,0.2)',
+  	// borderWidth: 1,
+  	// borderColor: 'green',
+  	backgroundColor: '#0457C9',
   	padding: 10,
   },
 _buttonText:{
