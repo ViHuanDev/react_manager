@@ -43,6 +43,7 @@ export const HomeMenu = StackNavigator({
 			},
 			headerLeft:
 				<Text></Text>,
+			// gesturesEnabled: false,
 		}),
 	},
 	Screen_EmployList:{
@@ -215,7 +216,7 @@ export const HomeMenu = StackNavigator({
 	   	 		</TouchableOpacity>,
 			title: (
 	            <Text style={{color: 'white'}}>
-	              	Comment
+	              	Reply to comment
 	            </Text>
         	),
 			headerStyle:{
@@ -230,7 +231,8 @@ export const HomeMenu = StackNavigator({
 	   	 		</TouchableOpacity>,
 		}),	
 	},
-});
+}
+);
 const styles = 	StyleSheet.create({
 	paddingIcons:{
 		padding: 5,
@@ -239,6 +241,9 @@ const styles = 	StyleSheet.create({
 export const Side_Menu = DrawerNavigator({
 	Sidebar_Menu:{
 		screen: HomeMenu,
+	},
+	Main_Route:{
+		screen: Main_Screen,
 	}
 },{
 	drawerWidth: (width*8)/10,
@@ -246,6 +251,12 @@ export const Side_Menu = DrawerNavigator({
 	contentComponent: props => <SideBar {...props} />,
 	// initialRouteName:'',
 	initialRoute :'MenuOpen',
+	index: 0,
+    initialRouteName: 'Main_Route',
+    headerMode: 'none',
+    navigationOptions: {
+      gesturesEnabled: false
+    }
 });
 export default connect()(Side_Menu);
 // export default connect()(HomeMenu);

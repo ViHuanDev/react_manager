@@ -17,7 +17,7 @@ export default class CommentList extends Component {
 	  	dataSource: ds,checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
 	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
 	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',_temp_id_del_comment:[],_isEditComment:'',_stateComment: false,
-	  	_temp_new_comment:[],_id_user:'',_langid:'',_lang:lang,_page: 1,
+	  	_temp_new_comment:[],_id_user:'',_langid:'',_lang:lang,_page: 1,_imageCamera: false,
 	  };
 	};
 	componentWillMount(){
@@ -217,7 +217,7 @@ _saveComment(){
 				    "content": this.state._isComment,
 				})
 			}).then((response)=>response.json()).then((responseJson)=>{
-				// console.log(responseJson.id);
+				console.log(responseJson);
 				var temp = this.state._temp_new_comment;
 				temp.push(responseJson);
 				this.setState({
@@ -511,10 +511,16 @@ _keyExtractor = (item, index) => item.id;
 						{this._renderNewComment(this.state._temp_new_comment)}
 					</ScrollView>
 					<View style={styles._mtextComment}>
+						<View style={[styles._mClickComment,styles._center]}>
+							<TouchableOpacity style={{flex: 1,paddingVertical: 5}} onPress={()=>{this.setState({_imageCamera: true})}}>
+								<Icon type='ionicon' color='gray' name='md-camera' size={width/15} />
+							</TouchableOpacity>
+						</View>
 						<View style={[styles._minputText]}>
-							<TextInput style={{borderWidth: 0.3,borderRadius: 3}}
+							<TextInput style={{backgroundColor: 'white',borderRadius: 10}}
 								value={this.state._isComment}
 								onChangeText={(text)=>this._onCommentChange(text)}
+								placeholder={this.state._langid?"Nội dung":"Comment"}
 								underlineColorAndroid='transparent'/>
 						</View>
 						<View style={[styles._mClickComment,styles._center]}>
@@ -523,14 +529,18 @@ _keyExtractor = (item, index) => item.id;
 															  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
 															</Text>
 														</TouchableOpacity>*/}
-							<TouchableOpacity onPress={()=>{this._saveComment()}}>
-								<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
-								  	{this.state._langid?this.state._lang.vi.send:this.state._lang.en.send}
-								</Text>
+							<TouchableOpacity style={{flex: 1,paddingVertical: 5}} onPress={()=>{this._saveComment()}}>
+								{/*<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
+																  	{this.state._langid?this.state._lang.vi.send:this.state._lang.en.send}
+																</Text>*/}
+								<Icon type='ionicon' color='#5F84CE' name='ios-send' size={width/15} />
 							</TouchableOpacity>
 						</View>
 					</View>
-				</View>
+					<View style={{display: this.state._imageCamera?'flex':'none' }}>
+							<View style={{height: 50, width: 50,backgroundColor: 'cyan',margin: 2}}></View>
+						</View>
+					</View>
 			</View>
 		</View>
     </View>
@@ -637,7 +647,10 @@ const styles = StyleSheet.create({
 		paddingRight: 5,
 	},
 	_mtextComment:{
-		height: ((height)/10)*1.1,
+		height: ((height)/15),
+		flexDirection: 'row',
+		backgroundColor: '#E9EBEE',
+		padding: 2,
 	},
 	_sNameUser:{
 		flex: 0.3,
@@ -722,5 +735,11 @@ const styles = StyleSheet.create({
 		borderWidth: 0.3,
 		width: width/5,
 		borderRadius: 5,	
+	},
+	_minputText:{
+		flex: 0.78,
+	},
+	_mClickComment:{
+		flex: 0.11,
 	},
 });

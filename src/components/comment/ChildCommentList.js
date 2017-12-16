@@ -184,12 +184,12 @@ _renderChildComment(){
 								<View style={styles._sChildActionsUser}>
 									<TouchableOpacity onPress={()=>{this.setState({_cancel_comment:item[i].content,_temp_comment: this.state._temp_id_comment.includes(item[i].id)?this.state._temp_comment:item[i].content,_temp_id_comment: [item[i].id],_stateEditComment: !this.state._stateEditComment});}}>
 										<Text style={[styles.font_size,{textAlign: 'center',paddingHorizontal: 5}]}>
-										  	Sửa
+										  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
 										</Text>
 									</TouchableOpacity>
 									<TouchableOpacity onPress={()=>{this._onClickDelComment(item[i].id)}}>
 										<Text style={[styles.font_size,{textAlign: 'center',paddingHorizontal: 5}]}>
-										  	Xóa
+										  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
 										</Text>
 									</TouchableOpacity>
 			     				</View>
@@ -264,9 +264,14 @@ render() {
 		     	</ScrollView>
 		    </View>
      		<View style={styles._sAddCommentChild}>
+     			<View style={[styles._mClickComment,styles._center]}>
+					<TouchableOpacity  onPress={()=>{this._saveComment()}}>
+						<Icon type='ionicon' color='gray' name='md-camera' size={width/15} />
+					</TouchableOpacity>
+				</View>
      			<View style={[styles._minputText]}>
 					<TextInput
-						style={{flex: 1,borderWidth: 0.3}}
+						style={{flex: 1,borderWidth: 0.3,borderRadius: 5}}
 						multiline = {true}
 						underlineColorAndroid={'transparent'}
 						editable = {true}
@@ -274,15 +279,16 @@ render() {
 				     	value={this.state._isComment}/>
 				</View>
 				<View style={[styles._mClickComment,styles._center]}>
-					<TouchableOpacity onPress={()=>{this.setState({_isComment:''})}} >
-						<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
-						  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
-						</Text>
-					</TouchableOpacity>
+					{/*<TouchableOpacity onPress={()=>{this.setState({_isComment:''})}} >
+											<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
+											  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
+											</Text>
+										</TouchableOpacity>*/}
 					<TouchableOpacity  onPress={()=>{this._saveComment()}}>
-						<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
-						  	{this.state._langid?this.state._lang.vi.send:this.state._lang.en.send}
-						</Text>
+						{/*<Text style={[styles._buttonComment,{textAlign: 'center'}]}>
+												  	{this.state._langid?this.state._lang.vi.send:this.state._lang.en.send}
+												</Text>*/}
+						<Icon type='ionicon' color='#5F84CE' name='ios-send' size={width/15}/>
 					</TouchableOpacity>
 				</View>
      		</View>
@@ -345,8 +351,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'column' 
 	},
 	_sChildComment:{
-		flex: 2/10,
-		// height: height/10,
+		// flex: 2/10,
+		height: height/20,
 		width: width,
 		flexDirection: 'row',
 		backgroundColor: 'white',
@@ -367,21 +373,23 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 	},
 	_sDataChildComment:{
-		flex: 8/10,
+		flex: 9/10,
 	},
 	_sScrollView:{
-		flex: 8/10,
+		flex: 9/10,
 	},
 	_sAddCommentChild:{
-		flex: 2/10,
-		marginBottom: 2,
+		width: width,
+		height: height/18,
+		paddingBottom: 2,
 		backgroundColor: 'white',
+		flexDirection: 'row', 
 	},
 	_minputText:{
-		flex: 0.6,
+		flex: 0.78,
 	},
 	_mClickComment:{
-		flex: 0.4,
+		flex: 0.11,
 		flexDirection: 'row', 
 	},
 	_img:{
