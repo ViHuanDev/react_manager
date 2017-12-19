@@ -38,7 +38,7 @@ render() {
       	<View style={styles.logo}>
             <Image 
             style={styles.img}
-              source={require('../../images/logo.jpg')}
+              source={require('../../images/logo2.jpg')}
             />
         </View>
         <View style={styles.div2}>

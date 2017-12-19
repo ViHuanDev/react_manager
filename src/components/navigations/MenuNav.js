@@ -8,6 +8,7 @@ import ListFaQ from '../ListFaQ';
 import ChangePassword from '../ChangePassword';
 import { connect } from 'react-redux';
 import EmployeeList from '../EmployeeList';
+import ActionsCheckList from '../ActionsCheckList';
 import Profile from '../Profile';
 import {Icon} from 'react-native-elements';
 import SideBar from '../SideBar';
@@ -218,6 +219,28 @@ export const HomeMenu = StackNavigator({
 	            <Text style={{color: 'white'}}>
 	              	Reply to comment
 	            </Text>
+        	),
+			headerStyle:{
+				backgroundColor: '#0457C9',
+			},
+			headerTitleStyle:{
+				alignSelf: 'center',
+			},
+			headerLeft:
+				<TouchableOpacity style={styles.paddingIcons}  onPress={()=>{navigation.goBack()}}>
+						<Icon type='entypo' color='white' name='chevron-thin-left' size={20} />
+	   	 		</TouchableOpacity>,
+		}),	
+	},
+	Screen_ActionsCheckList:{
+		screen: ActionsCheckList,
+		navigationOptions:({navigation})=>({
+			headerRight:
+				<TouchableOpacity  style={styles.paddingIcons} onPress={()=>navigation.navigate('DrawerOpen')}>
+						<Icon type='material-community-icons' color='white' name='menu' size={20} />
+	   	 		</TouchableOpacity>,
+			title: (
+				<Text></Text>
         	),
 			headerStyle:{
 				backgroundColor: '#0457C9',

@@ -76,7 +76,7 @@ class EmployeeList extends Component {
 							 		data={this.state.mang}
 							  		keyExtractor={item => item.id}
 							  		renderItem={({item})=>
-							  		<TouchableOpacity style={{borderBottomWidth: 1,borderColor: 'gray'}} onPress={()=>{this.props.navigation.navigate('Screen_ListFaQ',{id: item.id,name_org: item.name})}}>
+							  		<TouchableOpacity style={{borderBottomWidth: 1,borderColor: 'gray'}} onPress={()=>{this.props.navigation.navigate('Screen_ActionsCheckList',{id: item.id,name_org: item.name})}}>
 										<View style={styles.contentList}>
 											<View style={styles.contentLeft}>
 												<View style={styles.iconLeft}>

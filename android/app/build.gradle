@@ -95,7 +95,7 @@ import com.android.build.OutputFile
 
  android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "com.manager"
@@ -155,8 +155,10 @@ dependencies {
     // For WebP support, including animated WebP
     compile 'com.facebook.fresco:animated-gif:1.0.1'  
     compile 'com.facebook.fresco:animated-webp:1.0.1' 
+    compile project(':react-native-image-picker')
     compile project(':react-native-linear-gradient')
     compile  'com.facebook.fresco:webpsupport:1.0.1'
+    // compile "com.facebook.android:facebook-android-sdk:[4.18.0)"
 }
 
 // Run this once to be able to run the application with BUCK

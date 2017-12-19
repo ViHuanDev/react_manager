@@ -67,7 +67,7 @@ class LoginForm extends Component{
 	constructor(props) {
 	  super(props);
 	  this.state = {
-	  	loadingLogin: true,loading:true,
+	  	loadingLogin: true,loading:true,error: this.props.error,
 	  };
 	}
 	onEmailChange(text){
@@ -106,6 +106,9 @@ class LoginForm extends Component{
 						console.log(email+"-"+password+" login");
 						console.log(this.props.loginUser({password,email}));
 						this.props.loginUser({password,email});
+						var x = this.props.loginUser({password,email});
+						console.log(x);
+						console.log("daluu");
 					}
 					if(value[0][1]==null && value[1][1]==null){
 						this.setState({
@@ -141,7 +144,7 @@ class LoginForm extends Component{
 										<View style={[{width: width,padding: 5,flex: 0.4},styles._center]}>
 											<Image
 											  style={{width: height/4,height: height/4}}
-											  source={require('../../images/Logo.png')}/>
+											  source={require('../../images/logo.png')}/>
 										</View>
 										<View style={{width:width,flex: 0.6}} >
 											<CardSection style={{backgroundColor: 'rgba(255,255,255,0.4)',borderRadius: 50,marginHorizontal: 5, marginVertical: 5}} >

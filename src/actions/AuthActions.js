@@ -65,6 +65,12 @@ export const loginUser = ({email, password}) =>{
 		// 		console.log("null keys");
 		// 	}
 		// });
+		// AsyncStorage.getAllKeys((err, keys) => { 
+  //         AsyncStorage.multiRemove(keys).then((value)=>{
+  //            console.log("ok remoe");
+  //         });
+  //         // Actions.auth();
+  //  		 }); 
 		dispatch({type: LOGIN_USER});
 		try {
 			fetch(URL_HOME+"/api/users/signin",{
@@ -78,7 +84,7 @@ export const loginUser = ({email, password}) =>{
 					"email" : email
 				})
 			}).then(async(response)=> response.json()).then((responseJson)=>{
-				console.log(responseJson);
+				// console.log(responseJson);
 				if(responseJson.response==="success"){
 					// console.log(responseJson);
 					var rJson = responseJson;
@@ -108,8 +114,10 @@ export const loginUser = ({email, password}) =>{
 			}
 			else{
 				loginUserFail(dispatch,rJson.message);
-				
+				// console.log(rJson);
 			}
+		}else{
+			loginUserFail(dispatch,"Syntax error");
 		}
 		// if(responseJson._bodyInit.reponse){
 		// 	console.log("adasd");
