@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,Picker,TextInput,TouchableHighlight,
-	StyleSheet,ScrollView,TouchableOpacity} from 'react-native';
+	StyleSheet,ScrollView,Alert,TouchableOpacity} from 'react-native';
 // import CheckBox from 'react-native-checkbox';
 import { Icon } from 'react-native-elements';
 import { CheckBox } from 'react-native-elements';
@@ -14,7 +14,7 @@ class ListFaQ extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			id_faq: this.props.navigation.state.params.id,name_org: this.props.navigation.state.params.name_org,isLoading:true,
+			status: this.props.navigation.state.params.status,id_faq: this.props.navigation.state.params.id,name_list: this.props.navigation.state.params.name_list,isLoading:true,
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
 			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],_mReport:false,
 			comment:'',_langid:'',_lang: lang,array_comment:[],_showCmt:true,_mChildComment: false,array_refer_dq:[],
@@ -33,6 +33,7 @@ componentWillMount() {
           	});
         	fetch(URL_HOME+'/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => {
+					// console.log(responseJson);
 					this.setState({
 						array_faq: responseJson.data,
 						_statusFAQ: responseJson.status,
@@ -43,7 +44,7 @@ componentWillMount() {
 			});
 			fetch(URL_HOME+'/api/chkitemstatus?token='+value[3][1]).then((response) => 
 				response.json()).then((responseJson)=>{ 
-					// console.log(responseJson); 
+					// console.log(responseJson);
 					this.setState({
 						array_status: responseJson,
 						});
@@ -101,13 +102,13 @@ _renderChildComment(){
 					  	{arr[0].content}
 					</Text>
 					<View style={styles._mChildActions}>
-						<TouchableOpacity>
-							<Text style={[styles._editChildComment,styles.font_size]}>
+						<TouchableOpacity style={styles._button} >
+							<Text style={[styles._editChildComment,styles.font_size,styles._color]}>
 							  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
 							</Text>
 						</TouchableOpacity>
-						<TouchableOpacity>
-							<Text style={[styles._delChildComment,styles.font_size]}>
+						<TouchableOpacity style={styles._button} >
+							<Text style={[styles._delChildComment,styles.font_size,styles._color]}>
 							  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
 							</Text>
 						</TouchableOpacity>
@@ -547,6 +548,54 @@ _eachColor(el){
 			return 'black';
 		}
 };
+_rennderViewComment(item){
+	temp=[];
+	if(this.state.status=="on progress" || this.state.status=="approval"){
+		temp.push(<View key={"viewComment"+item} style={[styles._itemAction,styles._center]}>
+					<View style={styles._iconAction}>
+						<Icon type='evilicon' color='#4C88FF' name='comment' size={height/30} />
+					</View>
+					<View style={styles._textAction}>
+						<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_CommentList',{checklist_id: this.state.id_faq,id_answer: item,_status: this.state._statusFAQ})}}>
+							<Text style={styles._text}>
+							  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
+							</Text>
+						</TouchableOpacity>
+					</View>
+				</View>);
+	}else{
+		temp.push(<View key={"viewComment"+item} style={[styles._itemAction,styles._center]}>
+					<View style={styles._iconAction}>
+						<Icon type='evilicon' color='#4C88FF' name='comment' size={height/30} />
+					</View>
+					<View style={styles._textAction}>
+						<TouchableOpacity onPress={()=>{this._viewAlert()}}>
+							<Text style={styles._text}>
+							  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
+							</Text>
+						</TouchableOpacity>
+					</View>
+				</View>);
+	}
+	return temp;
+}
+_viewAlert(){
+	// 	Alert.alert(
+	//   	'Thông Báo',
+	//   [
+	//     {text: 'Trạng thái checklist không hợp lệ', onPress: () => {cancelable: false}},
+	//   ],
+	//   { cancelable: false }
+	// )
+	Alert.alert(
+  'Thông báo',
+  'Trạng thái checklist không hợp lệ',
+  [
+    {text: 'OK', onPress: () => console.log('OK Pressed')},
+  ],
+  { cancelable: false }
+)
+}
 _eachStatus(){
 	let arr = this.state.array_status;
 	let view = [];
@@ -636,18 +685,7 @@ _eachItem(){
 							  		<HTML	html={arr[i].data[a].checklist_item[b].content} />
 								</View>
 								<View style={[styles._actionsContent,{borderBottomWidth: 0.3,borderColor: 'gray'}]}>
-										<View style={[styles._itemAction,styles._center]}>
-											<View style={styles._iconAction}>
-												<Icon type='evilicon' color='#4C88FF' name='comment' size={height/30} />
-											</View>
-											<View style={styles._textAction}>
-												<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_CommentList',{checklist_id: this.state.id_faq,id_answer: item.id,_status: this.state._statusFAQ})}}>
-													<Text style={styles._text}>
-													  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
-													</Text>
-												</TouchableOpacity>
-											</View>
-										</View>
+										{this._rennderViewComment(item.id)}
 										<View style={[styles._itemAction,styles._center]}>
 											<View style={styles._iconAction}>
 												  	{this._renderIconStatus(item.id)}
@@ -724,8 +762,8 @@ render() {
 									</ScrollView>
 								</View>
 								<View style={[styles._mFootRefer,styles._center]}>
-									<TouchableOpacity onPress={()=>{this.setState({mRefer: false})}} >
-										<Text style={[styles._textCenter,styles._textAction]}>
+									<TouchableOpacity style={styles._button} onPress={()=>{this.setState({mRefer: false})}} >
+										<Text style={[styles._textCenter,styles._color]}>
 										  	{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
 										</Text>
 									</TouchableOpacity>
@@ -824,15 +862,15 @@ render() {
 								</View>
 								<View style={[styles._mfootAction,styles._center]}>
 									<View>
-										<TouchableOpacity style={{paddingHorizontal: 5, borderWidth: 0.3,borderRadius: 5, marginHorizontal: 5}} onPress={()=>{this._closeStatus()}}>
-											<Text>
+										<TouchableOpacity style={styles._button} onPress={()=>{this._closeStatus()}}>
+											<Text style={styles._color} >
 											  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
 											</Text>
 										</TouchableOpacity>
 									</View>
 									<View>
-										<TouchableOpacity style={{paddingHorizontal: 5, borderWidth: 0.3,borderRadius: 5, marginHorizontal: 5}} onPress={()=>this._sendComment(this.state._idClick)}>
-											<Text>
+										<TouchableOpacity style={styles._button} onPress={()=>this._sendComment(this.state._idClick)}>
+											<Text style={styles._color} >
 											  	{this.state._langid?this.state._lang.vi.save:this.state._lang.en.save}
 											</Text>
 										</TouchableOpacity>
@@ -844,7 +882,7 @@ render() {
 				<View style={styles._header}>
 					<View style={[styles._textHeader,styles._center]}>
 						<Text style={[styles._textHead]}>
-							{this.state.name_org}
+							{this.state.name_list}
 						</Text>
 					</View>
 					<View style={[styles._startFaQ,styles._center]}>
@@ -1149,6 +1187,20 @@ const styles= StyleSheet.create({
 		borderBottomLeftRadius: 5,
 		borderBottomRightRadius: 5,
 		// borderTopWidth: 1,
-	}
+	},
+	_button:{
+  		borderRadius: 5,
+  		// borderWidth: 1,
+  		// borderColor: 'green',
+  		backgroundColor: '#0457C9',
+  		// padding: 5,
+  		paddingHorizontal: 10,
+  		paddingVertical: 2,
+  		marginHorizontal: 5,
+  	},
+ 	_color:{
+ 	color: 'white',
+ 	fontSize: height/45,
+ 	}
 });
 export default ListFaQ;

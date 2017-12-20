@@ -68,23 +68,25 @@ _updatePassword(){
 								"repass": this.state.retypePass,
 								"id": id,
 							})
-						}).then((responseJson)=>{
-							// console.log(responseJson);
-							if((responseJson._bodyInit).replace(/[""]/g,'')=="Success"){
-								this.setState({
-									visibleModal: true,
-									notify: (responseJson._bodyInit).replace(/[""]/g,''),
-									_iconsuccess: true,_iconerror: false,
-								});
-								AsyncStorage.setItem('@password:key',this.state.newPass);
-							}
-							else{
+						}).then((response)=>response.json()).then((responseJson)=>{
+							console.log(responseJson);
+							// if((responseJson._bodyInit).replace(/[""]/g,'')=="Success"){
+							// 	this.setState({
+							// 		visibleModal: true,
+							// 		notify: (responseJson._bodyInit).replace(/[""]/g,''),
+							// 		_iconsuccess: true,_iconerror: false,
+							// 	});
+							// 	AsyncStorage.setItem('@password:key',this.state.newPass);
+							// }
+							// else{
+								console.log(responseJson.error);
+								// alert((JSON.parse(responseJson._bodyInit).error));
 								this.setState({
 									visibleModal: true,
 									_iconsuccess: false,_iconerror: true,
-									error: (JSON.parse(responseJson._bodyInit).error),
+									error: responseJson,
 								});
-							}
+							// }
 						}).catch((error)=>{
 					});
 				}
@@ -104,14 +106,19 @@ _renderError(){
 					{this.state.error.repass!=null?this.state.error.repass:''}
 				</Text>
 			</Text>
+			<Text styel={styles.centerText}>
+				<Text style={{color: 'red',fontSize: 15}}>
+					{this.state.error.error!=null?this.state.error.error:''}
+				</Text>
+			</Text>
 		</View>
 	);
 };
 _renderSuccess(){
 	return(
 		<View style={styles.renderSuccess}>
-			<Text style={[styles.centerText,{color: 'green'}]} >
-				<Text style={{color: 'green',fontSize: 15,}}>
+			<Text style={[styles._button]} >
+				<Text style={styles._color}>
 			  		{this.state._langid?this.state._lang.vi.update_succ:this.state._lang.en.update_succ}
 			 	</Text>
 			</Text>
@@ -137,9 +144,9 @@ _renderSuccess(){
 				         	{this.state.notify=='Success'?this._renderSuccess():this._renderError()}
 				        </View>
 				        <View style={styles.CloseM}>
-				         		<TouchableOpacity style={styles.button}
+				         		<TouchableOpacity style={styles._button}
 				         		 onPress={()=>{this.state._iconerror?this.onCloseModal():this.props.navigation.goBack()}} >
-									<Text style={[styles.buttonText]} >
+									<Text style={[styles._color]} >
 									  	{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
 									</Text>
 								</TouchableOpacity>
@@ -185,8 +192,8 @@ _renderSuccess(){
     			<View style={styles.buttonChange}>
     					<TouchableOpacity
     						onPress={()=>{this.props.navigation.goBack()}}
-    					  style={[styles.button,styles.center]} >
-    						<Text style={{color: 'black',fontSize: width/30,}} >
+    					  style={[styles._button,styles.center]} >
+    						<Text style={styles._color} >
     						  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
     						</Text>
     					</TouchableOpacity>
@@ -194,8 +201,8 @@ _renderSuccess(){
     			<View style={styles.buttonChange}>
     					<TouchableOpacity 
 						onPress={()=>{this._updatePassword()}}
-    					style={[styles.button,styles.center]} >
-    						<Text style={{color: 'black',fontSize: width/30,}} >
+    					style={[styles._button,styles.center]} >
+    						<Text style={styles._color} >
     						  	{this.state._langid?this.state._lang.vi.update:this.state._lang.en.update}
     						</Text>
     					</TouchableOpacity>
@@ -322,6 +329,21 @@ const styles = StyleSheet.create({
   	paddingHorizontal: 10,
   	paddingVertical: 5,
   },
+  _button:{
+  	borderRadius: 5,
+  	// borderWidth: 1,
+  	// borderColor: 'green',
+  	backgroundColor: '#0457C9',
+  	paddingHorizontal: 15,
+  	paddingVertical: 5,
+  },
+	_color:{
+ 	color: 'white',
+ 	fontSize: width/25,
+ },
+ buttonChange:{
+ 	marginHorizontal: 5
+ }
 });
 
 

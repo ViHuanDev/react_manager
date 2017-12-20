@@ -138,8 +138,8 @@ _clickCheck(id){
                     	</Text>
                     </View>
                     <View style={[styles._footerModal,styles._center]}>
-                        <TouchableOpacity onPress={()=>{this._onClose()}} style={[styles._button,{padding: 5}]} >
-                          <Text style={styles._buttonText} >
+                        <TouchableOpacity onPress={()=>{this._onClose()}} style={[styles._button,{paddingHorizontal: 15,paddingVertical: 5}]} >
+                          <Text style={styles._color} >
                               {this.state.lang_load?this.state._lang.vi.close:this.state._lang.en.close}
                           </Text>
                         </TouchableOpacity>
@@ -287,11 +287,14 @@ _button:{
   },
 _buttonText:{
   	fontSize: height/45,
-  	color: 'black',
+  	color: 'white',
   },
  _spanText:{
  	fontSize: height/40,
  	color: 'black',
+ },
+ _color:{
+ 	color: 'white',
  }
 });
 export default connect()(ChooseLanguage);

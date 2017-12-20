@@ -10,6 +10,10 @@ import {
 	passwordChanged,
 	loginUser,loginUserFail,loginUserSuccess
 } from '../actions';
+const mapStateToProps = ({auth}) => {
+	const {email, password, error, loading } = auth;
+	return { email, password, error, loading };
+};
 const presetColors = {
   instagram: [
     'rgb(106, 57, 171)',
@@ -91,6 +95,7 @@ class LoginForm extends Component{
 			);
 		}
 		componentWillMount(){
+			// this.mapStateToProps();
 			console.log("will login");
 			var keyGet = ['@email:key','@password:key','@user_id:key'];
 			AsyncStorage.multiGet(keyGet).then((value)=>{
@@ -104,17 +109,23 @@ class LoginForm extends Component{
 							loading: false,
 						});
 						console.log(email+"-"+password+" login");
-						console.log(this.props.loginUser({password,email}));
+						// console.log(this.props.loginUser({password,email}));
 						this.props.loginUser({password,email});
-						var x = this.props.loginUser({password,email});
-						console.log(x);
-						console.log("daluu");
+						// var x = this.props.loginUser({password,email});
+						// console.log(x);
+						// console.log("daluu");
 					}
 					if(value[0][1]==null && value[1][1]==null){
 						this.setState({
 							loadingLogin: false,
 						});
 						console.log('F'+'Login');
+					}
+					if(this.props.error){
+						this.setState({
+							loadingLogin: false,
+						});
+						console.log('error'+'Login');
 					}
 				}
 
@@ -212,9 +223,4 @@ const styles = {
 	    flex: 1,
   },
 };
-
-const mapStateToProps = ({auth}) => {
-	const {email, password, error, loading } = auth;
-	return { email, password, error, loading };
-};
-export default connect(mapStateToProps, {emailChanged, passwordChanged, loginUser,loginUserSuccess})(LoginForm);
+export default connect(mapStateToProps, {emailChanged,loginUserFail, passwordChanged, loginUser,loginUserSuccess})(LoginForm);

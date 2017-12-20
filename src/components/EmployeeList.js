@@ -29,7 +29,7 @@ class EmployeeList extends Component {
 				const token = value[3][1];
 				fetch(URL_HOME+'/api/checklists?token='+token).then((response) => 
 				response.json()) .then((responseJson) => { 
-					console.log(responseJson);
+				console.log(responseJson);
 				this.setState({
 					isLoading: false,
 					mang: responseJson,
@@ -46,7 +46,7 @@ class EmployeeList extends Component {
 			return(
 				<View style={styles.row}>
 						<Modal 
-							animationType="slide"
+							animationType="fade"
 							transparent={false}
 							visible={this.state.isLoading}
 							onRequestClose={() => {alert("Modal has been closed.")}} >
@@ -76,7 +76,7 @@ class EmployeeList extends Component {
 							 		data={this.state.mang}
 							  		keyExtractor={item => item.id}
 							  		renderItem={({item})=>
-							  		<TouchableOpacity style={{borderBottomWidth: 1,borderColor: 'gray'}} onPress={()=>{this.props.navigation.navigate('Screen_ActionsCheckList',{id: item.id,name_org: item.name})}}>
+							  		<TouchableOpacity style={{borderBottomWidth: 1,borderColor: 'gray'}} onPress={()=>{this.props.navigation.navigate('Screen_ActionsCheckList',{id: item.id,name_list: item.name,name_org: item.organization.name,status: item.status})}}>
 										<View style={styles.contentList}>
 											<View style={styles.contentLeft}>
 												<View style={styles.iconLeft}>

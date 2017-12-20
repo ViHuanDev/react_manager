@@ -48,7 +48,13 @@ export const lang = {
 				'replly': 'Trả lời',
 				'cancel': 'Hủy',
 				'send': 'Gửi',
-				'action': 'Hành động'
+				'action': 'Hành động',
+				'fun': 'Chức năng',
+				'start': 'Bắt đầu',
+				'name': 'Tên',
+				'checked_org': 'Đơn vị được kiểm tra',
+				'paLead': 'Trưởng đoàn đánh giá',
+				'paAudit': 'Đánh giá viên',
 				},
 		"en":{
 				'signout':'Sign Out',
@@ -98,6 +104,12 @@ export const lang = {
 				'replly': 'Replly',
 				'cancel': 'Cancel',
 				'send': 'Send',
-				'action': 'Actions'
+				'action': 'Actions',
+				'fun': 'Function',
+				'start': 'Start',
+				'name': 'Name',
+				'checked_org': 'Checked organization',
+				'paLead': 'Lead',
+				'paAudit': 'Audit',
 		}
 };

@@ -14,13 +14,14 @@ export default class CommentList extends Component {
 	  super(props);
 	  const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 	  this.state = {
-	  	dataSource: ds,checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
+	  	_status: this.props.navigation.state.params._status=="on progress"?true:this.props.navigation.state.params._status=="approval"?true:false,dataSource: ds,checklist_id: this.props.navigation.state.params.checklist_id,id_answer: this.props.navigation.state.params.id_answer,
 	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
 	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',_temp_id_del_comment:[],_isEditComment:'',_stateComment: false,
 	  	_temp_new_comment:[],_id_user:'',_langid:'',_lang:lang,_page: 1,_imageCamera: false,
 	  };
 	};
 	componentWillMount(){
+		console.log();
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
         	this.setState({
@@ -169,11 +170,6 @@ _renderNewComment(arr){
 								</View>
 							</View>
 							<View style={styles._textActions}>
-								<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
-									<Text style={[styles._repComment,styles.font_size]}>
-									  	Trả lời
-									</Text>
-								</TouchableOpacity>
 								<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
 									<Text style={[styles._editComment,styles.font_size]}>
 									  	Sửa
@@ -286,11 +282,11 @@ _renderComment(){
 							</View>
 						</View>
 						<View style={styles._textActions}>
-							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
-								<Text style={[styles._repComment,styles.font_size]}>
-								  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
-								</Text>
-							</TouchableOpacity>
+							{/*<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+															<Text style={[styles._repComment,styles.font_size]}>
+															  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
+															</Text>
+														</TouchableOpacity>*/}
 							<TouchableOpacity style={[styles._buttonClick,{display: user_action}]} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
 								<Text style={[styles._editComment,styles.font_size]}>
 								  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
@@ -510,7 +506,7 @@ _keyExtractor = (item, index) => item.id;
 								}/>
 						{this._renderNewComment(this.state._temp_new_comment)}
 					</ScrollView>
-					<View style={styles._mtextComment}>
+					<View style={[styles._mtextComment]}>
 						<View style={[styles._mClickComment,styles._center]}>
 							<TouchableOpacity style={{flex: 1,paddingVertical: 5}} onPress={()=>{this.setState({_imageCamera: true})}}>
 								<Icon type='ionicon' color='gray' name='md-camera' size={width/15} />

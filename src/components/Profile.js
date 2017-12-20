@@ -243,8 +243,8 @@ componentWillMount(){
 				         	{this.state.error=='Success'?this._renderSuccess():this._renderError()}
 				        </View>
 				        <View style={styles.CloseM}>
-				         		<TouchableOpacity style={styles.button} onPress={()=>{this.onCloseModal()}} >
-									<Text style={styles.buttonText} >
+				         		<TouchableOpacity style={styles._button} onPress={()=>{this.onCloseModal()}} >
+									<Text style={styles._color} >
 									  	{ this.state.lang_load?this.state._lang.vi.close:this.state._lang.en.close }
 									</Text>
 								</TouchableOpacity>
@@ -459,6 +459,18 @@ const styles = StyleSheet.create({
 	borderRadius: 50,
 	borderColor: 'green'
   },
+  _button:{
+  	borderRadius: 5,
+  	// borderWidth: 1,
+  	// borderColor: 'green',
+  	backgroundColor: '#0457C9',
+  	paddingHorizontal: 15,
+  	paddingVertical: 5,
+  },
+	_color:{
+ 	color: 'white',
+ 	fontSize: width/25,
+ },
   button:{
   	borderRadius: 5,
   	borderWidth: 1,
