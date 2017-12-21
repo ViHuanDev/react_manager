@@ -133,7 +133,7 @@ _renderNewChildComment(arr){
 					</View>
 					<View style={styles._sContentChildUser}>
 						<View style={styles._sNameUser}>
-							<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+							<Text style={[{fontWeight: 'bold',textAlign: 'left'  },styles.font_size]} >
 						  		{arr[i].user.fullname} 
 							</Text>
 						</View>
@@ -172,7 +172,7 @@ _renderChildComment(){
 			     			</View>
 			     			<View style={styles._sContentChildUser}>
 								<View style={styles._sNameUser}>
-									<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+									<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left', color:'black' }]} >
 								  		{item[i].user.fullname} 
 									</Text>
 								</View>
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
 	},
 	_sChildComment:{
 		// flex: 2/10,
-		height: height/20,
+		// height: height/20,
 		width: width,
 		flexDirection: 'row',
 		backgroundColor: 'white',

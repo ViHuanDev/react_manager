@@ -102,6 +102,7 @@ import com.android.build.OutputFile
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
+        vectorDrawables.useSupportLibrary = true
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
@@ -150,13 +151,12 @@ dependencies {
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
     compile project(':react-native-vector-icons')
+    compile project(':react-native-linear-gradient')
     // For animated GIF support
     compile 'com.facebook.fresco:animated-base-support:1.0.1'  
     // For WebP support, including animated WebP
     compile 'com.facebook.fresco:animated-gif:1.0.1'  
     compile 'com.facebook.fresco:animated-webp:1.0.1' 
-    compile project(':react-native-image-picker')
-    compile project(':react-native-linear-gradient')
     compile  'com.facebook.fresco:webpsupport:1.0.1'
     // compile "com.facebook.android:facebook-android-sdk:[4.18.0)"
 }

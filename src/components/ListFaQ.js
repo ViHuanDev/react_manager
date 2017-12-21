@@ -172,14 +172,14 @@ _funItemrefer(arr){
 					<Icon style={[styles._center,{flex: 0.1}]} type="material-community" name="circle-outline" size={10} />
 					<Text style={{flex: 0.9}}>{arr[i].index} {arr[i].docitemheader}</Text>
 				</View>
-				<View  style={{paddingLeft: 10}}>
-					<Text>{arr[i].content}</Text>
+				<View style={{paddingLeft: 20}}>
+					<HTML html={arr[i].content==""?<Text></Text>:arr[i].content}/>
 				</View>
 			</View>
 		);
 		if(arr[i].children){
 			temp.push(
-						<View style={{paddingLeft: 20}} key={"keychild"+i}>
+					<View style={{paddingLeft: 30}} key={"keychild"+i}>
 						{this._funItemrefer(arr[i].children)}
 					</View>
 				);
@@ -212,10 +212,11 @@ _renderItemRefer(item_refer,refer){
 		}
 	}
 	// this._renderReferView(temp);
-	// console.log(temp);
+	console.log(temp);
 	this.setState({
 		_viewRefer: temp,
 	});
+	// console.log(temp);
 }
 _renderReferView(arr){
 	console.log(arr);
@@ -579,6 +580,19 @@ _rennderViewComment(item){
 	}
 	return temp;
 }
+_viewRenderStatus(item){
+	var temp=[];
+	if(this.state.status=="on progress" || this.state.status=="approval"){
+		temp.push(<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item.id)} >
+			{this._renderStatus(item.id)}
+		</TouchableOpacity>);
+	}else{
+		temp.push(<TouchableOpacity key={"action:key"+item.id} onPress={()=>{this._viewAlert()}} >
+			{this._renderStatus(item.id)}
+		</TouchableOpacity>);
+	}
+	return temp;
+};
 _viewAlert(){
 	// 	Alert.alert(
 	//   	'Thông Báo',
@@ -691,9 +705,7 @@ _eachItem(){
 												  	{this._renderIconStatus(item.id)}
 											</View>
 											<View style={styles._textAction}>
-												<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item.id)} >
-													{this._renderStatus(item.id)}
-												</TouchableOpacity>
+												{this._viewRenderStatus(item)}
 											</View>											
 										</View>
 										<View style={[styles._itemAction,styles._center]}>
@@ -752,13 +764,13 @@ render() {
 						<View style={styles.row}>
 							<View style={styles._mBodyRefer}>
 								<View style={[styles._mHeadRefer,styles._center]}>
-									<Text style={[styles._textCenter,{fontWeight: 'bold',fontSize: 18,color: 'black'}]}>
+									<Text style={{fontWeight: 'bold',fontSize: 24,color: 'black'}}>
 									  	{this.state._langid?this.state._lang.vi.refer:this.state._lang.en.refer}
 									</Text>
 								</View>
 								<View style={styles._mContentRefer}>
 									<ScrollView>
-										{this.state.mRefer?this.state._viewRefer:this._renderNull()}
+										{this.state.mRefer?(this.state._viewRefer):this._renderNull()}
 									</ScrollView>
 								</View>
 								<View style={[styles._mFootRefer,styles._center]}>
