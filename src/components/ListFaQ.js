@@ -131,7 +131,8 @@ _funRefer(arr,parent){
 		}
 	return out;
 };
-_renderRefer(id){
+_renderRefer(id){	
+	console.log(this.state.array_id);
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
           	console.log(value[1][1]);
@@ -173,7 +174,7 @@ _funItemrefer(arr){
 					<Text style={{flex: 0.9}}>{arr[i].index} {arr[i].docitemheader}</Text>
 				</View>
 				<View style={{paddingLeft: 20}}>
-					<HTML html={arr[i].content==""?<Text></Text>:arr[i].content}/>
+					{arr[i].content!=""?<HTML html={arr[i].content}/>:<Text></Text>}
 				</View>
 			</View>
 		);
@@ -444,17 +445,19 @@ _renderIconStatus(id){
 _thisSelectSatus(el){
 	var ar= el.split('-');
 	var id = this.state._idClick;
+	var count_status = this.state.array_status;
 	let temp = this.state.array_local.length >0?this.state.array_local:this.state.array_id;
 	this.setState({
 		array_id: [],
 	});
 	console.log(temp+' trc khi xu ly');
-		for(let m=1;m<=12;m++){
-			if(temp.includes(id+'-'+m)){
-				if(m==Number(ar[1])){
+	console.log(count_status);
+		for(let m=0;m<=count_status.length;m++){
+			if(temp.includes(id+'-'+count_status[m].code)){
+				if(count_status[m].code==ar[1]){
 				}
 				else{
-					temp.splice(temp.indexOf(id+'-'+m),1);
+					temp.splice(temp.indexOf(id+'-'+count_status[m].code),1);
 				}
 			}
 	}
@@ -504,46 +507,76 @@ _sendComment(checklist_id){
 _thisCheckbox(el){
 	//fix loi check 2 state if else with array_local and array_id...
 	var id = this.state._idClick;
-	var temp= Number(el)%2==0?Number(el)-1:Number(el)+1;
-		if(this.state.array_local.length >0){
-			if(this.state.array_local.includes(id+'-'+el)){
+	// var temp= Number(el)%2==0?Number(el)-1:Number(el)+1;
+		// if(this.state.array_local.length > 0){
+			if(this.state.array_local.includes(id+'-'+'S')){
 				return true;
 			}
-			else if(this.state.array_local.includes(id+'-'+temp)){
+			else if(this.state.array_local.includes(id+'-'+'NW')){
+				return true;
+			}
+			else if(this.state.array_local.includes(id+'-'+'F')){
+				return true;
+			}
+			else if(this.state.array_local.includes(id+'-'+'C')){
+				return true;
+			}
+			else if(this.state.array_local.includes(id+'-'+'NA')){
+				return true;
+			}
+			else if(this.state.array_id.includes(id+'-'+'Đ')){
+				return true;
+			}
+			else if(this.state.array_id.includes(id+'-'+'NW')){
+				return true;
+			}
+			else if(this.state.array_id.includes(id+'-'+'L')){
+				return true;
+			}
+			else if(this.state.array_id.includes(id+'-'+'Y')){
+				return true;
+			}
+			else if(this.state.array_id.includes(id+'-'+'NA')){
 				return true;
 			}
 			else{
 				return false;
 			}
-		}
-		else{
-			if(this.state.array_id.includes(id+'-'+el)){
-				return true;
-			}
-			else if(this.state.array_id.includes(id+'-'+temp)){
-				return true;
-			}
-			else{
-				return false;
-			}
-		}
+		// }
+		// else{
+		// 	if(this.state.array_id.includes(id+'-'+'Đ')){
+		// 		return true;
+		// 	}
+		// 	else if(this.state.array_id.includes(id+'-'+'NW')){
+		// 		return true;
+		// 	}
+		// 	else if(this.state.array_id.includes(id+'-'+'L')){
+		// 		return true;
+		// 	}
+		// 	else if(this.state.array_id.includes(id+'-'+'Y')){
+		// 		return true;
+		// 	}
+		// 	else if(this.state.array_id.includes(id+'-'+'NA')){
+		// 		return true;
+		// 	}
+		// 	else{
+		// 		return false;
+		// 	}
+		// }
 }
 _eachColor(el){
-	console.log(el);
-		if(el==1 || el==2){
-			return '#4F81F0';
+	// console.log(el);
+		if(el=="S" || el=="Đ"){
+			return '#4c7ff0';
 		}
-		else if(el==3 || el==4){
+		else if(el=="NW"){
 			return '#9DD182';
 		}
-		else if(el==5 || el==6){
-			return '#F0C751';
+		else if(el=="F" || el=="L"){
+			return '#f0c54c';
 		}
-		else if(el==7 || el==8){
-			return '#67CCF2';
-		}
-		else if(el==9 || el==10){
-			return '#D67A63';
+		else if(el=="C" || el=="Y"){
+			return '#d26d54';
 		}
 		else{
 			return 'black';
@@ -624,15 +657,15 @@ _eachStatus(){
 							iconType='foundation'
 							checkedIcon='record'
 							uncheckedIcon='record'
-							isChecked={this._thisCheckbox(item.id)}
-							checked={this._thisCheckbox(item.id)}
-							checkedColor={this._eachColor(item.id)}
-							onPress={()=>this._thisSelectSatus(this.state._idClick+'-'+item.id)}
+							isChecked={this._thisCheckbox(item.code)}
+							checked={this._thisCheckbox(item.code)}
+							checkedColor={this._eachColor(item.code)}
+							onPress={()=>this._thisSelectSatus(this.state._idClick+'-'+item.code)}
 							uncheckedColor='white'
 							style={[styles._checkbox]}  />
 					</View>
 					<View style={[styles._mtextAction,styles._center]}>
-						<Text style={[styles._mText,styles._center,styles._colorText,{color: i==0?'#4F81F0':i==1?'#9DD182':i==2?'#F0C751':i==3?'#67CCF2':i==4?'#D67A63':'black'}]}>
+						<Text style={[styles._mText,styles._center,styles._colorText,{color: arr[i].code=="S"||arr[i].code=="Đ"?'#4c7ff0':arr[i].code=="NW"?'#9DD182':arr[i].code=="F"||arr[i].code=="L"?'#F0C751':arr[i].code=="Y"||arr[i].code=="C"?'#67CCF2':'black'}]}>
 						  	{item.name}
 						</Text>
 					</View>
@@ -685,14 +718,15 @@ _eachItem(){
 							let item = arr[i].data[a].checklist_item[b];
 							let temp = [];
 							// console.log(item);
-							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.pivot.chkitemstatus);
-							for(let i2=0;i2 <= this.state.array_id.length-1;i2++){
-								for(let j=i2+1; j <this.state.array_id.length;j++){
-									if(this.state.array_id[i2]==this.state.array_id[j]){
-										this.state.array_id.splice(j);
-									}
-								}
-							}
+							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.status.code);
+							// for(let i2=0;i2 <= this.state.array_id.length-1;i2++){
+							// 	for(let j=i2+1; j <this.state.array_id.length;j++){
+							// 		if(this.state.array_id[i2]==this.state.array_id[j]){
+							// 			this.state.array_id.splice(j);
+							// 		}
+							// 	}
+							// }
+							// console.log(this.state.array_id);
 							view.push(
 							<View style={[styles._datasContent]} key={"checklist"+item.id}>
 								<View style={[styles._dataContent,{paddingHorizontal: 10}]}>

@@ -24,18 +24,18 @@ componentWillMount() {
           	this.setState({
           		_langid: value[1][1]=='vi'?true:false,
        		});
-        fetch(URL_HOME+'/api/user/auditpermission?data='+this.state.id_list+'&token='+value[3][1]).then((response) => 
-				response.json()) .then((responseJson) => {
-					// console.log(responseJson.userleader.length)
-					this.setState({
-						array_audit: responseJson,
-						_isLoading: false,
-					});
-					// console.log(this.state.array_faq);
-				}) .catch((error) => { 
-					console.error(error); 
+	        fetch(URL_HOME+'/api/user/auditpermission?data='+this.state.id_list+'&token='+value[3][1]).then((response) => 
+					response.json()) .then((responseJson) => {
+						console.log(responseJson);
+						this.setState({
+							array_audit: responseJson,
+							_isLoading: false,
+						});
+						// console.log(this.state.array_faq);
+					}) .catch((error) => { 
+						console.error(error); 
 			});
-    	});
+	    });
     });
 };
 _clickStartChecklist(){

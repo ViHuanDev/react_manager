@@ -17,8 +17,8 @@ class EmployeeList extends Component {
 		};
 	}
 	componentWillMount(){
-		console.log(width+"'"+height);
-		console.log(this.state.ress);
+		// console.log(width+"'"+height);
+		// console.log(this.state.ress);
 		var keyGet = ['@email:key','@password:key','@user_id:key','@token:key',''];
 		AsyncStorage.getAllKeys((err, keys) => { 
 		AsyncStorage.multiGet(keys).then((value)=>{
@@ -29,12 +29,11 @@ class EmployeeList extends Component {
 				const token = value[3][1];
 				fetch(URL_HOME+'/api/checklists?token='+token).then((response) => 
 				response.json()) .then((responseJson) => { 
-				console.log(responseJson);
+				// console.log(responseJson.length);
 				this.setState({
 					isLoading: false,
 					mang: responseJson,
 				});
-
 				// console.log(this.state.mang);
 				}).catch((error) => { 
 				console.error(error); });
@@ -42,7 +41,7 @@ class EmployeeList extends Component {
 		});
 	});
 };
-		render(){
+render(){
 			return(
 				<View style={styles.row}>
 						<Modal 
@@ -80,10 +79,9 @@ class EmployeeList extends Component {
 										<View style={styles.contentList}>
 											<View style={styles.contentLeft}>
 												<View style={styles.iconLeft}>
-													{/*<Icon type='octicon' color='#16A086' name="checklist" size={height/20} />*/}
 													{item.status=="close"?<Icon type='evilicon' color='#808080' name="exclamation" size={height/20} />:item.status=="on progress"?<Icon type='material-community' color='#5DFF5D' name="timelapse" size={height/20} />:
 													item.status=="pending"?<Icon type='evilicon' color='#f0c54c' name="clock" size={height/20} />:item.status=="approval"?<Icon type='evilicon' color='#36c6d3' name="check" size={height/20} />:
-													item.status=="refuse"?<Icon type='evilicon' color='red' name="close-o" size={height/20} />:''}
+													item.status=="refuse"?<Icon type='evilicon' color='red' name="close-o" size={height/20} />:<Icon type='evilicon' color='red' name="close-o" size={height/20} />}
 													<Text style={{fontSize: 11}}>
 													  {item.status}
 													</Text>

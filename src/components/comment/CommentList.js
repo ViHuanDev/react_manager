@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {URL_HOME,normalize} from '../../config';
+import ImagePicker from 'react-native-image-picker';
 import {
   StyleSheet,Dimensions,AsyncStorage,Text,TouchableOpacity,TextInput,ScrollView,
   View,Modal,Image,FlatList,WebView,ListView
@@ -7,6 +8,9 @@ import {
 import { Icon } from 'react-native-elements';
 import {lang} from '../languages/languages';
 import HTML from 'react-native-render-html';
+var options = {
+  title: 'Select Image',
+};
 const {height,width} = Dimensions.get('screen');
 // const htmlContent = `<p style="margin: 0 !important">This HTML snippet is now rendered with native components !</p>`;
 export default class CommentList extends Component {
@@ -21,16 +25,16 @@ export default class CommentList extends Component {
 	  };
 	};
 	componentWillMount(){
-		console.log();
-	AsyncStorage.getAllKeys((err, keys) => { 
+		// console.log();
+		AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
         	this.setState({
           		_langid: value[1][1]=='vi'?true:false,
           	});
 		// console.log(this.state.checklist_id+'---'+this.state.id_answer);
-		fetch(URL_HOME+'/api/comments?page='+this.state._page+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
+		fetch(URL_HOME+'/api/comments?token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
 		.then((response) => response.json()).then((responseJson)=> {
-					// console.log(responseJson.data.length);
+			console.log(responseJson);
 					// if(responseJson.error){
 						
 					// }else{
@@ -54,6 +58,46 @@ _onEditCommentChange(text){
 		_isEditComment: text,
 		_temp_comment: text,
 	});
+};
+_opendImage(){
+AsyncStorage.getAllKeys((err, keys) => { 
+	AsyncStorage.multiGet(keys).then((value)=>{
+	ImagePicker.showImagePicker(options, (response) => {
+      // console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }
+    else {
+        console.log(response.fileName);
+        let source = {uri: response.uri};
+
+        // You can also display the image using data:
+        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+        // this.setState({
+        //  avatarSource : source
+        // });
+		        	const data = new FormData();
+					data.append('name', 'testName'); // you can append anyone.
+					data.append('photo', {
+					  uri: source,
+					  type: 'image/jpeg', // or photo.type
+					  filename: response.fileName,
+					});
+					fetch(URL_HOME+'/api/docitem/upload?token='+value[3][1], {
+					  method: 'post',
+					  body: data
+					}).then(res => {
+					  console.log(res)
+					});
+			}
+	 	});
+ 	});
+});	
+
 };
 _onClickDelComment(id){
 	console.log(id);
@@ -147,7 +191,7 @@ _renderNewComment(arr){
 		var temp=[];
 		for(let i=0;i<arr.length;i++){
 			temp.push(
-			    	<View key={"newComment"+arr[i].id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
+			    	<View key={"newComment"+i} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
 						<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
 							<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
 						</View>
@@ -259,7 +303,7 @@ _renderComment(){
 		for(let i=0;i<arr.length;i++){
 			var user_action = this.state._id_user.replace(/'/g,'')==arr[i].user.id?'flex':'none';
 		    temp.push(
-		    	<View key={"Comment"+arr[i].id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
+		    	<View key={"CommentComment1"+i} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
 					<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
 						<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
 					</View>
@@ -344,7 +388,7 @@ _renderComment2(){
 		    <ListView
 		    dataSource={this.state.dataSource}
 		    renderRow={(rowData) =>
-		    	<View key={"Comment"+rowData.id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(rowData.id)?'none':'flex'}]}>
+		    	<View style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(rowData.id)?'none':'flex'}]}>
 					<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
 						<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
 					</View>
@@ -462,7 +506,7 @@ _keyExtractor = (item, index) => item.id;
 							onEndReachedThreshold={0.1}
 						    dataSource={this.state.dataSource}
 						    renderRow={(rowData) =>
-						    	<View key={"Comment"+rowData.id} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(rowData.id)?'none':'flex'}]}>
+						    	<View style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(rowData.id)?'none':'flex'}]}>
 									<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
 										<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
 									</View>
@@ -508,7 +552,7 @@ _keyExtractor = (item, index) => item.id;
 					</ScrollView>
 					<View style={[styles._mtextComment]}>
 						<View style={[styles._mClickComment,styles._center]}>
-							<TouchableOpacity style={{flex: 1,paddingVertical: 5}} onPress={()=>{this.setState({_imageCamera: true})}}>
+							<TouchableOpacity style={{flex: 1,paddingVertical: 5}} onPress={()=>{this._opendImage()}}>
 								<Icon type='ionicon' color='gray' name='md-camera' size={width/15} />
 							</TouchableOpacity>
 						</View>

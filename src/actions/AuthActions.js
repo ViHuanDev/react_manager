@@ -69,7 +69,7 @@ export const loginUser = ({email, password}) =>{
   //         AsyncStorage.multiRemove(keys).then((value)=>{
   //            console.log("ok remoe");
   //         });
-  //         // Actions.auth();
+ 	// 			 // Actions.auth();
   //  		 }); 
 		dispatch({type: LOGIN_USER});
 		try {
@@ -84,7 +84,7 @@ export const loginUser = ({email, password}) =>{
 					"email" : email
 				})
 			}).then(async(response)=> response.json()).then((responseJson)=>{
-				// console.log(responseJson);
+				console.log(responseJson);
 				if(responseJson.response==="success"){
 					// console.log(responseJson);
 					var rJson = responseJson;
