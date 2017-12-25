@@ -95,6 +95,12 @@ class LoginForm extends Component{
 			);
 		}
 		componentWillMount(){
+			// console.log(this.props.error+"login form");
+			// if(this.state.error){
+			// 	this.setState({
+			// 		loadingLogin: false,
+			// 	});
+			// }
 			// this.mapStateToProps();
 			console.log("will login");
 			var keyGet = ['@email:key','@password:key','@user_id:key'];
@@ -109,12 +115,15 @@ class LoginForm extends Component{
 							loading: false,
 						});
 						console.log(email+"-"+password+" login");
-						// console.log(this.props.loginUser({password,email}));
 						this.props.loginUser({password,email});
-						// var x = this.props.loginUser({password,email});
-						// console.log(x);
-						// console.log("daluu");
-					}
+						// this.setState({
+						// 	loadingLogin: false,
+						// });
+						setTimeout(()=>{
+							this.setState({
+								loadingLogin: false})
+							}, 2000);
+						}
 					if(value[0][1]==null && value[1][1]==null){
 						this.setState({
 							loadingLogin: false,

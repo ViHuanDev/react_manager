@@ -132,7 +132,7 @@ _funRefer(arr,parent){
 	return out;
 };
 _renderRefer(id){	
-	console.log(this.state.array_id);
+	// console.log(this.state.array_id);
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
           	console.log(value[1][1]);
@@ -272,38 +272,34 @@ _closeStatus(){
 	// console.log(this.state.array_local);
 }
 _renderStatus(id){
+	var arr = this.state.array_status;
+	// console.log(arr[0].code);
 	if(this.state.array_local.length>0){
-		for(let i=1;i<=12;i++){
-			if(this.state.array_local.includes(id+'-'+i)){
-			if(i==1||i==2){
+	if(arr.length>0){
+		for(let i=0;i<=arr.length;i++){
+			if(this.state.array_local.includes(id+'-'+arr[i].code)){
+			if(arr[i].code=="S"||arr[i].code=="Đ"){
 					return(
 						<Text style={[styles._text,styles._textCenter]}>
 							{this.state._langid?this.state._lang.vi.satis:this.state._lang.en.satis}
 						</Text>
 					);
 				}
-				else if(i==3||i==4){
+				else if(arr[i].code=="NW"){
 					return(
 						<Text style={[styles._text,styles._textCenter]}>
 							{this.state._langid?this.state._lang.vi.non_satis:this.state._lang.en.non_satis}
 						</Text>
 					);
 				}
-				else if(i==5||i==6){
+				else if(arr[i].code=="F"||arr[i].code=="L"){
 					return(
 						<Text style={[styles._text,styles._textCenter]}>
 							{this.state._langid?this.state._lang.vi.finding:this.state._lang.en.finding}
 						</Text>
 					);
 				}
-				else if(i==7||i==8){
-					return(
-						<Text style={[styles._text,styles._textCenter]}>
-							{this.state._langid?this.state._lang.vi.observation:this.state._lang.en.observation}
-						</Text>
-					);
-				}
-				else if(i==9||i==10){
+				else if(arr[i].code=="C"||arr[i].code=="Y"){
 					return(
 						<Text style={[styles._text,styles._textCenter]}>
 							{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
@@ -320,146 +316,158 @@ _renderStatus(id){
 			}
 		}
 	}
+}
 	else{
-		for(let i=1;i<=12;i++){
-			if(this.state.array_id.includes(id+'-'+i)){
-			if(i==1||i==2){
-					return(
-						<Text style={[styles._text,styles._textCenter]}>
-							{this.state._langid?this.state._lang.vi.satis:this.state._lang.en.satis}
-						</Text>
-					);
+	if(arr.length>0){
+		for(let i=0;i<=arr.length;i++){
+			if(this.state.array_id.includes(id+'-'+arr[i].code)){
+				if(arr[i].code=="S"||arr[i].code=="Đ"){
+						return(
+							<Text style={[styles._text,styles._textCenter]}>
+								{this.state._langid?this.state._lang.vi.satis:this.state._lang.en.satis}
+							</Text>
+						);
+					}
+					else if(arr[i].code=="NW"){
+						return(
+							<Text style={[styles._text,styles._textCenter]}>
+								{this.state._langid?this.state._lang.vi.non_satis:this.state._lang.en.non_satis}
+							</Text>
+						);
+					}
+					else if(arr[i].code=="F"||arr[i].code=="L"){
+						return(
+							<Text style={[styles._text,styles._textCenter]}>
+								{this.state._langid?this.state._lang.vi.finding:this.state._lang.en.finding}
+							</Text>
+						);
+					}
+					else if(arr[i].code=="C"||arr[i].code=="Y"){
+						return(
+							<Text style={[styles._text,styles._textCenter]}>
+								{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
+							</Text>
+						);
+					}
+					else{
+						return(
+							<Text style={[styles._text,styles._textCenter]}>
+								{this.state._langid?this.state._lang.vi.not_appli:this.state._lang.en.not_appli}
+							</Text>
+						);
+					}
 				}
-				else if(i==3||i==4){
-					return(
-						<Text style={[styles._text,styles._textCenter]}>
-							{this.state._langid?this.state._lang.vi.non_satis:this.state._lang.en.non_satis}
-						</Text>
-					);
-				}
-				else if(i==5||i==6){
-					return(
-						<Text style={[styles._text,styles._textCenter]}>
-							{this.state._langid?this.state._lang.vi.finding:this.state._lang.en.finding}
-						</Text>
-					);
-				}
-				else if(i==7||i==8){
-					return(
-						<Text style={[styles._text,styles._textCenter]}>
-							{this.state._langid?this.state._lang.vi.observation:this.state._lang.en.observation}
-						</Text>
-					);
-				}
-				else if(i==9||i==10){
-					return(
-						<Text style={[styles._text,styles._textCenter]}>
-							{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
-						</Text>
-					);
-				}
-				else{
-					return(
-						<Text style={styles._text}>
-							{this.state._langid?this.state._lang.vi.not_appli:this.state._lang.en.not_appli}
-						</Text>
-					);
-				}
-			}
-		}	}
+			}	
+		}
+	}
 }
 _renderIconStatus(id){
+	var arr = this.state.array_status;
 	if(this.state.array_local.length>0){
-		for(let i=1;i<=12;i++){
-			if(this.state.array_local.includes(id+'-'+i)){
-			if(i==1||i==2){
-					return(
-						<Icon type='font-awesome' color='#4F81F0'  name='gear' size={height/30} />
-					);
-				}
-				else if(i==3||i==4){
-					return(
-						<Icon type='font-awesome' color='#9DD182' name='gear' size={height/30} />
-					);
-				}
-				else if(i==5||i==6){
-					return(
-						<Icon type='font-awesome' color='#F0C751' name='gear' size={height/30} />
-					);
-				}
-				else if(i==7||i==8){
-					return(
-						<Icon type='font-awesome' color='#67CCF2' name='gear' size={height/30} />
-					);
-				}
-				else if(i==9||i==10){
-					return(
-						<Icon type='font-awesome' color='#D67A63' name='gear' size={height/30} />
-					);
-				}
-				else{
-					return(
-						<Icon type='font-awesome' color='black' name='gear' size={height/30} />
-					);
-				}
+		if(arr.length>0){
+			for(let i=0;i<=arr.length;i++){
+					if(this.state.array_local.includes(id+'-'+arr[i].code)){
+					if(arr[i].code=="S"||arr[i].code=="Đ"){
+							return(
+								<Icon type='font-awesome' color='#4F81F0'  name='gear' size={height/30} />
+							);
+					}
+					else if(arr[i].code=="NW"){
+							return(
+								<Icon type='font-awesome' color='#9DD182' name='gear' size={height/30} />
+							);
+					}
+					else if(arr[i].code=="F"||arr[i].code=="L"){
+							return(
+								<Icon type='font-awesome' color='#F0C751' name='gear' size={height/30} />
+							);
+					}
+					else if(arr[i].code=="C"||arr[i].code=="Y"){
+							return(
+								<Icon type='font-awesome' color='#67CCF2' name='gear' size={height/30} />
+							);
+					}
+					else if(i==9||i==10){
+							return(
+								<Icon type='font-awesome' color='#D67A63' name='gear' size={height/30} />
+							);
+					}
+					else{
+							return(
+								<Icon type='font-awesome' color='black' name='gear' size={height/30} />
+							);
+					}
 			}
 		}
 	}
+}
 	else{
-		for(let i=1;i<=12;i++){
-			if(this.state.array_id.includes(id+'-'+i)){
-			if(i==1||i==2){
-					return(
-						<Icon type='font-awesome' color='#4F81F0'  name='gear' size={height/30} />
-					);
-				}
-				else if(i==3||i==4){
-					return(
-						<Icon type='font-awesome' color='#9DD182' name='gear' size={height/30} />
-					);
-				}
-				else if(i==5||i==6){
-					return(
-						<Icon type='font-awesome' color='#F0C751' name='gear' size={height/30} />
-					);
-				}
-				else if(i==7||i==8){
-					return(
-						<Icon type='font-awesome' color='#67CCF2' name='gear' size={height/30} />
-					);
-				}
-				else if(i==9||i==10){
-					return(
-						<Icon type='font-awesome' color='#D67A63' name='gear' size={height/30} />
-					);
-				}
-				else{
-					return(
-						<Icon type='font-awesome' color='black' name='gear' size={height/30} />
-					);
+		if(arr.length>0){
+			for(let i=0;i<=arr.length;i++){
+				if(this.state.array_id.includes(id+'-'+arr[i].code)){
+						if(arr[i].code=="S" || arr[i].code=="Đ"){
+								return(
+									<Icon type='font-awesome' color='#4F81F0'  name='gear' size={height/30} />
+								);
+							}
+							else if(arr[i].code=="NW"){
+								return(
+									<Icon type='font-awesome' color='#9DD182' name='gear' size={height/30} />
+								);
+							}
+							else if(arr[i].code=="F"||arr[i].code=="L"){
+								return(
+									<Icon type='font-awesome' color='#F0C751' name='gear' size={height/30} />
+								);
+							}
+							else if(arr[i].code=="C"||arr[i].code=="Y"){
+								return(
+									<Icon type='font-awesome' color='#67CCF2' name='gear' size={height/30} />
+								);
+							}
+							// else if(i==9||i==10){
+							// 	return(
+							// 		<Icon type='font-awesome' color='#D67A63' name='gear' size={height/30} />
+							// 	);
+							// }
+							else{
+								return(
+									<Icon type='font-awesome' color='black' name='gear' size={height/30} />
+								);
+							}
+						}
 				}
 			}
 		}
-	}
 };
 _thisSelectSatus(el){
+	console.log(el);
 	var ar= el.split('-');
 	var id = this.state._idClick;
-	var count_status = this.state.array_status;
+	var count_status = ['Đ','S','NW','L','F','C','Y','N\A','N\\A'];
 	let temp = this.state.array_local.length >0?this.state.array_local:this.state.array_id;
 	this.setState({
 		array_id: [],
 	});
 	console.log(temp+' trc khi xu ly');
 	console.log(count_status);
+	if(count_status.length>0){
 		for(let m=0;m<=count_status.length;m++){
-			if(temp.includes(id+'-'+count_status[m].code)){
-				if(count_status[m].code==ar[1]){
+			if(temp.includes(id+'-'+count_status[m])){
+				if(count_status[m]==ar[1]){
 				}
 				else{
-					temp.splice(temp.indexOf(id+'-'+count_status[m].code),1);
+					temp.splice(temp.indexOf(id+'-'+count_status[m]),1);
 				}
 			}
+		}
+		for(let i2=0;i2<= temp.length-1;i2++){
+				for(let j=i2+1; j <temp;j++){
+						if(temp[i2]==temp[j]){
+						temp.splice(j);
+				}
+			}
+		}
 	}
 	temp.push(el);
 	console.log(temp+' sau khi xu ly');
@@ -509,36 +517,36 @@ _thisCheckbox(el){
 	var id = this.state._idClick;
 	// var temp= Number(el)%2==0?Number(el)-1:Number(el)+1;
 		// if(this.state.array_local.length > 0){
-			if(this.state.array_local.includes(id+'-'+'S')){
+			if(this.state.array_local.includes(id+'-'+el)|| this.state.array_id.includes(id+'-'+el)){
 				return true;
 			}
-			else if(this.state.array_local.includes(id+'-'+'NW')){
-				return true;
-			}
-			else if(this.state.array_local.includes(id+'-'+'F')){
-				return true;
-			}
-			else if(this.state.array_local.includes(id+'-'+'C')){
-				return true;
-			}
-			else if(this.state.array_local.includes(id+'-'+'NA')){
-				return true;
-			}
-			else if(this.state.array_id.includes(id+'-'+'Đ')){
-				return true;
-			}
-			else if(this.state.array_id.includes(id+'-'+'NW')){
-				return true;
-			}
-			else if(this.state.array_id.includes(id+'-'+'L')){
-				return true;
-			}
-			else if(this.state.array_id.includes(id+'-'+'Y')){
-				return true;
-			}
-			else if(this.state.array_id.includes(id+'-'+'NA')){
-				return true;
-			}
+			// else if(this.state.array_local.includes(id+'-'+'NW')){
+			// 	return true;
+			// }
+			// else if(this.state.array_local.includes(id+'-'+'F')){
+			// 	return true;
+			// }
+			// else if(this.state.array_local.includes(id+'-'+'C')){
+			// 	return true;
+			// }
+			// else if(this.state.array_local.includes(id+'-'+'NA')){
+			// 	return true;
+			// }
+			// else if(this.state.array_id.includes(id+'-'+'Đ')){
+			// 	return true;
+			// }
+			// else if(this.state.array_id.includes(id+'-'+'NW')){
+			// 	return true;
+			// }
+			// else if(this.state.array_id.includes(id+'-'+'L')){
+			// 	return true;
+			// }
+			// else if(this.state.array_id.includes(id+'-'+'Y')){
+			// 	return true;
+			// }
+			// else if(this.state.array_id.includes(id+'-'+'NA')){
+			// 	return true;
+			// }
 			else{
 				return false;
 			}
@@ -581,6 +589,67 @@ _eachColor(el){
 		else{
 			return 'black';
 		}
+};
+_renderViewModalComment(){
+	var id = this.state._idClick;
+	var arr = ['Đ','S','NW','L','F','C','Y','N\A','N\\A'];
+	let view =[];
+	var state = this.state.array_local.length>0?this.state.array_local:this.state.array_id;
+	for(let i=0;i<=arr.length;i++){
+		if(state.includes(id+'-'+arr[i])){
+		// var index = state.indexOf(id+'-'+arr[i])
+			if(arr[i]=="C" || arr[i]=="Y" || arr[i]=="L" || arr[i]=="F"){
+				view.push(
+						<View style={{flex: 0.3}} key={"inputComment"+i}>
+								<View style={styles._mComment}>
+									<Text style={styles._colorText}>
+									  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment} :
+									</Text>
+									<TextInput style={[styles.input,{height: Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, height))} ]}
+						      		 				multiline
+													underlineColorAndroid='white'
+								      				onContentSizeChange={this.handleContentSizeChange}
+								      				onChangeText={(text)=>this._onCommentChange(text)}
+								      				value={this.state.comment}
+						      				/>
+								</View>
+								<View style={[styles._mfootAction,styles._center]}>
+									<View>
+										<TouchableOpacity style={styles._button} onPress={()=>{this._closeStatus()}}>
+											<Text style={styles._color} >
+											  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
+											</Text>
+										</TouchableOpacity>
+									</View>
+									<View>
+										<TouchableOpacity style={styles._button} onPress={()=>this._sendComment(this.state._idClick)}>
+											<Text style={styles._color} >
+											  	{this.state._langid?this.state._lang.vi.save:this.state._lang.en.save}
+											</Text>
+										</TouchableOpacity>
+									</View>
+								</View>
+						</View>
+						);
+			}
+			else{
+				view.push(
+						<View style={{flex:0.3}} key={"inputComment"+i}>
+								<View style={[styles._mfootAction,styles._center]}>
+									<View>
+										<TouchableOpacity style={styles._button} onPress={()=>{this._closeStatus()}}>
+											<Text style={styles._color} >
+											  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
+											</Text>
+										</TouchableOpacity>
+									</View>
+								</View>
+						</View>
+						);
+			}
+		}
+	}
+	return view;
 };
 _rennderViewComment(item){
 	temp=[];
@@ -678,6 +747,7 @@ _eachStatus(){
 	}
 	return view;
 }
+
 _eachItem(){
 	var arr = this.state.array_faq;
 	const lang = this.state.language;
@@ -719,13 +789,13 @@ _eachItem(){
 							let temp = [];
 							// console.log(item);
 							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.status.code);
-							// for(let i2=0;i2 <= this.state.array_id.length-1;i2++){
-							// 	for(let j=i2+1; j <this.state.array_id.length;j++){
-							// 		if(this.state.array_id[i2]==this.state.array_id[j]){
-							// 			this.state.array_id.splice(j);
-							// 		}
-							// 	}
-							// }
+							for(let i2=0;i2<= this.state.array_id.length-1;i2++){
+								for(let j=i2+1; j <this.state.array_id.length;j++){
+									if(this.state.array_id[i2]==this.state.array_id[j]){
+										this.state.array_id.splice(j);
+									}
+								}
+							}
 							// console.log(this.state.array_id);
 							view.push(
 							<View style={[styles._datasContent]} key={"checklist"+item.id}>
@@ -736,7 +806,7 @@ _eachItem(){
 										{this._rennderViewComment(item.id)}
 										<View style={[styles._itemAction,styles._center]}>
 											<View style={styles._iconAction}>
-												  	{this._renderIconStatus(item.id)}
+												{this._renderIconStatus(item.id)}
 											</View>
 											<View style={styles._textAction}>
 												{this._viewRenderStatus(item)}
@@ -894,34 +964,7 @@ render() {
 								<View style={styles._mdataAction}>
 									{this._eachStatus()}
 								</View>
-								<View style={styles._mComment}>
-									<Text style={styles._colorText}>
-									  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment} :
-									</Text>
-									<TextInput style={[styles.input,{height: Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, height))} ]}
-	         				 			multiline
-										underlineColorAndroid='white'
-				          				onContentSizeChange={this.handleContentSizeChange}
-				          				onChangeText={(text)=>this._onCommentChange(text)}
-				          				value={this.state.comment}
-	         						/>
-								</View>
-								<View style={[styles._mfootAction,styles._center]}>
-									<View>
-										<TouchableOpacity style={styles._button} onPress={()=>{this._closeStatus()}}>
-											<Text style={styles._color} >
-											  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
-											</Text>
-										</TouchableOpacity>
-									</View>
-									<View>
-										<TouchableOpacity style={styles._button} onPress={()=>this._sendComment(this.state._idClick)}>
-											<Text style={styles._color} >
-											  	{this.state._langid?this.state._lang.vi.save:this.state._lang.en.save}
-											</Text>
-										</TouchableOpacity>
-									</View>
-								</View>
+								{this._renderViewModalComment()}
 							</View>
 						</View>
 				</Modal>

@@ -113,11 +113,11 @@ export const loginUser = ({email, password}) =>{
 				// console.log(await AsyncStorage.get('@token:key'));
 			}
 			else{
-				loginUserFail(dispatch,rJson.message);
+				loginUserFail(dispatch,responseJson.message);
 				// console.log(rJson);
 			}
 		}else{
-			loginUserFail(dispatch,"Syntax error");
+			loginUserFail(dispatch,responseJson.message);
 		}
 		// if(responseJson._bodyInit.reponse){
 		// 	console.log("adasd");
