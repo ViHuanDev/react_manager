@@ -55,6 +55,7 @@ export const lang = {
 				'checked_org': 'Đơn vị được kiểm tra',
 				'paLead': 'Trưởng đoàn đánh giá',
 				'paAudit': 'Đánh giá viên',
+				'corrective': 'Khắc phục',
 				},
 		"en":{
 				'signout':'Sign Out',
@@ -111,5 +112,6 @@ export const lang = {
 				'checked_org': 'Checked organization',
 				'paLead': 'Lead',
 				'paAudit': 'Audit',
+				'corrective': 'Corrective'
 		}
 };

@@ -273,13 +273,13 @@ export const Side_Menu = DrawerNavigator({
 	drawerPosition: 'left',
 	contentComponent: props => <SideBar {...props} />,
 	// initialRouteName:'',
-	initialRoute :'MenuOpen',
-	index: 0,
-    initialRouteName: 'Main_Route',
-    headerMode: 'none',
-    navigationOptions: {
-      gesturesEnabled: false
-    }
+	// initialRoute :'MenuOpen',
+	// index: 0,
+ //    initialRouteName: 'Main_Route',
+    // headerMode: 'none',
+ //    navigationOptions: {
+ //      gesturesEnabled: false
+ //    }
 });
 export default connect()(Side_Menu);
 // export default connect()(HomeMenu);

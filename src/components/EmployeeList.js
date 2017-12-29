@@ -81,7 +81,7 @@ render(){
 												<View style={styles.iconLeft}>
 													{item.status=="close"?<Icon type='evilicon' color='#808080' name="exclamation" size={height/20} />:item.status=="on progress"?<Icon type='material-community' color='#5DFF5D' name="timelapse" size={height/20} />:
 													item.status=="pending"?<Icon type='evilicon' color='#f0c54c' name="clock" size={height/20} />:item.status=="approval"?<Icon type='evilicon' color='#36c6d3' name="check" size={height/20} />:
-													item.status=="refuse"?<Icon type='evilicon' color='red' name="close-o" size={height/20} />:<Icon type='evilicon' color='red' name="close-o" size={height/20} />}
+													item.status=="refuse"?<Icon type='evilicon' color='red' name="close-o" size={height/20} />:<Icon type='ionicon' color='yellow' name="ios-settings" size={height/20} />}
 													<Text style={{fontSize: 11}}>
 													  {item.status}
 													</Text>

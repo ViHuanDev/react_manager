@@ -122,7 +122,7 @@ class LoginForm extends Component{
 						setTimeout(()=>{
 							this.setState({
 								loadingLogin: false})
-							}, 2000);
+							}, 3000);
 						}
 					if(value[0][1]==null && value[1][1]==null){
 						this.setState({

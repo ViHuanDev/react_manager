@@ -20,13 +20,13 @@ componentWillMount() {
 	// this.props.navigation.navigate('Screen_EmployList');
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
-          	console.log(value[1][1]);
+          	// console.log(value);
           	this.setState({
-          		_langid: value[1][1]=='vi'?true:false,
+          		_langid: value[4][1]=='vi'?true:false,
        		});
 	        fetch(URL_HOME+'/api/user/auditpermission?data='+this.state.id_list+'&token='+value[3][1]).then((response) => 
 					response.json()) .then((responseJson) => {
-						console.log(responseJson);
+						// console.log(responseJson);
 						this.setState({
 							array_audit: responseJson,
 							_isLoading: false,
@@ -44,32 +44,147 @@ _clickStartChecklist(){
 	var status = this.state.status;
 	this.props.navigation.navigate('Screen_ListFaQ',{id: id,name_list: name_list,status: status});
 };
+_changeStatusChecklist(val){
+	AsyncStorage.getAllKeys((err, keys) => { 
+        AsyncStorage.multiGet(keys).then((value)=>{
+        	if(val=="corrective"){
+		        fetch(URL_HOME+'/api/checklists/changestatus/'+this.state.id_list+'?token='+value[3][1],{
+		        	"method": "POST",
+		        	headers:{
+						"Accept":"application/json",
+						"Content-Type":"application/json;charset=utf-8"
+					},
+					body: JSON.stringify({
+						"data": "corrective",
+					})
+		        }).then((response) => 
+						response.json()) .then((responseJson) => {
+							console.log(responseJson);
+							this.setState({
+								status: responseJson.status,
+							});
+							console.log(this.state.status);
+						}) .catch((error) => { 
+							console.error(error);
+				});
+			}
+			else if(val=="close"){
+				fetch(URL_HOME+'/api/checklists/changestatus/'+this.state.id_list+'?token='+value[3][1],{
+		        	"method": "POST",
+		        	headers:{
+						"Accept":"application/json",
+						"Content-Type":"application/json;charset=utf-8"
+					},
+					body: JSON.stringify({
+						"data": "close",
+					})
+		        }).then((response) => 
+						response.json()) .then((responseJson) => {
+							console.log(responseJson);
+							this.setState({
+								status: responseJson.status,
+							});
+							console.log(this.state.status);
+						}) .catch((error) => { 
+							console.error(error);
+				});
+			}
+	    });
+    });
+};
 _renderButtonClick(){
 	var _status = this.state.status;
+	console.log(_status);
 	var temp=[];
-	if(_status=="on progress" || _status=="approval"){
-		temp.push(
-			<View key={"key1222"} style={[styles._contentFun,styles._center]}>
-				<View style={[styles._clickFun,styles._center]}>
-					<TouchableOpacity onPress={()=>{this._clickStartChecklist()}} style={[styles._button,styles._center,{flexDirection: 'row'}]} >
-						<Icon type="material-community" name="play" color="white" size={height/30} />
-						<Text style={styles._color} >
-						  {this.state._langid?this.state._lang.vi.start:this.state._lang.en.start}
-						</Text>
-					</TouchableOpacity>
-				</View>
-				<View style={[styles._clickFun,styles._center]}>
-					<TouchableOpacity style={[styles._button,styles._center,{flexDirection: 'row'}]} >
-						<Icon type="material-community" name="close" color="white" size={height/30} />
-						<Text style={styles._color} >
-						  {this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
-						</Text>
-					</TouchableOpacity>
-				</View>
-			</View>
-		);
-	}else{
-		temp.push(
+	// if(_status=="approval"){
+	// 	temp.push(
+	// 		<View key={"key1222"} style={[styles._contentFun,styles._center]}>
+	// 			<View style={[styles._clickFun,styles._center]}>
+	// 				<TouchableOpacity onPress={()=>{this._clickStartChecklist()}} style={[styles._button,styles._center,{flexDirection: 'row'}]} >
+	// 					<Icon type="material-community" name="play" color="white" size={height/30} />
+	// 					<Text style={styles._color} >
+	// 					  {this.state._langid?this.state._lang.vi.start:this.state._lang.en.start}
+	// 					</Text>
+	// 				</TouchableOpacity>
+	// 			</View>
+	// 			<View style={[styles._clickFun,styles._center]}>
+	// 				<TouchableOpacity style={[styles._button,styles._center,{flexDirection: 'row'}]} >
+	// 					<Icon type="material-community" name="close" color="white" size={height/30} />
+	// 					<Text style={styles._color} >
+	// 					  {this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
+	// 					</Text>
+	// 				</TouchableOpacity>
+	// 			</View>
+	// 		</View>
+	// 	);
+	// }
+	// else if(_status=="corrective"){
+	// 	temp.push(
+	// 		<View key={"key1222corrective"} style={[styles._contentFun,styles._center]}>
+	// 			<View style={[styles._clickFun,styles._center]}>
+	// 				<TouchableOpacity onPress={()=>{this._clickStartChecklist()}} style={[styles._button,styles._center,{flexDirection: 'row'}]} >
+	// 					<Icon type="material-community" name="play" color="white" size={height/30} />
+	// 					<Text style={styles._color} >
+	// 					  {this.state._langid?this.state._lang.vi.start:this.state._lang.en.start}
+	// 					</Text>
+	// 				</TouchableOpacity>
+	// 			</View>
+	// 			<View style={[styles._clickFun,styles._center]}>
+	// 				<TouchableOpacity style={[styles._button,styles._center,{flexDirection: 'row'}]} >
+	// 					<Icon type="material-community" onPress={()=>{this._changeStatusChecklist("close")}} name="close" color="white" size={height/30} />
+	// 					<Text style={styles._color} >
+	// 					  {this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
+	// 					</Text>
+	// 				</TouchableOpacity>
+	// 			</View>
+	// 		</View>
+	// 	);
+	// }
+	// else if(_status=="1"){
+	// 	temp.push(
+	// 		<View key={"key1222corrective"} style={[styles._contentFun,styles._center]}>
+	// 			<View style={[styles._clickFun,styles._center]}>
+	// 				<TouchableOpacity onPress={()=>{this.props.navigation.goBack()}} style={[styles._button,styles._center,{flexDirection: 'row'}]} >
+	// 					<Icon type="ionicon" name="ios-arrow-back" color="white" size={height/30} />
+	// 					<Text style={styles._color} >
+	// 					  {this.state._langid?'Quay lại':'Back'}
+	// 					</Text>
+	// 				</TouchableOpacity>
+	// 			</View>
+	// 		</View>
+	// 	);
+	// }
+	// else if(_status=="on progress"){
+	// 	temp.push(
+	// 		<View key={"key1222"} style={[styles._contentFun,styles._center]}>
+	// 			<View style={[styles._clickFun,styles._center]}>
+	// 				<TouchableOpacity onPress={()=>{this._clickStartChecklist()}} style={[styles._button,styles._center,{flexDirection: 'row'}]} >
+	// 					<Icon type="material-community" name="play" color="white" size={height/30} />
+	// 					<Text style={styles._color} >
+	// 					  {this.state._langid?this.state._lang.vi.start:this.state._lang.en.start}
+	// 					</Text>
+	// 				</TouchableOpacity>
+	// 			</View>
+	// 			<View style={[styles._clickFun,styles._center]}>
+	// 				<TouchableOpacity onPress={()=>{this._changeStatusChecklist("close")}} style={[styles._button,styles._center,{flexDirection: 'row'}]} >
+	// 					<Icon type="material-community" name="close" color="white" size={height/30} />
+	// 					<Text style={styles._color} >
+	// 					  {this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
+	// 					</Text>
+	// 				</TouchableOpacity>
+	// 			</View>
+	// 			<View style={[styles._clickFun,styles._center,{flex: 0.4}]}>
+	// 				<TouchableOpacity onPress={()=>{this._changeStatusChecklist("corrective")}} style={[styles._button,styles._center,{flexDirection: 'row'}]} >
+	// 					<Icon type="ionicon" name="ios-settings" color="white" size={height/30} />
+	// 					<Text style={styles._color} >
+	// 					  {this.state._langid?this.state._lang.vi.corrective:this.state._lang.en.corrective}
+	// 					</Text>
+	// 				</TouchableOpacity>
+	// 			</View>
+	// 		</View>
+	// 	);
+	// }
+	temp.push(
 		<View key={"keyAlert2208"} style={[styles._contentFun,styles._center]}>
 			<View style={[styles._clickFun,styles._center]}>
 				<TouchableOpacity onPress={()=>{this._clickStartChecklist()}} style={[styles._button,styles._center,{flexDirection: 'row'}]} >
@@ -81,7 +196,6 @@ _renderButtonClick(){
 			</View>
 		</View>
 		);
-	}
 	return temp;
 }
 _popupStatus(){
@@ -232,7 +346,7 @@ render() {
 						<View style={styles._dataFun}>
 							<View style={[styles._headFun,styles._center,{}]}>
 								{/*<Icon type="material-community" name="account-settings-variant" size={height/30} color="white" />*/}
-								<Text style={{fontSize: 16,color: 'black'}} >
+								<Text style={{fontSize: 14,color: 'black'}} >
 								  	{this.state._langid?this.state._lang.vi.fun:this.state._lang.en.fun}
 								</Text>
 							</View>
@@ -309,16 +423,17 @@ const styles = StyleSheet.create({
 		// borderWidth: 1,
 	},
 	_headFun:{
-		margin: 5,
-		flex: 0.3,
+		// margin: 5,
+		flex: 0.25,
 		flexDirection: 'row', 
 	},
 	_contentFun:{
-		flex: 0.7,
+		flex: 0.75,
 		flexDirection: 'row', 
 	},
 	_clickFun:{
-		flex: 0.5,
+		flex: 0.3,
+		// borderWidth: 1,
 	},
 	_headInfo:{
 		flex: 0.1,
@@ -377,12 +492,14 @@ const styles = StyleSheet.create({
   		// borderColor: 'green',
   		backgroundColor: '#0457C9',
   		// padding: 5,
-  		paddingHorizontal: 10,
+  		paddingHorizontal: 5,
   		paddingVertical: 2,
+  		justifyContent: 'center',
+  		alignItems: 'center',  
   	},
  	_color:{
  	color: 'white',
- 	fontSize: height/45,
+ 	fontSize: height/50,
  	}
 });
 export default ActionsCheckList;
