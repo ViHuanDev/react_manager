@@ -5,6 +5,7 @@ import { Icon } from 'react-native-elements';
 import LinearGradient from 'react-native-linear-gradient';
 import AnimatedLinearGradient from 'react-native-animated-linear-gradient'
 import {Card, CardSection, Input, Button, Spinner} from './common';
+import { Keyboard } from 'react-native';
 import {
 	emailChanged,
 	passwordChanged,
@@ -70,6 +71,7 @@ const {height,width} = Dimensions.get('screen');
 class LoginForm extends Component{
 	constructor(props) {
 	  super(props);
+
 	  this.state = {
 	  	loadingLogin: true,loading:true,error: this.props.error,
 	  };
@@ -82,6 +84,7 @@ class LoginForm extends Component{
 	}
 	onButtonPress(){
 		const {email,password} = this.props;
+		Keyboard.dismiss();
 		this.props.loginUser({ email, password});
 	}
 	renderButton(){
@@ -172,6 +175,7 @@ class LoginForm extends Component{
 													customText={
 														<Icon type='material-community' style={{paddingLeft: 10 ,paddingRight: width/20}} color='white' name="email-outline" size={height/20}/>
 													}
+													autoFocus2={false}
 													placeholderTextColor="white"
 													keyboardType={'email-address'}
 													placeholder = "Email"
@@ -184,6 +188,7 @@ class LoginForm extends Component{
 													customText={
 														<Icon type='material-community' style={{paddingLeft: 10 ,paddingRight: width/20}} color='white' name="lock-outline" size={height/20}/>
 													}
+													autoFocus2={false}
 													secureTextEntry={true}
 													placeholderTextColor="white"
 													placeholder = "Password"

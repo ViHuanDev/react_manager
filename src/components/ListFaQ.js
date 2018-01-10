@@ -4,6 +4,7 @@ import {View,Text,FlatList,AsyncStorage,Dimensions,Modal,Image,Picker,TextInput,
 // import CheckBox from 'react-native-checkbox';
 import { Icon } from 'react-native-elements';
 import { CheckBox } from 'react-native-elements';
+import Pie from 'react-native-pie';
 import PopoverTooltip from 'react-native-popover-tooltip';
 import {lang} from './languages/languages';
 import {URL_HOME,normalize} from '../config';
@@ -15,10 +16,10 @@ class ListFaQ extends Component {
 		super(props);
 		this.state = {
 			status: this.props.navigation.state.params.status,id_faq: this.props.navigation.state.params.id,name_list: this.props.navigation.state.params.name_list,isLoading:true,
-			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',
+			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',data_pie:[0],
 			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],_mReport:false,
 			comment:'',_langid:'',_lang: lang,array_comment:[],_showCmt:true,_mChildComment: false,array_refer_dq:[],
-			_idComment:[],_idChildComment:[],_statusFAQ:'',array_report:[],mRefer:false,array_refer:[],
+			_idComment:[],_idChildComment:[],_statusFAQ:'',array_report:[],mRefer:false,array_refer:[],_this_status:'',
 		};
 	};
 // _keyExtractor = (item, index) => index;
@@ -27,9 +28,9 @@ componentWillMount() {
 	//checklists/id_check?token
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
-          	// console.log(value[1][1]);
+          	console.log(value);
           	this.setState({
-          		_langid: value[4][1]=='vi'?true:false,
+          		_langid: value[1][1]=='vi'?true:false,
           	});
         	fetch(URL_HOME+'/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => {
@@ -54,9 +55,16 @@ componentWillMount() {
 			});  
 			fetch(URL_HOME+'/api/checklists/statistic?data='+this.state.id_faq+'&token='+value[3][1]).then((response) => 
 				response.json()).then((responseJson)=>{ 
-					// console.log(responseJson);
+					console.log(responseJson.totalchk);
+					var temp = [];
+					for(let i=0;i<responseJson.sttchk.length;i++){
+						let result = (responseJson.sttchk[i].total/responseJson.totalchk)*100;
+						temp.push(result);
+					}
+					console.log(temp);
 					this.setState({
 						array_report: responseJson,
+						data_pie: temp,
 						isLoading: false,
 						});
 					// console.log(this.state.array_status);
@@ -230,9 +238,11 @@ _renderReport(){
 		var arr = this.state.array_report.sttchk;
 		var temp = [];
 		for(let i=0;i<arr.length;i++){
+			var color_t = arr[i].name=='Satisfactory'?'#4F81F0':arr[i].name=="Phù hợp"?'#4F81F0':arr[i].name=='Not witness'?'#f05a63':arr[i].name=="Không kiểm chứng"?"#f05a63":arr[i].name=="Finding"?"#F0C751":arr[i].name=="Lỗi"?"#F0C751":arr[i].name=="Ý kiến"?"#67CCF2":arr[i].name=="Comment"?"#67CCF2":"#ECEEEF";
+			console.log(arr[i]);
 			var color_true = i%2==0?"#ECEEEF":"white";
 			temp.push(
-				<View key={"report"+i} style={[styles._itemsDataReport,{backgroundColor: color_true}]}>
+				<View key={"report"+i} style={[styles._itemsDataReport,{backgroundColor: color_t}]}>
 					<View style={[styles._itemReport,styles._center]}>
 						<Text style={styles._textCenter} >
 						  {arr[i].name}
@@ -255,17 +265,32 @@ _renderReport(){
 	}
 };
 _onPressAction(el){
+	// console.log(el.status.code);
+	var temp = el.id+'-'+el.status.code;
 	this.setState({
 		_modal: true,
-		_idClick: el,
+		_idClick: el.id,
+		_this_status: temp,
 	});
 	// console.log(this.state.array_local);
 }
 _closeStatus(){
+	var id = this.state._idClick;
+	var count_status = ['Đ','S','NW','L','F','C','Y','N\A','N\\A'];
+	let temp = this.state.array_local.length>0?this.state.array_local:this.state.array_id;
+	for(let m=0;m<=count_status.length;m++){
+			if(temp.includes(id+'-'+count_status[m])){
+				temp.splice(temp.indexOf(id+'-'+count_status[m]),1);
+			}
+	}
+	temp.push(this.state._this_status);
 	this.setState({
 		_modal: !this.state._modal,
+		array_id: temp,
+		array_local: temp,
 	});
-	// console.log(this.state.array_local);
+	console.log(this.state._this_status);
+	console.log(temp);
 }
 _renderStatus(id){
 	var arr = this.state.array_status;
@@ -370,7 +395,7 @@ _renderIconStatus(id){
 					}
 					else if(arr[i].code=="NW"){
 							return(
-								<Icon type='font-awesome' color='#9DD182' name='gear' size={height/30} />
+								<Icon type='font-awesome' color='#f05a63' name='gear' size={height/30} />
 							);
 					}
 					else if(arr[i].code=="F"||arr[i].code=="L"){
@@ -408,7 +433,7 @@ _renderIconStatus(id){
 							}
 							else if(arr[i].code=="NW"){
 								return(
-									<Icon type='font-awesome' color='#9DD182' name='gear' size={height/30} />
+									<Icon type='font-awesome' color='#f05a63' name='gear' size={height/30} />
 								);
 							}
 							else if(arr[i].code=="F"||arr[i].code=="L"){
@@ -681,7 +706,7 @@ _rennderViewComment(item){
 _viewRenderStatus(item){
 	var temp=[];
 	if(this.state.status=="on progress" || this.state.status=="approval" || this.state.status=="corrective"){
-		temp.push(<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item.id)} >
+		temp.push(<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item)} >
 			{this._renderStatus(item.id)}
 		</TouchableOpacity>);
 	}else{
@@ -730,9 +755,11 @@ _eachStatus(){
 							style={[styles._checkbox]}  />
 					</View>
 					<View style={[styles._mtextAction,styles._center]}>
-						<Text style={[styles._mText,styles._center,styles._colorText,{color: arr[i].code=="S"||arr[i].code=="Đ"?'#4c7ff0':arr[i].code=="NW"?'#9DD182':arr[i].code=="F"||arr[i].code=="L"?'#F0C751':arr[i].code=="Y"||arr[i].code=="C"?'#67CCF2':'black'}]}>
-						  	{item.name}
-						</Text>
+						<TouchableOpacity onPress={()=>this._thisSelectSatus(this.state._idClick+'-'+item.code)}  >
+							<Text style={[styles._mText,styles._center,styles._colorText,{color: arr[i].code=="S"||arr[i].code=="Đ"?'#4c7ff0':arr[i].code=="NW"?'#9DD182':arr[i].code=="F"||arr[i].code=="L"?'#F0C751':arr[i].code=="Y"||arr[i].code=="C"?'#67CCF2':'black'}]}>
+							  	{item.name}
+							</Text>
+						</TouchableOpacity>
 					</View>
 				</View>
 			);
@@ -844,7 +871,7 @@ _renderViewActions(){
 			<View key={"keyStatus"} style={[styles._mFootReport,styles._center]}>
 				<TouchableOpacity style={styles._button} onPress={()=>{this._renderButtonClick("close")}}>
 			  		<Text style={{color: "white"}} >
-			  	  		{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
+			  	  		{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close} {"checklist"}
 			  		</Text>
 				</TouchableOpacity>
 			</View>
@@ -855,12 +882,12 @@ _renderViewActions(){
 			<View key={"keyStatus"} style={[styles._mFootReport,styles._center]}>
 				<TouchableOpacity style={styles._button} onPress={()=>{this._renderButtonClick("close")}}>
 			  		<Text style={{color: "white"}} >
-			  	  		{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close}
+			  	  		{this.state._langid?this.state._lang.vi.close:this.state._lang.en.close} {"checklist"}
 			  		</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles._button} onPress={()=>{this._renderButtonClick("corrective")}}>
 			  		<Text style={{color: "white"}} >
-			  	  		{this.state._langid?this.state._lang.vi.corrective:this.state._lang.en.corrective}
+			  	  		{this.state._langid?this.state._lang.vi.corrective:this.state._lang.en.corrective} {"checklist"}
 			  		</Text>
 				</TouchableOpacity>
 			</View>
@@ -916,22 +943,11 @@ _renderButtonClick(val){
 	    });
     });
 };
-// _keyExtractor(){
-// 	var arr = this.state.array_faq;
-// 	const id =[];
-// 	// console.log(arr);
-// 	arr.map(function(item){
-// 		item.data.map(function(data){
-// 			id.push(data.id);
-// 		});
-// 	});
-// 	return id;
-// }
 render() {
 	return (
 			<View style={[styles.row]}>
 				<Modal 
-					animationType="slide"
+					animationType="fade"
 					transparent={false}
 					visible={this.state.isLoading}
 					onRequestClose={() => {alert("Modal has been closed.")}} >
@@ -942,8 +958,8 @@ render() {
 							/>
 						</View>
 				</Modal>
-				<Modal 
-					animationType="slide"
+				<Modal
+					animationType="fade"
 					transparent={false}
 					visible={this.state.mRefer}
 					onRequestClose={() => {this.setState({mRefer: false})}} >
@@ -1026,14 +1042,68 @@ render() {
 										</View>
 										{this._renderReport()}
 									</View>
-									{this.state.status!=''?this._renderViewActions():this._renderViewActions()}
 								</View>
+								<View style={[styles._bodyCharts,styles._center]}>
+									{/*<View style={styles._viewStatus} >
+																				<View style={{flex: 0.2,borderWidth: 1,flexDirection: 'row'}}>
+																					<View style={{flex: 0.5}}>
+																					</View>
+																					<View style={{flex: 0.5}}>
+																						<Text>
+																						  name
+																						</Text>
+																					</View>
+																				</View>
+																				<View style={{flex: 0.2,borderWidth: 1,flexDirection: 'row'}}>
+																					<View style={{flex: 0.5}}>
+																					</View>
+																					<View style={{flex: 0.5}}>
+																						<Text>
+																						  name
+																						</Text>
+																					</View>
+																				</View>
+																				<View style={{flex: 0.2,borderWidth: 1,flexDirection: 'row'}}>
+																					<View style={{flex: 0.5}}>
+																					</View>
+																					<View style={{flex: 0.5}}>
+																						<Text>
+																						  name
+																						</Text>
+																					</View>
+																				</View>
+																				<View style={{flex: 0.2,borderWidth: 1,flexDirection: 'row'}}>
+																					<View style={{flex: 0.5}}>
+																					</View>
+																					<View style={{flex: 0.5}}>
+																						<Text>
+																						  name
+																						</Text>
+																					</View>
+																				</View>
+																				<View style={{flex: 0.2,borderWidth: 1,flexDirection: 'row'}}>
+																					<View style={{flex: 0.5}}>
+																					</View>
+																					<View style={{flex: 0.5}}>
+																						<Text>
+																						  name
+																						</Text>
+																					</View>
+																				</View>
+																		</View>*/}
+									<View style={[styles._viewChartStatus,styles._center]} >
+										<Pie
+									        radius={90}
+									        series={this.state.data_pie}
+									        colors={['#4F81F0', '#f05a63', '#F0C751','#67CCF2','#d7d4f0']} />
+									</View>
+								</View>
+								{this.state.status!=''?this._renderViewActions():this._renderViewActions()}
 							</View>
-							
 						</View>
 				</Modal>
 				<Modal 
-					animationType="slide"
+					animationType="fade"
 					transparent={true}
 					visible={this.state._modal}
 					onRequestClose={()=>{this.setState({_modal: false})}} >
@@ -1059,8 +1129,8 @@ render() {
 										</View>*/}
 					<View style={[styles._startFaQ,styles._center]}>
 						<TouchableOpacity onPress={()=>{this.setState({_mReport: !this.state._mReport})}} style={[styles._flex_FaQ,styles._center]}>
-							<Icon type="font-awesome" style={{marginHorizontal: 2}} name="line-chart" color="white" size={height/20} />
-							<Text style={{color:"white", fontSize: width/15,}} >
+							<Icon type="font-awesome" style={{marginHorizontal: 2}} name="line-chart" color="white" size={height/25} />
+							<Text style={{color:"white", fontSize: width/20,}} >
 								{this.state._langid?this.state._lang.vi.statistic:this.state._lang.en.statistic}
 							</Text>
 						</TouchableOpacity>
@@ -1315,12 +1385,11 @@ const styles= StyleSheet.create({
 		flexDirection: 'row', 
 	},
 	_mContentReport:{
-		height: (height/3)*2,
-		width: width-20,
+		flex: 1,
 		backgroundColor: 'white',
 	},
 	_mBodyReport:{
-		flex: 1,
+		flex: 0.5,
 	},
 	_mFootReport:{
 		flex: 0.1,
@@ -1328,9 +1397,21 @@ const styles= StyleSheet.create({
 		width: width-20,
 	},
 	_mDataReport:{
-		flex: 0.8,
+		flex: 1,
 		width: width-20,
 		flexDirection: 'column',
+	},
+	_bodyCharts:{
+		flex: 0.3,
+		flexDirection: 'column', 
+	},
+	_viewStatus:{
+		flex: 0.15,
+		flexDirection: 'row',
+		borderWidth: 1,
+	},
+	_viewChartStatus:{
+		flex: 0.9,
 	},
 	_itemsDataReport:{
 		flex: 1,

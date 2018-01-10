@@ -2,7 +2,7 @@ import React from 'react';
 import { TextInput, View, Text } from 'react-native';
 
 
-const Input = ({customText,label, value, onChangeText,placeholderTextColor, placeholder, secureTextEntry,labelStyle}) => {
+const Input = ({customText,ref,onSubmitEditing,autoFocus2,label, value, onChangeText,placeholderTextColor, placeholder, secureTextEntry,labelStyle}) => {
 	const {inputStyle, labelstyle, containerStyle } = styles;
 	return(
 		<View style = {containerStyle}>
@@ -10,6 +10,9 @@ const Input = ({customText,label, value, onChangeText,placeholderTextColor, plac
 			<TextInput
 				secureTextEntry = {secureTextEntry}
 				placeholder = {placeholder}
+				ref={ref}
+				onSubmitEditing={onSubmitEditing}
+				autoFocus={autoFocus2}
 				placeholderTextColor={placeholderTextColor}
 				underlineColorAndroid={'transparent'}
 				autoCorrect = {false}

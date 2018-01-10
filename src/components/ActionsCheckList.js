@@ -330,7 +330,7 @@ render() {
 								<View style={styles._auditInfo}>
 									<View style={[styles._center,{flex: 0.1,paddingTop: 5}]}>
 										<Text style={[styles._textTitel,{}]}>
-										  	ĐÁNH GIÁ VIÊN
+										  	{this.state._langid?this.state._lang.vi.auditor.toUpperCase():this.state._lang.en.auditor.toUpperCase()}
 										</Text>
 									</View>
 									<View style={[{flex: 0.58,}]}>

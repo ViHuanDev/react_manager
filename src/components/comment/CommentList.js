@@ -3,7 +3,7 @@ import {URL_HOME,normalize} from '../../config';
 import ImagePicker from 'react-native-image-picker';
 import {
   StyleSheet,Dimensions,AsyncStorage,Text,TouchableOpacity,TextInput,ScrollView,
-  View,Modal,Image,FlatList,WebView,ListView
+  View,Modal,Image,FlatList,WebView,ListView,Alert
 } from 'react-native';
 import { Icon } from 'react-native-elements';
 import {lang} from '../languages/languages';
@@ -22,19 +22,23 @@ export default class CommentList extends Component {
 	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
 	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',_temp_id_del_comment:[],_isEditComment:'',_stateComment: false,
 	  	_temp_new_comment:[],_id_user:'',_langid:'',_lang:lang,_page: 1,_imageCamera: false,_isImage:[],_thisSource:'',
+	  	last_page:'',_keyImage: 1,_index_comment: '',_refreshing: false,
 	  };
 	};
 	componentWillMount(){
 		// console.log();
 		AsyncStorage.getAllKeys((err, keys) => { 
-        AsyncStorage.multiGet(keys).then((value)=>{
+       	 AsyncStorage.multiGet(keys).then((value)=>{
+        	console.log(value);
         	this.setState({
-          		_langid: value[1][1]=='vi'?true:false,
+          		_langid: value[4][1]=='vi'?true:false,
           	});
 		// console.log(this.state.checklist_id+'---'+this.state.id_answer);
-		fetch(URL_HOME+'/api/comments?token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
+		fetch(URL_HOME+'/api/comments?page='+this.state._page+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer,{
+			"method": "GET",
+		})
 		.then((response) => response.json()).then((responseJson)=> {
-			console.log(responseJson);
+				console.log(responseJson);
 					// if(responseJson.error){
 						
 					// }else{
@@ -43,10 +47,12 @@ export default class CommentList extends Component {
 							array_comment: responseJson.data,
 							dataSource: this.state.dataSource.cloneWithRows(responseJson.data),
 							_isLoading: false,
-							_id_user: value[4][1],
+							_id_user: value[0][1],
+							last_page: responseJson.last_page,
 						});
 					// }
-					// console.log(responseJson);
+					// var item = responseJson.data[4];
+					// console.log(responseJson.data.indexOf(item));
 				}) .catch((error) => { 
 					console.error(error); 
 				});
@@ -54,9 +60,10 @@ export default class CommentList extends Component {
     });
 };
 _onEditCommentChange(text){
+	var index = this.state._index_comment;
+	index.content = text;
 	this.setState({
-		_isEditComment: text,
-		_temp_comment: text,
+		_index_comment: index,
 	});
 };
 _opendImage(){
@@ -114,11 +121,11 @@ AsyncStorage.getAllKeys((err, keys) => {
 });	
 
 };
-_onClickDelComment(id){
-	console.log(id);
+_onClickDelComment(el){
+	console.log(el);
 	AsyncStorage.getAllKeys((err, keys) => { 
-        AsyncStorage.multiGet(keys).then((value)=>{
-		console.log(this.state.checklist_id+'---'+this.state.id_answer);
+ 	 AsyncStorage.multiGet(keys).then((value)=>{
+		// console.log(this.state.checklist_id+'---'+this.state.id_answer);
 		fetch(URL_HOME+'/api/comments/multidelete',{
 			method: 'POST',
 				headers:{
@@ -127,17 +134,20 @@ _onClickDelComment(id){
 				},
 				body:JSON.stringify({
 				    "token": value[3][1],
-				    "id": id,
+				    "id": el.id,
 				})
 		})
 		.then((response) => response.json()).then((responseJson)=> {
-				console.log(this.state._temp_id_del_comment);
-				var temp=this.state._temp_id_del_comment;
-				temp.push(id);
+				// console.log(this.state._temp_id_del_comment);
+				// var temp=this.state._temp_id_del_comment;
+				var arr = this.state.array_comment;
+				// temp.push(el.id);
 				// console.log(responseJson.toString()=="true"?'1':'2');
 				// if(responseJson.toString()=="true"){
+				arr.splice(arr.indexOf(el),1);
 					this.setState({
-						_temp_id_del_comment: temp,
+						// _temp_id_del_comment: temp,
+						array_comment: arr,
 					});
 				// }
 			}) .catch((error) => { 
@@ -153,30 +163,31 @@ _onCommentChange(text){
 };
 _onSendEditComment(){
 	var content = this.state._isEditComment;
+	var index = this.state.array_comment.findIndex((obj)=>obj.id==this.state._index_comment);
+	console.log(index);
 	// alert(this.state._isComment+'log');
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
         	// if(content!=''){
-				fetch(URL_HOME+'/api/comments?token='+value[3][1],{
-					method: 'POST',
-					headers:{
-						'Accept': 'application/json',
-					    'Content-Type': 'application/json',
-					},
-					body:JSON.stringify({
-						"checklist_id": this.state.checklist_id,
-					    "content": content,
-					    "id": this.state.id_answer,
-					})
-				}).then((response)=>response.json()).then((responseJson)=>{
-					console.log(responseJson);
-					this.setState({
-						_isEditComment: '',
-					});
-					alert("Success");
-				});
+				// fetch(URL_HOME+'/api/comments?token='+value[3][1],{
+				// 	method: 'POST',
+				// 	headers:{
+				// 		'Accept': 'application/json',
+				// 	    'Content-Type': 'application/json',
+				// 	},
+				// 	body:JSON.stringify({
+				// 		"checklist_id": this.state.checklist_id,
+				// 	    "content": content,
+				// 	    "id": this.state.id_answer,
+				// 	})
+				// }).then((response)=>response.json()).then((responseJson)=>{
+				// 	console.log(responseJson);
+				// 	this.setState({
+				// 		_isEditComment: '',
+				// 	});
+				// 	alert("Success");
+				// });
 			// }else{
-
 			// }
     	});
 	});
@@ -192,7 +203,7 @@ _renderImageSelect(){
 	console.log(this.state._thisSource);
 	if(this.state._thisSource!=''){
 		temp.push(
-			<Image key={"ImageProps"} style={{width: 50,height: 50,margin: 2,alignItems: 'flex-end'}} source={{uri: this.state._thisSource}}>
+			<Image key={"ImageProps"+Number(this.state._keyImage)+1} style={{width: 50,height: 50,margin: 2,alignItems: 'flex-end'}} source={{uri: this.state._thisSource}}>
 				<Icon onPress={()=>{this._DelItemImage()}} type='evilicon' name='close-o' color="white" size={15} />
 			</Image>
 		);
@@ -202,79 +213,47 @@ _renderImageSelect(){
 	return temp;
 }
 _saveEditComment(){
+	// var index = this.state.array_comment.findIndex((obj)=>obj.id==this.state._index_comment);
+	var index = this.state.array_comment.indexOf(this.state._index_comment);
+	// console.log(index);
+	var arr = this.state.array_comment;
+	// arr[index].content="thay doi tai vi tri";
+	// var temp = arr[index];
+	// arr[index] = temp;
+	// this.setState({
+	// 	array_comment: arr,
+	// });
+	console.log(this.state._index_comment.id);
 	AsyncStorage.getAllKeys((err, keys) => { 
         AsyncStorage.multiGet(keys).then((value)=>{
-			fetch(URL_HOME+'/api/comments/'+this.state._temp_id_comment,{
+			fetch(URL_HOME+'/api/comments/'+this.state._index_comment.id,{
 				method: 'PUT',
 				headers:{
 					'Accept': 'application/json',
 				    'Content-Type': 'application/json',
 				},
 				body:JSON.stringify({
-				    "content": this.state._temp_comment,
+				    "content": this.state._index_comment.content,
 				    "token": value[3][1],
+				    _refreshing: true,
 				})
 			}).then((response)=>response.json()).then((responseJson)=>{
-				console.log(responseJson);
+				// console.log(responseJson);
+				// var arr_index = arr[index];
+				// var temp = responseJson.("user":user);
+				// console.log(temp[0]);
+				// arr_index.splice(index,1);
+				// arr.splice(index,0,temp);
+				// console.log(arr);
+				arr[index].content = responseJson.content;
 				this.setState({
 					_stateEditComment: !this.state._stateEditComment,
-					_temp_comment: responseJson.content,
+					array_comment: arr,
 				});
-				console.log("Success");
 			});
     	});
 	});
 }
-_renderNewComment(arr){
-	if(arr.length>0){
-		// console.log(arr.length);
-		var temp=[];
-		for(let i=0;i<arr.length;i++){
-			temp.push(
-			    	<View key={"newComment"+i} style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(arr[i].id)?'none':'flex'}]}>
-						<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
-							<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
-						</View>
-						<View style={styles._mitemContent}>
-							<View style={styles._itemText}>
-								<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
-								  	{arr[i].user.fullname} 
-								</Text>
-							</View>
-							<View style={styles._itemText}>
-								<View style={styles._mItemText}>
-									<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
-										{this._rederEditCoomit(arr[i])}
-									</TouchableOpacity>
-									<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[0].child,id_arr: arr[0].id})}}>
-										<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
-										  	{arr[i].child.length} trả lời
-										</Text>
-									</TouchableOpacity>
-								</View>
-							</View>
-							<View style={styles._textActions}>
-								<TouchableOpacity style={styles._buttonClick} onPress={()=>{this.setState({_cancel_comment:arr[i].content,_temp_comment: this.state._temp_id_comment.includes(arr[i].id)?this.state._temp_comment:arr[i].content,_temp_id_comment: [arr[i].id],_stateEditComment: !this.state._stateEditComment});}} >
-									<Text style={[styles._editComment,styles.font_size]}>
-									  	Sửa
-									</Text>
-								</TouchableOpacity>
-								<TouchableOpacity onPress={()=>{this._onClickDelComment(arr[i].id)}} style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==arr[i].user.id?'flex':'none'}]}>
-									<Text style={[styles._delComment,styles.font_size]}>
-									  	Xóa
-									</Text>
-								</TouchableOpacity>
-							</View>
-						</View>
-					</View>
-			    );
-		}
-		return temp;
-	}
-	else{
-		return(<View></View>);
-	}
-};
 _closeComment(){
 	this.setState({
 		_isComment: '',
@@ -298,19 +277,13 @@ _saveComment(){
 						    "content": this.state._isComment,
 						})
 					}).then((response)=>response.json()).then((responseJson)=>{
-						console.log(responseJson);
-						var temp = this.state._temp_new_comment;
-						temp.push(responseJson);
+						// console.log(responseJson);
+						var temp = this.state.array_comment.concat(responseJson);
 						this.setState({
 							_stateComment: true,
 							_isComment: '',
-							_temp_new_comment: temp,
+							array_comment: temp,
 						});
-						// this._renderNewComment(responseJson);
-						// this.setState({
-						// 	_stateComment: !this.state._stateComment,
-						// });
-						// console.log("Success");
 					});
 				}
 				else{
@@ -322,7 +295,13 @@ _saveComment(){
 					    },
 					 	body: this.state._isImage,
 					}).then((res)=>res.json()).then((response)=>{
-					  console.log(response);
+						console.log(response);
+						var temp = this.state.array_comment.concat(response);
+					  	this.setState({
+							_thisSource: '',
+							_imageCamera: false,
+							array_comment: temp,
+						});
 					});
 				}
 	    	});
@@ -349,6 +328,84 @@ _rederEditCoomit(el){
 // _renderItemComment(arr){
 	
 // };
+_onRerfreshController(){
+	if(this.state._refreshing){
+		AsyncStorage.getAllKeys((err, keys) => { 
+       	 AsyncStorage.multiGet(keys).then((value)=>{
+		fetch(URL_HOME+'/api/comments?page='+this.state._page+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer,{
+			"method": "GET",
+		})
+		.then((response) => response.json()).then((responseJson)=> {
+						this.setState({
+							array_comment: responseJson.data,
+							dataSource: this.state.dataSource.cloneWithRows(responseJson.data),
+							_isLoading: false,
+							_id_user: value[0][1],
+							last_page: responseJson.last_page,
+						});
+				}) .catch((error) => { 
+					console.error(error); 
+				});
+			});
+    	});
+	}
+}
+_renderFlatList(){
+return(
+	<FlatList
+		data={this.state.array_comment}
+		extraData={this.state.array_comment}
+		keyExtractor={(item)=>item.id}
+		onEndReachedThreshold={-1}
+		onEndReached={this._onEndReached()}
+		refreshing={this.state._refreshing}
+        onRefresh={this._onRerfreshController()}
+		renderItem={({item})=>
+				<View style={[styles._mItemsComment]}>
+					<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
+						<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
+					</View>
+					<View style={styles._mitemContent}>
+						<View style={styles._itemText}>
+							<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+							  	{item.user.fullname} 
+							</Text>
+						</View>
+						<View style={styles._itemText}>
+							<View style={styles._mItemText}>
+								<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: item.child,id_arr: item.id})}}>
+									{this._rederEditCoomit(item)}
+								</TouchableOpacity>
+								<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: item.child,id_arr: item.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
+									<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
+									  	{item.child.length} trả lời
+									</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
+						<View style={styles._textActions}>
+							{/*<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+															<Text style={[styles._repComment,styles.font_size]}>
+															  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
+															</Text>
+														</TouchableOpacity>*/}
+							<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==item.user.id?'flex':'none'}]} onPress={()=>{this.setState({_index_comment: item,_cancel_comment:item.content,_stateEditComment: !this.state._stateEditComment});}} >
+								<Text style={[styles._editComment,styles.font_size]}>
+								  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
+								</Text>
+							</TouchableOpacity>
+							<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==item.user.id?'flex':'none'}]} onPress={()=>{this._onClickDelComment(item)}} >
+								<Text style={[styles._delComment,styles.font_size]}>
+								  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
+								</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+		}
+	/>
+);
+}
 _renderComment(){
 		var arr= this.state.array_comment;
 		// console.log(arr);
@@ -390,7 +447,7 @@ _renderComment(){
 								  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
 								</Text>
 							</TouchableOpacity>
-							<TouchableOpacity style={[styles._buttonClick,{display: user_action}]} onPress={()=>{this._onClickDelComment(arr[i].id)}} >
+							<TouchableOpacity style={[styles._buttonClick,{display: user_action}]} onPress={()=>{this._onClickDelComment(arr[i])}} >
 								<Text style={[styles._delComment,styles.font_size]}>
 								  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
 								</Text>
@@ -403,96 +460,54 @@ _renderComment(){
 		return temp;
 };
 _onEndReached(){
-	AsyncStorage.getAllKeys((err, keys) => { 
-        AsyncStorage.multiGet(keys).then((value)=>{
-		fetch(URL_HOME+'/api/comments?page='+(this.state._page+1)+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
-		.then((response) => response.json()).then((responseJson)=> {
-			if(responseJson.length!=0){
-				var arr =  (this.state.dataSource._dataBlob.s1).concat(responseJson.data);
-					this.setState({
-						dataSource: this.state.dataSource.cloneWithRows(arr),
-						_page: this.state._page+1,
-					});
-				}else{
-					Alert.alert(
-					  'Alert Title',
-					  'My Alert Msg',
-					  [
-					    {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
-					    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-					    {text: 'OK', onPress: () => console.log('OK Pressed')},
-					  ],
-					  { cancelable: false }
-					)
-				}
-			}) .catch((error) => { 
-				console.error(error); 
+	// console.log(this.state._page+1+'----'+this.state.last_page);
+	if(this.state._page<=this.state.last_page){
+		AsyncStorage.getAllKeys((err, keys) => { 
+	        AsyncStorage.multiGet(keys).then((value)=>{
+	        // console.log(value[3][1]);
+			fetch(URL_HOME+'/api/comments?page='+(Number(this.state._page)+1)+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer)
+			.then((response) => response.json()).then((responseJson)=> {
+				console.log(responseJson.data);
+				if(responseJson.data.length > 0){
+					var arr =  this.state.array_comment.concat(responseJson.data);
+						this.setState({
+							array_comment: arr,
+							_page: this.state._page+1,
+						});
+					}else{
+						// Alert.alert(
+						//   'Alert Title',
+						//   'My Alert Msg',
+						//   [
+						//     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+						//     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+						//     {text: 'OK', onPress: () => console.log('OK Pressed')},
+						//   ],
+						//   { cancelable: false }
+						// )
+						console.log("end");
+					}
+				}) .catch((error) => { 
+					console.error(error); 
+				});
 			});
-		});
-    });
-};
-_renderComment2(){
-		// var user_action = this.state._id_user.replace(/'/g,'')==arr[i].user.id?'flex':'none';
-		// var arr= this.state.array_comment;
-		// console.log(this.state.dataSource);
-		// console.log(this.state._id_user.replace(/'/g,''));
-		var temp = [];
-		// for(let i=0;i<arr.length;i++){
-		    // temp.push(
-		    <ListView
-		    dataSource={this.state.dataSource}
-		    renderRow={(rowData) =>
-		    	<View style={[styles._mItemsComment,{display: this.state._temp_id_del_comment.includes(rowData.id)?'none':'flex'}]}>
-					<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
-						<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
-					</View>
-					<View style={styles._mitemContent}>
-						<View style={styles._itemText}>
-							<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
-							  	{rowData.user.fullname} 
-							</Text>
-						</View>
-						<View style={styles._itemText}>
-							<View style={styles._mItemText}>
-								<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id})}}>
-									{this._rederEditCoomit(rowData)}
-								</TouchableOpacity>
-								<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
-									<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
-									  	{rowData.child.length} trả lời
-									</Text>
-								</TouchableOpacity>
-							</View>
-						</View>
-						<View style={styles._textActions}>
-							<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: rowData.child,id_arr: rowData.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
-								<Text style={[styles._repComment,styles.font_size]}>
-								  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
-								</Text>
-							</TouchableOpacity>
-							<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==rowData.user.id?'flex':'none'}]} onPress={()=>{this.setState({_cancel_comment:rowData.content,_temp_comment: this.state._temp_id_comment.includes(rowData.id)?this.state._temp_comment:rowData.content,_temp_id_comment: [rowData.id],_stateEditComment: !this.state._stateEditComment});}} >
-								<Text style={[styles._editComment,styles.font_size]}>
-								  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
-								</Text>
-							</TouchableOpacity>
-							<TouchableOpacity style={[styles._buttonClick,{display: this.state._id_user.replace(/'/g,'')==rowData.user.id?'flex':'none'}]} onPress={()=>{this._onClickDelComment(rowData.id)}} >
-								<Text style={[styles._delComment,styles.font_size]}>
-								  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
-								</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-				</View>
-				}/>
-		    // );
-		// }
-		// return temp;
+	    });
+	}
 };
 _renderNull(){
 	return(
 		<Text></Text>
 	);
 }
+_convertText(text){
+	if(text){
+	var temp = '';
+	temp = text.replace(/(&nbsp;)/g," ");
+	temp = temp.replace(/(<p>)/g,"");
+	temp = temp.replace(/(<\/p>)/g,"");
+	return temp;
+	}
+};
 _keyExtractor = (item, index) => item.id;
   render() {
     return (
@@ -525,11 +540,12 @@ _keyExtractor = (item, index) => item.id;
 							<TextInput
 								style={{flex: 1}}
 								multiline = {true}
+								returnKeyType="done"
 								underlineColorAndroid={'transparent'}
 								editable = {true}
 								numberOfLines={4}
-						        onChangeText={(text) => this.setState({_temp_comment: text})}
-						        value={this.state._temp_comment}/>
+						        onChangeText={(text)=>{this._onEditCommentChange(text)}}
+						        value={this._convertText(this.state._index_comment.content)}/>
 						</View>
 						<View style={styles._editFooter}>
 							<TouchableOpacity onPress={()=>{this.setState({_stateEditComment: !this.state._stateEditComment,_temp_comment: this.state._cancel_comment})}} >
@@ -555,8 +571,7 @@ _keyExtractor = (item, index) => item.id;
 								</View>*/}
 				<View style={styles._mdataComment}>
 					<ScrollView  contentContainerStyle={styles._mScrolView}>
-						{this._renderComment()}
-						{this._renderNewComment(this.state._temp_new_comment)}
+						{this._renderFlatList()}
 					</ScrollView>
 					<View style={[styles._mtextComment]}>
 						<View style={[styles._mClickComment,styles._center]}>
@@ -666,7 +681,7 @@ const styles = StyleSheet.create({
 		flex: 9/10,
 	},
 	_mScrolView:{
-		height: height,
+		// height: height,
 	},
 	_img:{
 		flex: 1,
@@ -675,9 +690,10 @@ const styles = StyleSheet.create({
 	},
 	_mItemsComment:{
 		flexDirection: 'row',
-		borderBottomWidth: 0.3,
+		borderBottomWidth: 0.4,
 		borderColor: 'gray',
-		paddingTop: 2,
+		paddingVertical: 2,
+		marginBottom: 2,
 	},
 	_mitemUser:{
 		flex: 0.2,
