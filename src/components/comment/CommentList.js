@@ -8,6 +8,7 @@ import {
 import { Icon } from 'react-native-elements';
 import {lang} from '../languages/languages';
 import HTML from 'react-native-render-html';
+import { Keyboard } from 'react-native';
 var options = {
   title: 'Select Image',
 };
@@ -22,7 +23,7 @@ export default class CommentList extends Component {
 	  	_isLoading: true,array_comment:[],array_child:[],_ChildComment: false,temp_com:[],_isComment:'',_stateEditComment:false,
 	  	_temp_comment:'',_temp_id_comment:[],_cancel_comment:'',_temp_id_del_comment:[],_isEditComment:'',_stateComment: false,
 	  	_temp_new_comment:[],_id_user:'',_langid:'',_lang:lang,_page: 1,_imageCamera: false,_isImage:[],_thisSource:'',
-	  	last_page:'',_keyImage: 1,_index_comment: '',_refreshing: false,
+	  	last_page:'',_keyImage: 1,_index_comment: '',_refreshing: false,_extraComment: [],
 	  };
 	};
 	componentWillMount(){
@@ -214,9 +215,6 @@ _renderImageSelect(){
 }
 _saveEditComment(){
 	// var index = this.state.array_comment.findIndex((obj)=>obj.id==this.state._index_comment);
-	var index = this.state.array_comment.indexOf(this.state._index_comment);
-	// console.log(index);
-	var arr = this.state.array_comment;
 	// arr[index].content="thay doi tai vi tri";
 	// var temp = arr[index];
 	// arr[index] = temp;
@@ -238,17 +236,13 @@ _saveEditComment(){
 				    _refreshing: true,
 				})
 			}).then((response)=>response.json()).then((responseJson)=>{
-				// console.log(responseJson);
-				// var arr_index = arr[index];
-				// var temp = responseJson.("user":user);
-				// console.log(temp[0]);
-				// arr_index.splice(index,1);
-				// arr.splice(index,0,temp);
-				// console.log(arr);
-				arr[index].content = responseJson.content;
+				let arr = this.state.array_comment;
+				// var index = arr.indexOf(this.state._index_comment);
+				arr[arr.indexOf(this.state._index_comment)].content = responseJson.content;
 				this.setState({
-					_stateEditComment: !this.state._stateEditComment,
 					array_comment: arr,
+					_extraComment: arr,
+					_stateEditComment: !this.state._stateEditComment,
 				});
 			});
     	});
@@ -279,6 +273,7 @@ _saveComment(){
 					}).then((response)=>response.json()).then((responseJson)=>{
 						// console.log(responseJson);
 						var temp = this.state.array_comment.concat(responseJson);
+						Keyboard.dismiss();
 						this.setState({
 							_stateComment: true,
 							_isComment: '',
@@ -329,39 +324,30 @@ _rederEditCoomit(el){
 	
 // };
 _onRerfreshController(){
-	if(this.state._refreshing){
-		AsyncStorage.getAllKeys((err, keys) => { 
-       	 AsyncStorage.multiGet(keys).then((value)=>{
-		fetch(URL_HOME+'/api/comments?page='+this.state._page+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer,{
-			"method": "GET",
-		})
-		.then((response) => response.json()).then((responseJson)=> {
-						this.setState({
-							array_comment: responseJson.data,
-							dataSource: this.state.dataSource.cloneWithRows(responseJson.data),
-							_isLoading: false,
-							_id_user: value[0][1],
-							last_page: responseJson.last_page,
-						});
-				}) .catch((error) => { 
-					console.error(error); 
-				});
-			});
-    	});
-	}
+	// this.setState({
+	// 	_refreshing: !this.state._refreshing,
+	// });
+	// if(this.state._refreshing){
+	// 	AsyncStorage.getAllKeys((err, keys) => { 
+ //       	 AsyncStorage.multiGet(keys).then((value)=>{
+	// 	fetch(URL_HOME+'/api/comments?page='+this.state._page+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer,{
+	// 		"method": "GET",
+	// 	})
+	// 	.then((response) => response.json()).then((responseJson)=> {
+	// 					this.setState({
+	// 						array_comment: responseJson.data,
+	// 						_refreshing: !this.state._refreshing,
+	// 					});
+	// 			}) .catch((error) => { 
+	// 				console.error(error); 
+	// 			});
+	// 		});
+ //    	});
+	// }
 }
-_renderFlatList(){
+_renderFlatList=({item})=>{
 return(
-	<FlatList
-		data={this.state.array_comment}
-		extraData={this.state.array_comment}
-		keyExtractor={(item)=>item.id}
-		onEndReachedThreshold={-1}
-		onEndReached={this._onEndReached()}
-		refreshing={this.state._refreshing}
-        onRefresh={this._onRerfreshController()}
-		renderItem={({item})=>
-				<View style={[styles._mItemsComment]}>
+	<View style={[styles._mItemsComment]}>
 					<View style={[styles._mitemUser,{justifyContent: 'flex-start'}]}>
 						<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={((width-30)/9)} />
 					</View>
@@ -402,8 +388,6 @@ return(
 						</View>
 					</View>
 				</View>
-		}
-	/>
 );
 }
 _renderComment(){
@@ -571,7 +555,16 @@ _keyExtractor = (item, index) => item.id;
 								</View>*/}
 				<View style={styles._mdataComment}>
 					<ScrollView  contentContainerStyle={styles._mScrolView}>
-						{this._renderFlatList()}
+						<FlatList
+							data={this.state.array_comment}
+							extraData={this.state.array_comment}
+							keyExtractor={(item)=>item.id}
+							onEndReachedThreshold={-1}
+							onEndReached={this._onEndReached()}
+							refreshing={this.state._refreshing}
+					        onRefresh={this._onRerfreshController()}
+							renderItem={this._renderFlatList}
+						/>
 					</ScrollView>
 					<View style={[styles._mtextComment]}>
 						<View style={[styles._mClickComment,styles._center]}>
