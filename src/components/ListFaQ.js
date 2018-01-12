@@ -30,7 +30,7 @@ componentWillMount() {
         AsyncStorage.multiGet(keys).then((value)=>{
           	console.log(value);
           	this.setState({
-          		_langid: value[1][1]=='vi'?true:false,
+          		_langid: value[4][1]=='vi'?true:false,
           	});
         	fetch(URL_HOME+'/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => {

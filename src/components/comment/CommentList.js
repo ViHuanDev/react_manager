@@ -237,8 +237,15 @@ _saveEditComment(){
 				})
 			}).then((response)=>response.json()).then((responseJson)=>{
 				let arr = this.state.array_comment;
-				// var index = arr.indexOf(this.state._index_comment);
-				arr[arr.indexOf(this.state._index_comment)].content = responseJson.content;
+				this.setState({
+					array_comment: [],
+				});
+				let index = arr.indexOf(this.state._index_comment);
+				arr[index].content = responseJson.content;
+				var temp = arr[index];
+				arr.splice(index,1);
+				arr.splice(index,0,temp);
+				// console.log(arr[index]);
 				this.setState({
 					array_comment: arr,
 					_extraComment: arr,
