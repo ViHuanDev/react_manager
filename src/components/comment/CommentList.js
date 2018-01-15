@@ -38,7 +38,7 @@ export default class CommentList extends Component {
 			"method": "GET",
 		})
 		.then((response) => response.json()).then((responseJson)=> {
-				console.log(responseJson);
+				// console.log(responseJson); 
 						this.setState({
 							array_comment: responseJson.data,
 							dataSource: this.state.dataSource.cloneWithRows(responseJson.data),
@@ -93,7 +93,7 @@ AsyncStorage.getAllKeys((err, keys) => {
 					  name: response.fileName,
 					  // content: 'image',
 					});
-					data.append('content','<p></p>');
+					// data.append('content','<p></p>');
 					this.setState({
 						_thisSource: response.uri,
 						_isImage: data,
@@ -260,47 +260,51 @@ _saveComment(){
 	// console.log(this.state._isComment);
 		AsyncStorage.getAllKeys((err, keys) => { 
 	        AsyncStorage.multiGet(keys).then((value)=>{
-	        	if(this.state._isComment!=''){
-					fetch(URL_HOME+'/api/comments?token='+value[3][1],{
-						method: 'POST',
-						headers:{
-							'Accept': 'application/json',
-						    'Content-Type': 'application/json',
-						},
-						body:JSON.stringify({
-							"checklist_id": this.state.checklist_id,
-							"id": this.state.id_answer,
-						    "content": this.state._isComment,
-						})
-					}).then((response)=>response.json()).then((responseJson)=>{
-						// console.log(responseJson);
-						var temp = this.state.array_comment.concat(responseJson);
-						Keyboard.dismiss();
-						this.setState({
-							_stateComment: true,
-							_isComment: '',
-							array_comment: temp,
-						});
-					});
-				}
-				else{
-					fetch(URL_HOME+'/api/comments?token='+value[3][1], {
-					 	method: 'POST',
-						headers: {
-					      'Accept': 'application/json',
-					      'Content-Type': 'multipart/form-data',
-					    },
-					 	body: this.state._isImage,
-					}).then((res)=>res.json()).then((response)=>{
-						console.log(response);
-						var temp = this.state.array_comment.concat(response);
-					  	this.setState({
-							_thisSource: '',
-							_imageCamera: false,
-							array_comment: temp,
-						});
-					});
-				}
+	   //      	if(this.state._isComment!=''){
+				// 	fetch(URL_HOME+'/api/comments?token='+value[3][1],{
+				// 		method: 'POST',
+				// 		headers:{
+				// 			'Accept': 'application/json',
+				// 		    'Content-Type': 'application/json',
+				// 		},
+				// 		body:JSON.stringify({
+				// 			"checklist_id": this.state.checklist_id,
+				// 			"id": this.state.id_answer,
+				// 		    "content": this.state._isComment,
+				// 		})
+				// 	}).then((response)=>response.json()).then((responseJson)=>{
+				// 		// console.log(responseJson);
+				// 		var temp = this.state.array_comment.concat(responseJson);
+				// 		Keyboard.dismiss();
+				// 		this.setState({
+				// 			_stateComment: true,
+				// 			_isComment: '',
+				// 			array_comment: temp,
+				// 		});
+				// 	});
+				// }
+				// else{
+					var data = this.state._isImage;
+					data.appen(this.state._isComment);
+					console.log(data);
+					// fetch(URL_HOME+'/api/comments?token='+value[3][1], {
+					//  	method: 'POST',
+					// 	headers: {
+					//       'Accept': 'application/json',
+					//       'Content-Type': 'multipart/form-data',
+					//     },
+					//  	body: this.state._isImage,
+					// }).then((res)=>res.json()).then((response)=>{
+					// 	console.log(response);
+					// 	var temp = this.state.array_comment.concat(response);
+					//   	this.setState({
+					// 		_thisSource: '',
+					// 		_isComment: '',
+					// 		_imageCamera: false,
+					// 		array_comment: temp,
+					// 	});
+					// });
+				// }
 	    	});
 		});
 };
@@ -355,7 +359,7 @@ return(
 					</View>
 					<View style={styles._mitemContent}>
 						<View style={styles._itemText}>
-							<Text style={[styles.font_size,{fontWeight: 'bold',textAlign: 'left'  }]} >
+							<Text style={[styles.font_size,{textAlign: 'left',color:'black'  }]} >
 							  	{item.user.fullname} 
 							</Text>
 						</View>
@@ -364,7 +368,7 @@ return(
 								<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: item.child,id_arr: item.id})}}>
 									{this._rederEditCoomit(item)}
 								</TouchableOpacity>
-								<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: item.child,id_arr: item.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}}>
+								<TouchableOpacity   onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: item.child,id_arr: item.id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer,_langid: this.state._langid})}}>
 									<Text style={{textDecorationLine: 'underline',paddingLeft: 30 }}>
 									  	{item.child.length} trả lời
 									</Text>
@@ -372,7 +376,7 @@ return(
 							</View>
 						</View>
 						<View style={styles._textActions}>
-							{/*<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer})}} >
+							{/*<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_ChildCommentList',{arr_child: arr[i].child,id_arr: arr[i].id,ckl_id: this.state.checklist_id,id_aw: this.state.id_answer,_langid: this.state._langid})}} >
 															<Text style={[styles._repComment,styles.font_size]}>
 															  	{this.state._langid?this.state._lang.vi.replly:this.state._lang.en.replly}
 															</Text>
@@ -556,7 +560,6 @@ _keyExtractor = (item, index) => item.id;
 									</Text>
 								</View>*/}
 				<View style={styles._mdataComment}>
-					<ScrollView  contentContainerStyle={styles._mScrolView}>
 						<FlatList
 							data={this.state.array_comment}
 							extraData={this.state.array_comment}
@@ -567,7 +570,6 @@ _keyExtractor = (item, index) => item.id;
 					        onRefresh={this._onRerfreshController()}
 							renderItem={this._renderFlatList}
 						/>
-					</ScrollView>
 					<View style={[styles._mtextComment]}>
 						<View style={[styles._mClickComment,styles._center]}>
 							<TouchableOpacity style={{flex: 1,paddingVertical: 5}} onPress={()=>{this._opendImage()}}>

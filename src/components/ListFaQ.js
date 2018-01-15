@@ -45,7 +45,7 @@ componentWillMount() {
 			});
 			fetch(URL_HOME+'/api/chkitemstatus?token='+value[3][1]).then((response) => 
 				response.json()).then((responseJson)=>{ 
-					console.log(responseJson+"status");
+					// console.log(responseJson+"status");
 					var value = responseJson;
 					// console.log(responseJson);
 					var temp = [];
@@ -822,7 +822,8 @@ _eachItem(){
 							let item = arr[i].data[a].checklist_item[b];
 							let temp = [];
 							// console.log(item);
-							this.state.array_id.push(item.pivot.chkitems_id+'-'+'S');
+							// this.state.array_id.push(item.pivot.chkitems_id+'-'+'S');
+							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.status.code);
 							for(let i2=0;i2<= this.state.array_id.length-1;i2++){
 								for(let j=i2+1; j <this.state.array_id.length;j++){
 									if(this.state.array_id[i2]==this.state.array_id[j]){
