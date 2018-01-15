@@ -113,7 +113,7 @@ _onChangeLanguage(){
       		<View style={styles.head}>
       			 <View style={styles.logo}>
               <Image style={styles.img}
-                source={require('./../../images/logo.png')}
+                source={require('./../../images/Logo.png')}
               />
             </View>
       		</View>

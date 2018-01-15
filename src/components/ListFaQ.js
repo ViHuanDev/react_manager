@@ -16,7 +16,7 @@ class ListFaQ extends Component {
 		super(props);
 		this.state = {
 			status: this.props.navigation.state.params.status,id_faq: this.props.navigation.state.params.id,name_list: this.props.navigation.state.params.name_list,isLoading:true,
-			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',data_pie:[0],
+			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',data_pie:[0],_this_code: '',
 			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],_mReport:false,
 			comment:'',_langid:'',_lang: lang,array_comment:[],_showCmt:true,_mChildComment: false,array_refer_dq:[],
 			_idComment:[],_idChildComment:[],_statusFAQ:'',array_report:[],mRefer:false,array_refer:[],_this_status:'',
@@ -34,7 +34,7 @@ componentWillMount() {
           	});
         	fetch(URL_HOME+'/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => {
-					// console.log(responseJson);
+					// console.log(responseJson.data);
 					this.setState({
 						array_faq: responseJson.data,
 						_statusFAQ: responseJson.status,
@@ -45,32 +45,41 @@ componentWillMount() {
 			});
 			fetch(URL_HOME+'/api/chkitemstatus?token='+value[3][1]).then((response) => 
 				response.json()).then((responseJson)=>{ 
+					console.log(responseJson+"status");
+					var value = responseJson;
 					// console.log(responseJson);
-					this.setState({
-						array_status: responseJson,
-						});
-					// console.log(this.state.array_status);
-			}) .catch((error) => { 
-					console.error(error); 
-			});  
-			fetch(URL_HOME+'/api/checklists/statistic?data='+this.state.id_faq+'&token='+value[3][1]).then((response) => 
-				response.json()).then((responseJson)=>{ 
-					console.log(responseJson.totalchk);
 					var temp = [];
-					for(let i=0;i<responseJson.sttchk.length;i++){
-						let result = (responseJson.sttchk[i].total/responseJson.totalchk)*100;
-						temp.push(result);
+					for(var i=0;i<value.length;i++){
+						temp.push(value[i].id+'-'+value[i].code);
 					}
 					console.log(temp);
 					this.setState({
-						array_report: responseJson,
-						data_pie: temp,
+						array_status: responseJson,
+						array_local_status: temp,
 						isLoading: false,
 						});
 					// console.log(this.state.array_status);
 			}) .catch((error) => { 
 					console.error(error); 
-			});
+			});  
+			// fetch(URL_HOME+'/api/checklists/statistic?data='+this.state.id_faq+'&token='+value[3][1]).then((response) => 
+			// 	response.json()).then((responseJson)=>{ 
+			// 		console.log(responseJson.totalchk+"statistic");
+			// 		var temp = [];
+			// 		for(let i=0;i<responseJson.sttchk.length;i++){
+			// 			let result = (responseJson.sttchk[i].total/responseJson.totalchk)*100;
+			// 			temp.push(result);
+			// 		}
+			// 		console.log(temp);
+			// 		this.setState({
+			// 			array_report: responseJson,
+			// 			data_pie: temp,
+			// 			isLoading: false,
+			// 			});
+			// 		// console.log(this.state.array_status);
+			// }) .catch((error) => { 
+			// 		console.error(error); 
+			// });
 		});
     }); 
 };
@@ -467,9 +476,9 @@ _thisSelectSatus(el){
 	var id = this.state._idClick;
 	var count_status = ['Đ','S','NW','L','F','C','Y','N\A','N\\A'];
 	let temp = this.state.array_local.length>0?this.state.array_local:this.state.array_id;
-	// this.setState({
-	// 	array_id: [],
-	// });
+	this.setState({
+		_this_code: el,
+	});
 	console.log(temp+' trc khi xu ly');
 	console.log(count_status);
 	// if(count_status.length>0){
@@ -499,39 +508,34 @@ _thisSelectSatus(el){
 }
 _sendComment(checklist_id){
 	//id la trang thai status
-	var arr = this.state.array_local;
-	var temp=[];
-	for(let m=1;m<=12;m++){
-			if(arr.includes(checklist_id+'-'+m)){
-				temp.push(m);
-			}
-	}
-	console.log(temp[0]);
+	var code = (this.state._this_code).split('-')[1];
+	var temp = '';
+	console.log(this.state.array_local_status);	
 	var content = this.state.comment;
-	AsyncStorage.getAllKeys((err, keys) => { 
-          AsyncStorage.multiGet(keys).then((value)=>{
-          	fetch(URL_HOME+'/api/checklist_checklistitems/'+checklist_id+'?token='+value[3][1], {
-				  method: 'PUT',
-				  headers: {
-				    'Accept': 'application/json',
-				    'Content-Type': 'application/json',
-				  },
-				  body: JSON.stringify({
-				    "checklist_id": this.state.id_faq,
-				    "comment": content,
-				    "id": temp[0],
-				  })
-				}).then((responseJson)=>{
-					console.log(responseJson);
-					if(responseJson.status==200){
-						this.setState({
-							_modal: false,
-							comment: '',
-						});
-					}
-				});
-          });
-    });
+	// AsyncStorage.getAllKeys((err, keys) => { 
+ //          AsyncStorage.multiGet(keys).then((value)=>{
+ //          	fetch(URL_HOME+'/api/checklist_checklistitems/'+checklist_id+'?token='+value[3][1], {
+	// 			  method: 'PUT',
+	// 			  headers: {
+	// 			    'Accept': 'application/json',
+	// 			    'Content-Type': 'application/json',
+	// 			  },
+	// 			  body: JSON.stringify({
+	// 			    "checklist_id": this.state.id_faq,
+	// 			    "comment": content,
+	// 			    "id": temp[0],
+	// 			  })
+	// 			}).then((responseJson)=>{
+	// 				console.log(responseJson);
+	// 				if(responseJson.status==200){
+	// 					this.setState({
+	// 						_modal: false,
+	// 						comment: '',
+	// 					});
+	// 				}
+	// 			});
+ //          });
+ //    });
 };
 _thisCheckbox(el){
 	//fix loi check 2 state if else with array_local and array_id...
@@ -599,7 +603,7 @@ _eachColor(el){
 			return '#4c7ff0';
 		}
 		else if(el=="NW"){
-			return '#9DD182';
+			return '#f05a63';
 		}
 		else if(el=="F" || el=="L"){
 			return '#f0c54c';
@@ -661,6 +665,13 @@ _renderViewModalComment(){
 										<TouchableOpacity style={styles._button} onPress={()=>{this._closeStatus()}}>
 											<Text style={styles._color} >
 											  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
+											</Text>
+										</TouchableOpacity>
+									</View>
+									<View>
+										<TouchableOpacity style={styles._button} onPress={()=>this._sendComment(this.state._idClick)}>
+											<Text style={styles._color} >
+											  	{this.state._langid?this.state._lang.vi.save:this.state._lang.en.save}
 											</Text>
 										</TouchableOpacity>
 									</View>
@@ -756,7 +767,7 @@ _eachStatus(){
 					</View>
 					<View style={[styles._mtextAction,styles._center]}>
 						<TouchableOpacity onPress={()=>this._thisSelectSatus(this.state._idClick+'-'+item.code)}  >
-							<Text style={[styles._mText,styles._center,styles._colorText,{color: arr[i].code=="S"||arr[i].code=="Đ"?'#4c7ff0':arr[i].code=="NW"?'#9DD182':arr[i].code=="F"||arr[i].code=="L"?'#F0C751':arr[i].code=="Y"||arr[i].code=="C"?'#67CCF2':'black'}]}>
+							<Text style={[styles._mText,styles._center,styles._colorText,{color: arr[i].code=="S"||arr[i].code=="Đ"?'#4c7ff0':arr[i].code=="NW"?'#f05a63':arr[i].code=="F"||arr[i].code=="L"?'#F0C751':arr[i].code=="Y"||arr[i].code=="C"?'#67CCF2':'black'}]}>
 							  	{item.name}
 							</Text>
 						</TouchableOpacity>
@@ -811,7 +822,7 @@ _eachItem(){
 							let item = arr[i].data[a].checklist_item[b];
 							let temp = [];
 							// console.log(item);
-							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.status.code);
+							this.state.array_id.push(item.pivot.chkitems_id+'-'+'S');
 							for(let i2=0;i2<= this.state.array_id.length-1;i2++){
 								for(let j=i2+1; j <this.state.array_id.length;j++){
 									if(this.state.array_id[i2]==this.state.array_id[j]){

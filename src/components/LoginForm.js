@@ -167,7 +167,7 @@ class LoginForm extends Component{
 										<View style={[{width: width,padding: 5,flex: 0.4},styles._center]}>
 											<Image
 											  style={{width: height/4,height: height/4}}
-											  source={require('../../images/logo.png')}/>
+											  source={require('../../images/Logo.png')}/>
 										</View>
 										<View style={{width:width,flex: 0.6}} >
 											<CardSection style={{backgroundColor: 'rgba(255,255,255,0.4)',borderRadius: 50,marginHorizontal: 5, marginVertical: 5}} >

@@ -34,16 +34,11 @@ export default class CommentList extends Component {
         	this.setState({
           		_langid: value[4][1]=='vi'?true:false,
           	});
-		// console.log(this.state.checklist_id+'---'+this.state.id_answer);
 		fetch(URL_HOME+'/api/comments?page='+this.state._page+'&token='+value[3][1]+'&checklist_id='+this.state.checklist_id+'&id='+this.state.id_answer,{
 			"method": "GET",
 		})
 		.then((response) => response.json()).then((responseJson)=> {
 				console.log(responseJson);
-					// if(responseJson.error){
-						
-					// }else{
-						// console.log(responseJson);
 						this.setState({
 							array_comment: responseJson.data,
 							dataSource: this.state.dataSource.cloneWithRows(responseJson.data),

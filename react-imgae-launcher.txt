@@ -2,3 +2,4 @@ hdpi-36
 mdpi-48
 xhdpi-72
 xxhdpi-96
+.\gradlew assembleRelease --console plain
