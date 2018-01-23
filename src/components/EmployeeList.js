@@ -23,7 +23,7 @@ class EmployeeList extends Component {
 		AsyncStorage.getAllKeys((err, keys) => { 
 		AsyncStorage.multiGet(keys).then((value)=>{
 			if(value){
-				// console.log(value);
+				console.log(value);
 				this.setState({_langid: value[1][1]=='vi'?true:false,});
 				// console.log(value);
 				const token = value[3][1];

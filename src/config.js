@@ -63,3 +63,4 @@ export const normalize =temp;
 // export const URL_HOME = 'http://96.96.10.10';
 // https://test.glviews.com
 export const URL_HOME = 'https://test.glviews.com';
+// export const URL_HOME = '192.168.1.96:8080';

@@ -117,3 +117,9 @@ export const lang = {
 				'auditor': 'Auditor',
 		}
 };
+// _renderItem(item){
+
+// };
+// update(){
+// 	this._renderItem.bind(sucess);
+// }

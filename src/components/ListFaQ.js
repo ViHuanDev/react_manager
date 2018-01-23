@@ -19,7 +19,7 @@ class ListFaQ extends Component {
 			array_faq: [], page:0,isLoadding: true,count:0,checkItem: true, color:'blue',data_pie:[0],_this_code: '',
 			selectedIds:[],array_status: [],_modal: false,_idClick:'',array_id:[],array_local:[],_mReport:false,
 			comment:'',_langid:'',_lang: lang,array_comment:[],_showCmt:true,_mChildComment: false,array_refer_dq:[],
-			_idComment:[],_idChildComment:[],_statusFAQ:'',array_report:[],mRefer:false,array_refer:[],_this_status:'',
+			_idComment:[],_idChildComment:[],_statusFAQ:'',array_report:[],mRefer:false,array_refer:[],_this_status:'',array_faq_re: [],
 		};
 	};
 // _keyExtractor = (item, index) => index;
@@ -34,13 +34,14 @@ componentWillMount() {
           	});
         	fetch(URL_HOME+'/api/checklists/'+this.state.id_faq+'?token='+value[3][1]).then((response) => 
 				response.json()) .then((responseJson) => {
-					// console.log(responseJson.data);
+					// console.log(responseJson);
 					this.setState({
 						array_faq: responseJson.data,
+						// array_faq: [{'data':"du lieu 1"}],
 						_statusFAQ: responseJson.status,
 					});
 					// console.log(this.state.array_faq);
-				}) .catch((error) => { 
+				}) .catch((error) => {
 					console.error(error); 
 			});
 			fetch(URL_HOME+'/api/chkitemstatus?token='+value[3][1]).then((response) => 
@@ -103,37 +104,6 @@ _showChildComment(el){
 _onEditComment(id,val){
 	console.log('aaa');
 	console.log(id+'----'+val);
-}
-_renderChildComment(){
-	var arr = this.state.array_comment;
-	// console.log(this.state._idChildComment+"asdad");
-	// console.log(arr);
-	var temp = [];
-	temp.push(
-		<View key={'childcontent'+123} style={[styles._mChildComment,{display: 'flex'}]}>
-			<View style={styles._mChildUser}>
-				<Icon type='font-awesome' color='#F6F7F9' name='user-circle' size={20} />
-			</View>
-			<View style={styles._mChildContent}>
-					<Text>
-					  	{arr[0].content}
-					</Text>
-					<View style={styles._mChildActions}>
-						<TouchableOpacity style={styles._button} >
-							<Text style={[styles._editChildComment,styles.font_size,styles._color]}>
-							  	{this.state._langid?this.state._lang.vi.edit:this.state._lang.en.edit}
-							</Text>
-						</TouchableOpacity>
-						<TouchableOpacity style={styles._button} >
-							<Text style={[styles._delChildComment,styles.font_size,styles._color]}>
-							  	{this.state._langid?this.state._lang.vi.del:this.state._lang.en.del}
-							</Text>
-						</TouchableOpacity>
-					</View>
-			</View>
-		</View>
-	);
-	return temp;
 }
 _funRefer(arr,parent){
 	var out = [];
@@ -274,11 +244,37 @@ _renderReport(){
 	}
 };
 _onPressAction(el){
-	// console.log(el.status.code);
+	// console.log(el);
+	var arr = this.state.array_faq;
+	// console.log(arr);
+	// arr.map(function(e,i){
+	// 	e.data.map(function(item,i){
+	// 		item.checklist_item.map(function(value){
+	// 			if(value.id==el.id){
+	// 				console.log("arr 1");
+	// 			}
+	// 		})
+	// 	})
+	// });
+	// el.status.code="S";
+	// arr.map(function(e,i){
+	// 	e.data.map(function(item,i){
+	// 		const index = item.checklist_item.indexOf(el);
+	// 		if(index!=-1){
+	// 			console.log(item.checklist_item[index]);
+	// 			el.status.code="S";
+	// 			item.checklist_item.splice(index,1);
+	// 		}
+	// 	})
+	// });
+	// this.setState({
+	// 	array_faq_re: arr,
+	// });
+	// this._updateState(arr);
 	var temp = el.id+'-'+el.status.code;
 	this.setState({
 		_modal: true,
-		_idClick: el.id,
+		_idClick: el,
 		_this_status: temp,
 	});
 	// console.log(this.state.array_local);
@@ -302,34 +298,28 @@ _closeStatus(){
 	console.log(temp);
 }
 _renderStatus(id){
-	var arr = this.state.array_status;
-	// console.log(arr[0].code);
-	if(this.state.array_local.length>0){
-	if(arr.length>0){
-		for(let i=0;i<=arr.length;i++){
-			if(this.state.array_local.includes(id+'-'+arr[i].code)){
-			if(arr[i].code=="S"||arr[i].code=="Đ"){
+			if(id=="S"||id=="Đ"){
 					return(
 						<Text style={[styles._text,styles._textCenter]}>
 							{this.state._langid?this.state._lang.vi.satis:this.state._lang.en.satis}
 						</Text>
 					);
 				}
-				else if(arr[i].code=="NW"){
+				else if(id=="NW"){
 					return(
 						<Text style={[styles._text,styles._textCenter]}>
 							{this.state._langid?this.state._lang.vi.non_satis:this.state._lang.en.non_satis}
 						</Text>
 					);
 				}
-				else if(arr[i].code=="F"||arr[i].code=="L"){
+				else if(id=="F"||id=="L"){
 					return(
 						<Text style={[styles._text,styles._textCenter]}>
 							{this.state._langid?this.state._lang.vi.finding:this.state._lang.en.finding}
 						</Text>
 					);
 				}
-				else if(arr[i].code=="C"||arr[i].code=="Y"){
+				else if(id=="C"||id=="Y"){
 					return(
 						<Text style={[styles._text,styles._textCenter]}>
 							{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
@@ -343,83 +333,26 @@ _renderStatus(id){
 						</Text>
 					);
 				}
-			}
-		}
-	}
-}
-	else{
-	if(arr.length>0){
-		for(let i=0;i<=arr.length;i++){
-			if(this.state.array_id.includes(id+'-'+arr[i].code)){
-				if(arr[i].code=="S"||arr[i].code=="Đ"){
-						return(
-							<Text style={[styles._text,styles._textCenter]}>
-								{this.state._langid?this.state._lang.vi.satis:this.state._lang.en.satis}
-							</Text>
-						);
-					}
-					else if(arr[i].code=="NW"){
-						return(
-							<Text style={[styles._text,styles._textCenter]}>
-								{this.state._langid?this.state._lang.vi.non_satis:this.state._lang.en.non_satis}
-							</Text>
-						);
-					}
-					else if(arr[i].code=="F"||arr[i].code=="L"){
-						return(
-							<Text style={[styles._text,styles._textCenter]}>
-								{this.state._langid?this.state._lang.vi.finding:this.state._lang.en.finding}
-							</Text>
-						);
-					}
-					else if(arr[i].code=="C"||arr[i].code=="Y"){
-						return(
-							<Text style={[styles._text,styles._textCenter]}>
-								{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
-							</Text>
-						);
-					}
-					else{
-						return(
-							<Text style={[styles._text,styles._textCenter]}>
-								{this.state._langid?this.state._lang.vi.not_appli:this.state._lang.en.not_appli}
-							</Text>
-						);
-					}
-				}
-			}	
-		}
-	}
 }
 _renderIconStatus(id){
-	var arr = this.state.array_status;
-	if(this.state.array_local.length>0){
-		if(arr.length>0){
-			for(let i=0;i<=arr.length;i++){
-					if(this.state.array_local.includes(id+'-'+arr[i].code)){
-					if(arr[i].code=="S"||arr[i].code=="Đ"){
+					if(id=="S"||id=="Đ"){
 							return(
 								<Icon type='font-awesome' color='#4F81F0'  name='gear' size={height/30} />
 							);
 					}
-					else if(arr[i].code=="NW"){
+					else if(id=="NW"){
 							return(
 								<Icon type='font-awesome' color='#f05a63' name='gear' size={height/30} />
 							);
 					}
-					else if(arr[i].code=="F"||arr[i].code=="L"){
+					else if(id=="F"||id=="L"){
 							return(
 								<Icon type='font-awesome' color='#F0C751' name='gear' size={height/30} />
 							);
 					}
-					else if(arr[i].code=="C"||arr[i].code=="Y"){
+					else if(id=="C"||id=="Y"){
 							return(
 								<Icon type='font-awesome' color='#67CCF2' name='gear' size={height/30} />
-							);
-					}
-					else if(i==9||i==10){
-							return(
-								<Icon type='font-awesome' color='#D67A63' name='gear' size={height/30} />
 							);
 					}
 					else{
@@ -427,48 +360,6 @@ _renderIconStatus(id){
 								<Icon type='font-awesome' color='black' name='gear' size={height/30} />
 							);
 					}
-			}
-		}
-	}
-}
-	else{
-		if(arr.length>0){
-			for(let i=0;i<=arr.length;i++){
-				if(this.state.array_id.includes(id+'-'+arr[i].code)){
-						if(arr[i].code=="S" || arr[i].code=="Đ"){
-								return(
-									<Icon type='font-awesome' color='#4F81F0'  name='gear' size={height/30} />
-								);
-							}
-							else if(arr[i].code=="NW"){
-								return(
-									<Icon type='font-awesome' color='#f05a63' name='gear' size={height/30} />
-								);
-							}
-							else if(arr[i].code=="F"||arr[i].code=="L"){
-								return(
-									<Icon type='font-awesome' color='#F0C751' name='gear' size={height/30} />
-								);
-							}
-							else if(arr[i].code=="C"||arr[i].code=="Y"){
-								return(
-									<Icon type='font-awesome' color='#67CCF2' name='gear' size={height/30} />
-								);
-							}
-							// else if(i==9||i==10){
-							// 	return(
-							// 		<Icon type='font-awesome' color='#D67A63' name='gear' size={height/30} />
-							// 	);
-							// }
-							else{
-								return(
-									<Icon type='font-awesome' color='black' name='gear' size={height/30} />
-								);
-							}
-						}
-				}
-			}
-		}
 };
 _thisSelectSatus(el){
 	console.log(el);
@@ -507,11 +398,12 @@ _thisSelectSatus(el){
 	// console.log(this.state.array_local);
 }
 _sendComment(checklist_id){
+	this._updateState(checklist_id);
 	//id la trang thai status
-	var code = (this.state._this_code).split('-')[1];
-	var temp = '';
-	console.log(this.state.array_local_status);	
-	var content = this.state.comment;
+	// var code = (this.state._this_code).split('-')[1];
+	// var temp = '';
+	// console.log(this.state.array_local_status);	
+	// var content = this.state.comment;
 	// AsyncStorage.getAllKeys((err, keys) => { 
  //          AsyncStorage.multiGet(keys).then((value)=>{
  //          	fetch(URL_HOME+'/api/checklist_checklistitems/'+checklist_id+'?token='+value[3][1], {
@@ -619,47 +511,8 @@ _renderViewModalComment(){
 	var id = this.state._idClick;
 	var arr = ['Đ','S','NW','L','F','C','Y','N\A','N\\A'];
 	let view =[];
-	var state = this.state.array_local.length>0?this.state.array_local:this.state.array_id;
-	for(let i=0;i<=arr.length;i++){
-		if(state.includes(id+'-'+arr[i])){
-		// var index = state.indexOf(id+'-'+arr[i])
-			if(arr[i]=="C" || arr[i]=="Y" || arr[i]=="L" || arr[i]=="F"){
 				view.push(
-						<View style={{flex: 0.3}} key={"inputComment"+i}>
-								<View style={styles._mComment}>
-									<Text style={styles._colorText}>
-									  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment} :
-									</Text>
-									<TextInput style={[styles.input,{height: Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, height))} ]}
-						      		 				multiline
-													underlineColorAndroid='white'
-								      				onContentSizeChange={this.handleContentSizeChange}
-								      				onChangeText={(text)=>this._onCommentChange(text)}
-								      				value={this.state.comment}
-						      				/>
-								</View>
-								<View style={[styles._mfootAction,styles._center]}>
-									<View>
-										<TouchableOpacity style={styles._button} onPress={()=>{this._closeStatus()}}>
-											<Text style={styles._color} >
-											  	{this.state._langid?this.state._lang.vi.cancel:this.state._lang.en.cancel}
-											</Text>
-										</TouchableOpacity>
-									</View>
-									<View>
-										<TouchableOpacity style={styles._button} onPress={()=>this._sendComment(this.state._idClick)}>
-											<Text style={styles._color} >
-											  	{this.state._langid?this.state._lang.vi.save:this.state._lang.en.save}
-											</Text>
-										</TouchableOpacity>
-									</View>
-								</View>
-						</View>
-						);
-			}
-			else{
-				view.push(
-						<View style={{flex:0.3}} key={"inputComment"+i}>
+						<View style={{flex:0.3}} key={"inputComment"}>
 								<View style={[styles._mfootAction,styles._center,{flex: 0.3}]}>
 									<View>
 										<TouchableOpacity style={styles._button} onPress={()=>{this._closeStatus()}}>
@@ -678,9 +531,6 @@ _renderViewModalComment(){
 								</View>
 						</View>
 						);
-			}
-		}
-	}
 	return view;
 };
 _rennderViewComment(item){
@@ -718,11 +568,11 @@ _viewRenderStatus(item){
 	var temp=[];
 	if(this.state.status=="on progress" || this.state.status=="approval" || this.state.status=="corrective"){
 		temp.push(<TouchableOpacity key={"action:key"+item.id} onPress={()=>this._onPressAction(item)} >
-			{this._renderStatus(item.id)}
+			{this._renderStatus(item.status.code)}
 		</TouchableOpacity>);
 	}else{
 		temp.push(<TouchableOpacity key={"action:key"+item.id} onPress={()=>{this._viewAlert()}} >
-			{this._renderStatus(item.id)}
+			{this._renderStatus(item.status.code)}
 		</TouchableOpacity>);
 	}
 	return temp;
@@ -782,93 +632,6 @@ _eachStatus(){
 	return view;
 }
 
-_eachItem(){
-	var arr = this.state.array_faq;
-	const lang = this.state.language;
-	// console.log(lang);
-	var view = [];
-	for(let i=0;i < arr.length;i++){
-		// console.log(arr[i].group.name+'gr');
-		let item = arr[i];
-		view.push(
-			<View style={[styles._datasContent,{backgroundColor: '#5F84CE',paddingVertical: 10}]} key={"namegroup"+item.group.id}>
-				<View style={[styles._center,{flexDirection: 'row'}]}>
-					{/*<Text style={{width: width/4}}>
-										  	{this.state._langid?this.state._lang.vi.group:this.state._lang.en.group} :
-										</Text>*/}
-					<Text style={{fontWeight: 'bold',fontSize: 16,color: 'black'}}>
-					  	{item.group.name}
-					</Text>
-				</View>
-			</View>
-		);
-			for(let a=0;a<arr[i].data.length;a++){
-				// console.log(arr[i].data[a].name);
-				let item = arr[i].data[a];
-				view.push(
-					<View style={[styles._datasContent,{paddingHorizontal: 5}]} key={"nameCheck"+item.id}>
-						<View style={{flexDirection: 'row' }}>
-							{/*<Text style={{width: width/4,textAlign: 'auto' }}>
-														  {this.state._langid?this.state._lang.vi.answer:this.state._lang.en.answer} :
-														</Text>*/}
-							<Text style={{fontSize: 14 ,color: 'black',textDecorationLine: 'underline',textDecorationStyle: "solid",}} >
-					  			{item.name}
-							</Text>
-						</View>
-					</View>
-				);
-					for(let b=0;b<arr[i].data[a].checklist_item.length;b++){
-						// console.log(arr[i].data[a].checklist_item[b].id);
-							let item = arr[i].data[a].checklist_item[b];
-							let temp = [];
-							// console.log(item);
-							// this.state.array_id.push(item.pivot.chkitems_id+'-'+'S');
-							this.state.array_id.push(item.pivot.chkitems_id+'-'+item.status.code);
-							for(let i2=0;i2<= this.state.array_id.length-1;i2++){
-								for(let j=i2+1; j <this.state.array_id.length;j++){
-									if(this.state.array_id[i2]==this.state.array_id[j]){
-										this.state.array_id.splice(j);
-									}
-								}
-							}
-							// console.log(this.state.array_id);
-							view.push(
-							<View style={[styles._datasContent]} key={"checklist"+item.id}>
-								<View style={[styles._dataContent,{paddingHorizontal: 10}]}>
-							  		<HTML	html={arr[i].data[a].checklist_item[b].content} />
-								</View>
-								<View style={[styles._actionsContent,{borderBottomWidth: 0.3,borderColor: 'gray'}]}>
-										{this._rennderViewComment(item.id)}
-										<View style={[styles._itemAction,styles._center]}>
-											<View style={styles._iconAction}>
-												{this._renderIconStatus(item.id)}
-											</View>
-											<View style={styles._textAction}>
-												{this._viewRenderStatus(item)}
-											</View>											
-										</View>
-										<View style={[styles._itemAction,styles._center]}>
-											<View style={styles._iconAction}>
-												<TouchableOpacity onPress={()=>{this._renderRefer(item.id)}} >
-													<Icon type='ionicon' name='ios-help-circle-outline' size={height/30} />
-												</TouchableOpacity>
-											</View>
-											<View style={styles._textAction}>
-												<TouchableOpacity onPress={()=>{this._renderRefer(item.id)}} >
-													<Text style={styles._text}>
-										  				{this.state._langid?this.state._lang.vi.refer:this.state._lang.en.refer}
-													</Text>
-												</TouchableOpacity>
-											</View>
-										</View>
-								</View>
-							</View>
-						);
-					}
-			}
-	}
-	return view;
-};
 _renderViewActions(){
 	var _status = this.state.status;
 	var temp=[];
@@ -955,6 +718,68 @@ _renderButtonClick(val){
 	    });
     });
 };
+_updateState(el){
+	var arr = this.state.array_faq;
+	arr.map(function(e,i){
+		e.data.map(function(item,i){
+			const index = item.checklist_item.indexOf(el);
+			if(index!=-1){
+				el.status.code="S";
+				item.checklist_item.splice(index,0,el);
+			}
+		})
+	});
+	this.setState({
+		_modal: false,
+		array_faq: arr,
+	});
+};
+_renderFlatListItem=({item})=>{
+	// console.log(item);
+	return(
+	<View style={[styles._datasContent]}>
+		<View style={[styles._dataContent,{paddingHorizontal: 10}]}>
+					<HTML	html={item.content} />
+		</View>
+		<View style={[styles._actionsContent,{borderBottomWidth: 0.3,borderColor: 'gray'}]}>
+				<View style={[styles._itemAction,styles._center]}>
+					<View style={styles._iconAction}>
+						<Icon type='evilicon' color='#4C88FF' name='comment' size={height/30} />
+					</View>
+					<View style={styles._textAction}>
+						<TouchableOpacity onPress={()=>{this.props.navigation.navigate('Screen_CommentList',{checklist_id: this.state.id_faq,id_answer: item.id,_status: this.state._statusFAQ})}}>
+							<Text style={styles._text}>
+							  	{this.state._langid?this.state._lang.vi.comment:this.state._lang.en.comment}
+							</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+				<View style={[styles._itemAction,styles._center]}>
+					<View style={styles._iconAction}>
+						{this._renderIconStatus(item)}
+					</View>
+					<View style={styles._textAction}>
+						{this._viewRenderStatus(item)}
+					</View>											
+				</View>
+				<View style={[styles._itemAction,styles._center]}>
+					<View style={styles._iconAction}>
+						<TouchableOpacity onPress={()=>{this._renderRefer(item.id)}} >
+							<Icon type='ionicon' name='ios-help-circle-outline' size={height/30} />
+						</TouchableOpacity>
+					</View>
+					<View style={styles._textAction}>
+						<TouchableOpacity onPress={()=>{this._renderRefer(item.id)}} >
+							<Text style={styles._text}>
+				  				{this.state._langid?this.state._lang.vi.refer:this.state._lang.en.refer}
+							</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+		</View>
+	</View>
+	);
+}
 render() {
 	return (
 			<View style={[styles.row]}>
@@ -1149,11 +974,43 @@ render() {
 					</View>
 				</View>
 				<View style={styles._content}>
-					<ScrollView>
-						<View style={styles._itemsContent}>
-							{this._eachItem()}
+					<FlatList
+					data={this.state.array_faq}
+					keyExtractor={(item)=>item.group.id}
+					extraData={this.state}
+					renderItem={({item})=>
+					(<View>
+						<View style={[styles._datasContent,{backgroundColor: '#5F84CE',paddingVertical: 10}]} >
+								<View style={[styles._center,{flexDirection: 'row'}]} >
+									<Text style={{fontWeight: 'bold',fontSize: 16,color: 'black'}}>
+									  	{item.group.name}
+									  	{console.log(item)}
+									</Text>
+								</View>
 						</View>
-					</ScrollView>
+						<FlatList
+							data={item.data}
+							keyExtractor={(item)=>item.id}
+							extraData={this.state}
+							renderItem={({item})=>
+							<View key={item.id+"keyprops"}>
+									<View style={[styles._datasContent,{paddingHorizontal: 5}]}>
+										<View style={{flexDirection: 'row' }}>
+											<Text style={{fontSize: 14 ,color: 'black',textDecorationLine: 'underline',textDecorationStyle: "solid",}} >
+							  					{item.name}
+											</Text>
+										</View>
+									</View>
+									<FlatList
+										data={(item.checklist_item)}
+										keyExtractor={(item)=>item.id}								
+										extraData={this.state}
+										renderItem={this._renderFlatListItem}
+								/>
+							</View>
+						}/>
+				</View>)}
+			/>
 				</View>
 			</View>
 		);
@@ -1355,7 +1212,8 @@ const styles= StyleSheet.create({
 	},
 	_content:{
 		flex: 0.9,
-		flexDirection: 'column', 
+		flexDirection: 'column',
+		// backgroundColor: 'black',
 	},
 	_itemsContent:{
 		padding: 2,
